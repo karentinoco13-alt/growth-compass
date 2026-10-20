@@ -11,7 +11,9 @@ Growth Compass helps employees understand what really motivates them, and turns 
 - **A job is also a place to learn.** Every employee names what they want their job to teach them, besides pay, and logs lessons they could use in any job.
 - **Motivation shapes the message.** Someone driven mainly by pay is shown that skills are what raise pay over time, here or elsewhere. Someone driven by the work itself is encouraged to collect skills deliberately.
 
-> **Live demo:** open `index.html` in any browser, or visit the GitHub Pages site once it's enabled (see [Publishing](#publishing-on-github-pages)). The demo opens with **sample data** switched on: a made-up team of six people with finished assessments, plans, check-ins and support requests. Use **Sample data** in the top right to switch it off and take the assessment yourself.
+### ▶ [Open the live demo](https://karentinoco13-alt.github.io/growth-compass/)
+
+> The demo opens with **sample data** switched on: a made-up team of six people with finished assessments, plans, check-ins and support requests. Try the employee view as different people, then open **My team** to see the manager's side. Switch **Sample data** off (top right) to take the assessment yourself. Your answers stay in your own browser.
 
 ![Manager view: team overview and team patterns](docs/screenshots/manager-team.png)
 
@@ -95,7 +97,7 @@ The assessment logic, plan generation and coaching guidance draw on the framewor
 
 1. Push this repository to GitHub.
 2. Go to **Settings → Pages**, set **Source** to *Deploy from a branch*, pick `main` and `/ (root)`, and save.
-3. After a minute the demo is live at `https://<your-username>.github.io/<repo-name>/`. Add that link to the top of this README and to your portfolio.
+3. After a minute the demo is live. This repository's demo: https://karentinoco13-alt.github.io/growth-compass/
 
 ## Repository contents
 
