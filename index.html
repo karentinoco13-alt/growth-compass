@@ -4,29 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Growth Compass: a research-grounded personal development app where employees drive their own growth and managers support it.">
+<meta name="theme-color" content="#0F2347">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Growth Compass</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
-/* Layout: app bar + three workspaces (My growth / My team / Foundations); a stepped assessment tree grounded in SDT, achievement-goal, social-cognitive and I/O work-motivation theory feeds a 70-20-10 plan */
+/* Palette: navy and gold (the owner's brand colours). Layout: app bar + workspaces (My growth / My team / Foundations); a stepped assessment tree grounded in SDT, achievement-goal, social-cognitive and I/O work-motivation theory feeds a 70-20-10 plan */
 :root{
-  --bg:#F3F5F7; --surface:#FFFFFF; --sunk:#E9EDF1; --ink:#162231; --muted:#586577; --line:#D8DFE6;
-  --in:#0D7A6B; --in-soft:#D7EFEA; --ex:#A9640A; --ex-soft:#F6E7D0;
+  --bg:#F3F5F9; --surface:#FFFFFF; --sunk:#E7ECF4; --ink:#0F1E3D; --muted:#56627A; --line:#D3DBE8;
+  --in:#1F4E9C; --in-soft:#DEE7F7; --ex:#8C6A0E; --ex-soft:#F7EDD0;
+  --navy:#0F2347; --navy-2:#1A3463; --on-navy:#F4F6FB; --on-navy-muted:#B9C5DD; --gold:#D4A72C; --gold-soft:#F7EDD0;
+  --btn-bg:#0F2347; --btn-fg:#FFFFFF;
   --ok:#1E7A3C; --warn:#A35F00; --crit:#B3261E; --focus:#2B59C3;
   --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
   --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0E141B; --surface:#161F29; --sunk:#1D2834; --ink:#E5EBF1; --muted:#99A6B5; --line:#2A3644;
-  --in:#45C7B3; --in-soft:#173A36; --ex:#F0A845; --ex-soft:#3E2E17;
-  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#86A8FF; color-scheme:dark}}
+  --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
+  --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
+  --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328;
+  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0E141B; --surface:#161F29; --sunk:#1D2834; --ink:#E5EBF1; --muted:#99A6B5; --line:#2A3644;
-  --in:#45C7B3; --in-soft:#173A36; --ex:#F0A845; --ex-soft:#3E2E17;
-  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#86A8FF; color-scheme:dark}
+  --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
+  --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
+  --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328;
+  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
 h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
@@ -209,14 +216,60 @@ input[type=date]{background:var(--surface);border:1px solid var(--line);border-r
 .sugg button{border:1px dashed var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.86rem;text-align:left}
 .sugg button:hover{border-style:solid;border-color:var(--in)}
 details summary{cursor:pointer;font-weight:600;font-size:.92rem}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
+/* ---- Brand: navy and gold ---- */
+.bar{background:var(--navy);border-bottom:3px solid var(--gold);color:var(--on-navy)}
+body::before{background:var(--navy)}
+.brand{color:var(--on-navy);letter-spacing:.01em}
+.tabs{background:var(--navy-2)}
+.tab{color:var(--on-navy-muted)}
+.tab:hover{color:var(--on-navy)}
+.tab[aria-selected="true"]{background:var(--gold);color:#0F1E3D;box-shadow:none}
+.demo-tog{background:transparent;border-color:rgb(255 255 255 / .25);color:var(--on-navy-muted)}
+.demo-tog .sw{background:rgb(255 255 255 / .25)}
+.demo-tog .sw::after{background:#FFFFFF}
+.demo-tog[aria-pressed="true"]{color:var(--on-navy);border-color:var(--gold)}
+.demo-tog[aria-pressed="true"] .sw{background:var(--gold)}
+.bar :focus-visible{outline-color:var(--gold)}
+.btn{background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-fg)}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--gold)}
+.eyebrow{color:var(--ex)}
+h1,h2{color:var(--ink)}
+.prog{height:8px}
+.prog b{background:linear-gradient(90deg,var(--gold),var(--ex))}
+.stat .v{color:var(--in)}
+.stat{border-top:3px solid var(--gold)}
+.kirk .v{color:var(--in)}
+.stepper span.on{background:var(--navy-2);color:var(--on-navy)}
+.scale input:checked+span{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.opt input:checked+span{border-color:var(--gold);background:var(--gold-soft);box-shadow:inset 0 0 0 1px var(--gold)}
+.filters button[aria-pressed="true"],.personas button[aria-pressed="true"]{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.step.cur i{background:var(--gold)} .step.done i{background:var(--in)}
+.branch{border-left-color:var(--gold)}
+.demo-note{border-color:var(--gold);background:var(--gold-soft)}
+.sugg button:hover{border-color:var(--gold)}
+.move input,.act input{accent-color:var(--in)}
+/* Hero panels: navy with gold */
+.intro,.own{background:var(--navy);border-color:var(--navy);color:var(--on-navy)}
+.intro h1,.own h2{color:var(--on-navy)}
+.intro .eyebrow,.own .eyebrow{color:var(--gold)}
+.intro .muted,.own .muted{color:var(--on-navy-muted)}
+.intro .btn{background:var(--gold);border-color:var(--gold);color:#0F1E3D}
+.intro .btn.ghost{background:transparent;color:var(--on-navy);border-color:rgb(255 255 255 / .35)}
+.intro a{color:var(--gold)}
+.intro .tree .node{background:var(--navy-2);border-color:rgb(255 255 255 / .12);color:var(--on-navy)}
+.intro .tree .n{color:var(--gold)}
+.own .kirk>div{background:var(--navy-2);border-color:rgb(255 255 255 / .12)}
+.own .kirk .v{color:var(--gold)}
+.own b{color:var(--gold)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
 <body>
 <header class="bar">
   <div class="wrap">
     <div class="brand">
-      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.5" fill="none" stroke="var(--ink)" stroke-width="1.5"/><path d="M14 4 L17 14 L14 24 L11 14 Z" fill="var(--in)"/><path d="M14 14 L17 14 L14 24 Z" fill="var(--ex)"/></svg>
+      <svg width="30" height="30" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.5" fill="none" stroke="var(--gold)" stroke-width="1.6"/><path d="M14 3.5 L17.2 14 L14 24.5 L10.8 14 Z" fill="var(--gold)"/><path d="M14 14 L17.2 14 L14 24.5 Z" fill="var(--on-navy-muted)"/><circle cx="14" cy="14" r="1.4" fill="var(--navy)"/></svg>
       Growth Compass
     </div>
     <nav class="tabs" role="tablist" aria-label="Workspace">
@@ -1092,7 +1145,7 @@ function renderOwnership(doc){
     : P.inPct - P.exPct >= 15
     ? "You already value the work itself. Be deliberate about it: treat this job as a place to collect skills you'll keep for the rest of your career."
     : "Treat this job as two things: a way to earn, and a place to learn. The earning stops when you leave. The learning doesn't.";
-  return `<section class="card stack" style="gap:10px">
+  return `<section class="card stack own" style="gap:10px">
     <div><span class="eyebrow">Personal development is personal</span><h2>This is yours</h2></div>
     <p class="small">You drive your development. Your manager guides, supports and opens doors, but doesn't decide where you go next. The skills you build belong to you, wherever you work.</p>
     <div class="kirk">
