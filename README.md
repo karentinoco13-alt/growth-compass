@@ -4,6 +4,13 @@
 
 Growth Compass helps employees understand what really motivates them, and turns that into a realistic 90-day development plan that they own. Front-line managers act as a **supporting layer**, not a director: they see team patterns, answer support requests, and get a coaching playbook for each direct report.
 
+## Principle: personal development is personal
+
+- **The employee drives.** They choose what to develop, how fast, and how much of their own time to invest. The manager guides, supports and removes barriers, but doesn't set their direction.
+- **Skills are portable.** What someone masters goes with them, whether their next step is in this company or another one. The app treats both as normal career moves.
+- **A job is also a place to learn.** Every employee names what they want their job to teach them, besides pay, and logs lessons they could use in any job.
+- **Motivation shapes the message.** Someone driven mainly by pay is shown that skills are what raise pay over time, here or elsewhere. Someone driven by the work itself is encouraged to collect skills deliberately.
+
 > **Live demo:** open `index.html` in any browser, or visit the GitHub Pages site once it's enabled (see [Publishing](#publishing-on-github-pages)). The demo opens with **sample data** switched on: a made-up team of six people with finished assessments, plans, check-ins and support requests. Use **Sample data** in the top right to switch it off and take the assessment yourself.
 
 ![Manager view: team overview and team patterns](docs/screenshots/manager-team.png)
@@ -24,13 +31,15 @@ Front-line managers are often too busy to coach development, and generic develop
   - *How you work best*, self-identified: alone, with a partner or in a group; team identity; productive conditions; peak time; and talents **with evidence**.
   - *Rewards*: 5 intrinsic and 5 extrinsic, a top 3, and a role-specific deep-dive question for each.
   - *Beliefs*: mindset, achievement-goal focus, confidence to learn, whether effort leads to results and results to rewards, and fairness.
-  - *Career direction and practical constraints*: direction, blockers, and time available.
+  - *Career direction and practical constraints*: direction (including **a career that can go anywhere**, here or at another company), what they want this job to teach them, blockers, work time available, and optional own time.
 - **A 90-day plan sized to the time available.** Goals have a *Success looks like* measure, and actions follow 70-20-10: practice on the job, learning from people, formal learning. Goals that don't fit the available time are **parked**, not hidden.
 - **An honest reality check.** Every goal gets a verdict: *Realistic*, *Stretch*, *Unlikely in 90 days*, *Not fully in your control* or *Parked*. Pay, promotion, recognition and flexibility are clearly marked as depending on other people.
 - **Talents vs goals.** A talent is something you already do well, with evidence. A goal is something you still have to build. Talents without evidence are labelled *self-reported*.
-- **A skills and certifications tracker the employee owns.** Suggestions are tailored to technical or non-technical roles and ranked by the person's answers: CompTIA, AWS and Azure fundamentals, CMRT, PLC programming, NFPA 70E, Lean Six Sigma, supervisor certificates, CAPM, Excel, forklift, Mental Health First Aid and more, plus practical skills. Skills move Planned → Learning → Practising → **Mastered** (three independent practices). Certifications move Planned → Studying → Exam booked → **Certified**. Both need evidence.
+- **"This is yours."** An ownership card shows what the person has invested (actions done, practice logged, skills kept, lessons for any job), with a message tailored to their motivation.
+- **Own-time investment (optional).** People choose how much personal time they'll invest, and the plan is sized to work time plus that.
+- **A skills passport the employee owns.** Suggestions are tailored to technical or non-technical roles and ranked by the person's answers: CompTIA, AWS and Azure fundamentals, CMRT, PLC programming, NFPA 70E, Lean Six Sigma, supervisor certificates, CAPM, Excel, forklift, Mental Health First Aid and more, plus practical skills. Skills move Planned → Learning → Practising → **Mastered** (three independent practices). Certifications move Planned → Studying → Exam booked → **Certified**. Both need evidence. A **"Copy my passport"** button exports mastered skills, certifications and evidence as plain text for a CV or profile.
 - **Support requests.** The employee asks their manager for exactly what they need: time, a real task to practise on, feedback, funding, a mentor, or sign-off.
-- **Monthly check-ins.** Energy, productivity, wins, where they applied something new, what made the difference (with a nudge toward controllable causes) and what they need.
+- **Monthly check-ins.** Energy, productivity, wins, a lesson they could use in any job, where they applied something new, what made the difference (with a nudge toward controllable causes) and what they need.
 
 ![Reality check and skills tracker](docs/screenshots/reality-check-and-skills.png)
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Growth Compass: a research-grounded personal development app for front-line managers and their teams.">
+<meta name="description" content="Growth Compass: a research-grounded personal development app where employees drive their own growth and managers support it.">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Growth Compass</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -460,6 +460,10 @@ const DIRS = {
     goal:d=>d?`Make your role more rewarding: ${d}`:"Make your current role more rewarding", measure:()=>"One redesigned part of your job in place and reviewed after 6 weeks.",
     a70:()=>"Redesign one part of your job with your manager to add variety, ownership of a whole piece of work, or more direct feedback.", a20:()=>"Ask peers for one idea to improve your day-to-day.", a10:()=>"Learn one skill that would make the work easier.",
     mgr:"Look for job-crafting options: more skill variety, a whole task they can own, visible significance and direct feedback."},
+  anywhere: {label:"Build a career that can go anywhere", sub:"Here or at another company, wherever my next step is", follow:{kind:"text", q:"What kind of role do you want next, wherever it is?"},
+    goal:d=>`Build portable skills for ${d || "your next role"}`, measure:()=>"Two skills or certifications that role asks for, mastered with evidence and listed in your skills passport.",
+    a70:()=>"Volunteer for work here that builds the skills that role asks for.", a20:d=>`Talk with 2 people already working in ${d ? `"${d}"` : "that kind of"} roles, inside or outside this company, about what it takes.`, a10:()=>"Earn one certification that employers in that field recognise.",
+    mgr:"Support it. The skills they build here make your team stronger while they're with you. Be honest about which next steps you can and can't offer internally."},
   unsure: {label:"I'm not sure yet", sub:"Help me figure it out", follow:null,
     goal:()=>"Explore what's next for you", measure:()=>"A short list of 2 directions to test next quarter.",
     a70:()=>"Note which tasks give you energy each week for a month.", a20:()=>"Talk with 3 people in different roles about their path.", a10:()=>"Browse internal roles and note what appeals and why.",
@@ -474,6 +478,8 @@ const BLOCKERS = {
   schedule:{label:"Shift or schedule conflicts", mgr:"Schedule development activities around their shifts."}
 };
 const HOURS = ["1 to 2 hours a month","About 4 hours a month","8+ hours a month"];
+const OWN = ["None for now","1 to 2 hours a month","3 to 5 hours a month","6+ hours a month"];
+const OWN_90 = [0, 4.5, 12, 21];
 const ATTRIB = {effort:"My effort", strategy:"The approach I used", help:"Help from others", ability:"Natural ability", luck:"Luck or circumstances"};
 const STEPS = ["About you","Why you work","Your needs","How you work best","Rewards","Top 3","Deep dive","Beliefs","Direction","Practical"];
 const ST = Object.fromEntries(["about","why","needs","style","rewards","top","deep","beliefs","dir","practical"].map((k, i) => [k, i]));
@@ -575,18 +581,20 @@ function makePlan(a){
       support: dir.mgr + (ten ? " " + ten.mgr : ""), actions: acts.map(x => ({id: uid(), ...x, done: false}))});
   }
   // Size the plan to the time the person said they have: goals that don't fit are parked, not hidden
-  const feasible = Math.max(1, Math.floor(HOURS_90[a.hours ?? 1] / HOURS_PER_ACTION));
+  const feasible = Math.max(1, Math.floor(capacityHours(a) / HOURS_PER_ACTION));
   let used = 0;
   goals.forEach((g, i) => { const n = g.actions.length; if (i > 0 && used + n > feasible) g.status = "Later"; else used += n; });
   return {createdAt: todayISO(), goals};
 }
 // ---------- Reality check: honest feasibility, no sugar-coating ----------
 const HOURS_90 = [4.5, 12, 24];     // development hours over 90 days for each HOURS option
-const HOURS_PER_ACTION = 2;         // rough guide, stated to the user
+const HOURS_PER_ACTION = 2;
+const capacityHours = a => HOURS_90[a.hours ?? 1] + OWN_90[a.ownHours ?? 0];
+const timeText = a => HOURS[a.hours ?? 1].toLowerCase() + " of work time" + ((a.ownHours ?? 0) ? ` plus ${OWN[a.ownHours].toLowerCase()} of your own` : "");         // rough guide, stated to the user
 const VERDICT = {parked:{label:"Parked for later", cls:"neutral"}, ok:{label:"Realistic", cls:"ok"}, stretch:{label:"Stretch", cls:"warn"}, unlikely:{label:"Unlikely in 90 days", cls:"crit"}, outside:{label:"Not fully in your control", cls:"neutral"}};
 function realityCheck(doc){
   const a = doc.assessment || {}, goals = doc.plan?.goals || [];
-  const hours = HOURS_90[a.hours ?? 1]; const feasible = Math.max(1, Math.floor(hours / HOURS_PER_ACTION));
+  const hours = capacityHours(a); const feasible = Math.max(1, Math.floor(hours / HOURS_PER_ACTION));
   const open = goals.filter(g => g.status !== "Later").reduce((n, g) => n + (g.actions || []).filter(x => !x.done).length, 0);
   let used = 0; const verdicts = {};
   goals.forEach(g => {
@@ -606,7 +614,7 @@ function realityCheck(doc){
       else if (a.dirDetail === "Within 6 months") v = {level:"stretch", text:"Possible only with consistent effort and an opening. Plan for 12 months and treat 6 as a bonus."};
       else v = {level:"ok", text:"A realistic timeline, if you build a track record of leading small things now."};
     }
-    if (left && used + left > feasible && used >= feasible) v = {level:"unlikely", text:`Won't fit. With ${HOURS[a.hours ?? 1].toLowerCase()} you have time for about ${feasible} actions in 90 days, and earlier goals use them up. Drop this goal for now or free up more time.`};
+    if (left && used + left > feasible && used >= feasible) v = {level:"unlikely", text:`Won't fit. With ${timeText(a)} you have time for about ${feasible} actions in 90 days, and earlier goals use them up. Drop this goal for now or free up more time.`};
     else if (left && used + left > feasible) v = {level: v.level === "ok" ? "stretch" : v.level, text: v.text + ` Only part of this fits the time you have.`};
     used += left; verdicts[g.id] = v;
   });
@@ -641,6 +649,9 @@ function statusFor(doc, empId){
 }
 function playbook(a){
   const P = profileOf(a), out = [], ten = TENURE[a.tenure];
+  out.push(["SDT", "<b>Their development, their drive.</b> Guide, support and remove barriers. Don't set their direction or their pace. Ask what they want next, then help them get it."]);
+  if (a.direction === "anywhere") out.push(["APTM", `<b>Building a career that can go anywhere${a.dirDetail ? ` (${esc(a.dirDetail)})` : ""}.</b> Support it openly. People who grow here make the team stronger while they stay, and speak well of it when they go. Be honest about what you can offer internally.`]);
+  if (a.learnAgenda) out.push(["HL", `<b>Wants this job to teach them:</b> "${esc(a.learnAgenda)}". Look for real work that teaches exactly that.`]);
   if (ten) out.push(["APTM", `<b>${esc(ten.stage)} stage.</b> ${esc(ten.mgr)}`]);
   const q = {
     autonomous: "Protect what's working. Avoid micromanaging, and don't turn rewards into levers of control, which can crowd out motivation that comes from the work itself.",
@@ -808,10 +819,10 @@ function exampleTeam(){
   };
   const r = (o) => Object.fromEntries(DRIVERS.map(d => [d.key, o[d.key] || 3]));
   return [
-    mk("ex1", "Example: Amara O.", "Field service technician", {track:"tech", tenure:"y3_5", why:W(3,2,5,5,1), needs:N(4,4,4), beliefs:{fixed:2,growth:5,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{}, style:{mode:"pair", id1:4, id2:4, conds:["hands","tools","quickfb"], peak:0, talent:"diagnosing conveyor and sensor faults", talentProof:"Other sites call me when their lines go down; lowest repeat-fault rate on the team", flow:"tracing an intermittent fault to its root cause", best:"Last spring's line rebuild: clear goal, the right parts on hand, and a partner to bounce ideas off."}, ratings:r({mastery:5,growth:5,autonomy:4,promotion:4,pay:3}), top:["mastery","growth","promotion"], deep:{mastery:1,growth:2,promotion:1}, direction:"up", dirDetail:"Within a year", blockers:["time","clarity"], hours:1}, 2, [{date:addDays(-12), energy:4, wins:"Led root-cause review on the conveyor fault", applied:"Used the 5-whys method from the course", attrib:"strategy", needs:"Time to finish the automation course", prod:4}, {date:addDays(-41), energy:4, prod:3, wins:"Shadowed the shift lead for two handovers", applied:"Ran the Tuesday handover myself", attrib:"help", needs:"Clarity on what the lead role expects"}]),
-    mk("ex2", "Example: Luis R.", "Customer service associate", {track:"non", tenure:"lt1", why:W(5,4,2,2,2), needs:N(2,2,3), beliefs:{fixed:4,growth:3,efficacy:2,expectancy:3,instrumentality:2,equity:2}, goalO:"pav", needSrc:{autonomy:"rigid", competence:"training"}, style:{mode:"group", id1:3, id2:2, conds:["plan","people","quickfb"], peak:1, talent:"staying calm with upset customers", flow:"", best:"Busy Saturday with the whole team on the floor and a clear plan for the day."}, ratings:r({pay:5,stability:5,flex:4,belonging:4,recognition:4}), top:["pay","stability","flex"], deep:{pay:0,stability:0,flex:0}, direction:"unsure", blockers:["clarity","schedule"], hours:0}, 0, []),
+    mk("ex1", "Example: Amara O.", "Field service technician", {track:"tech", tenure:"y3_5", why:W(3,2,5,5,1), needs:N(4,4,4), beliefs:{fixed:2,growth:5,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{}, style:{mode:"pair", id1:4, id2:4, conds:["hands","tools","quickfb"], peak:0, talent:"diagnosing conveyor and sensor faults", talentProof:"Other sites call me when their lines go down; lowest repeat-fault rate on the team", flow:"tracing an intermittent fault to its root cause", best:"Last spring's line rebuild: clear goal, the right parts on hand, and a partner to bounce ideas off."}, ratings:r({mastery:5,growth:5,autonomy:4,promotion:4,pay:3}), top:["mastery","growth","promotion"], deep:{mastery:1,growth:2,promotion:1}, direction:"up", dirDetail:"Within a year", learnAgenda:"leading a maintenance crew", ownHours:2, blockers:["time","clarity"], hours:1}, 2, [{date:addDays(-12), energy:4, wins:"Led root-cause review on the conveyor fault", applied:"Used the 5-whys method from the course", portable:"Running a structured root-cause review", attrib:"strategy", needs:"Time to finish the automation course", prod:4}, {date:addDays(-41), energy:4, prod:3, wins:"Shadowed the shift lead for two handovers", applied:"Ran the Tuesday handover myself", attrib:"help", needs:"Clarity on what the lead role expects"}]),
+    mk("ex2", "Example: Luis R.", "Customer service associate", {track:"non", tenure:"lt1", why:W(5,4,2,2,2), needs:N(2,2,3), beliefs:{fixed:4,growth:3,efficacy:2,expectancy:3,instrumentality:2,equity:2}, goalO:"pav", needSrc:{autonomy:"rigid", competence:"training"}, style:{mode:"group", id1:3, id2:2, conds:["plan","people","quickfb"], peak:1, talent:"staying calm with upset customers", flow:"", best:"Busy Saturday with the whole team on the floor and a clear plan for the day."}, ratings:r({pay:5,stability:5,flex:4,belonging:4,recognition:4}), top:["pay","stability","flex"], deep:{pay:0,stability:0,flex:0}, direction:"anywhere", dirDetail:"a team lead role in customer operations", learnAgenda:"how to handle complaints end to end and run a shift", ownHours:1, blockers:["clarity","schedule"], hours:0}, 0, []),
     mk("ex3", "Example: Mei T.", "Shift supervisor", {track:"non", tenure:"y5", why:W(2,3,4,3,2), needs:N(2,4,4), beliefs:{fixed:2,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{autonomy:"voice"}, style:{mode:"mix", id1:5, id2:5, conds:["choice","variety","people"], peak:0, talent:"training new starters", talentProof:"HR asks me to onboard every new starter; 3 of 3 passed probation", flow:"coaching someone through their first week", best:"When I was trusted to redesign the break rota and the team ran smoother for it."}, ratings:r({purpose:5,belonging:5,recognition:4,autonomy:4}), top:["purpose","belonging","autonomy"], deep:{purpose:0,belonging:2,autonomy:3}, direction:"stay", dirDetail:"More say in how we schedule the floor", blockers:["feedback"], hours:1}, 0, [{date:addDays(-40), energy:2, wins:"Covered two extra shifts", applied:"", attrib:"luck", needs:"Feeling a bit stuck", prod:3}]),
-    mk("ex4", "Example: Dev P.", "IT support analyst", {track:"tech", tenure:"y1_3", why:W(4,3,4,5,1), needs:N(4,4,3), beliefs:{fixed:2,growth:5,efficacy:5,expectancy:4,instrumentality:4,equity:4}, goalO:"papp", needSrc:{}, style:{mode:"alone", id1:2, id2:3, conds:["quiet","deep","deadline"], peak:2, talent:"scripting fixes for recurring tickets", talentProof:"My scripts cut repeat tickets by a third last quarter", flow:"automating something repetitive", best:"A quiet afternoon with no tickets coming in, rebuilding the backup job end to end."}, ratings:r({growth:5,mastery:4,recognition:5,pay:4}), top:["growth","recognition","mastery"], deep:{growth:1,recognition:0,mastery:0}, direction:"deep", dirDetail:"cloud infrastructure", blockers:["resources"], hours:2}, 2, [{date:addDays(-6), energy:5, prod:5, wins:"Passed the first cloud practitioner exam", applied:"Rebuilt the backup job using what I learned", attrib:"effort", needs:"Budget for the next exam"}, {date:addDays(-36), energy:4, prod:3, wins:"Finished modules 1 to 4", applied:"", attrib:"strategy", needs:"Fewer interruptions on Thursday afternoons"}]),
+    mk("ex4", "Example: Dev P.", "IT support analyst", {track:"tech", tenure:"y1_3", why:W(4,3,4,5,1), needs:N(4,4,3), beliefs:{fixed:2,growth:5,efficacy:5,expectancy:4,instrumentality:4,equity:4}, goalO:"papp", needSrc:{}, style:{mode:"alone", id1:2, id2:3, conds:["quiet","deep","deadline"], peak:2, talent:"scripting fixes for recurring tickets", talentProof:"My scripts cut repeat tickets by a third last quarter", flow:"automating something repetitive", best:"A quiet afternoon with no tickets coming in, rebuilding the backup job end to end."}, ratings:r({growth:5,mastery:4,recognition:5,pay:4}), top:["growth","recognition","mastery"], deep:{growth:1,recognition:0,mastery:0}, direction:"deep", dirDetail:"cloud infrastructure", learnAgenda:"designing cloud systems, not just supporting them", ownHours:3, blockers:["resources"], hours:2}, 2, [{date:addDays(-6), energy:5, prod:5, wins:"Passed the first cloud practitioner exam", applied:"Rebuilt the backup job using what I learned", portable:"Infrastructure-as-code basics", attrib:"effort", needs:"Budget for the next exam"}, {date:addDays(-36), energy:4, prod:3, wins:"Finished modules 1 to 4", applied:"", attrib:"strategy", needs:"Fewer interruptions on Thursday afternoons"}]),
     mk("ex5", "Example: Tom B.", "Maintenance electrician", {track:"tech", tenure:"y5", why:W(3,2,4,4,1), needs:N(4,5,3), beliefs:{fixed:3,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mav", needSrc:{}, style:{mode:"alone", id1:3, id2:3, conds:["hands","tools","deep"], peak:0, talent:"reading old wiring diagrams", flow:"commissioning new equipment", best:"The week we installed the new compressor: my own job list, the right tools, no meetings."}, ratings:r({mastery:4,stability:5,flex:4,growth:3}), top:["stability","mastery","flex"], deep:{stability:1,mastery:2,flex:0}, direction:"deep", dirDetail:"PLC controls", blockers:["time"], hours:1}, 1, [{date:addDays(-52), energy:3, prod:4, wins:"Documented the panel B rewiring", applied:"Used the new labelling standard", attrib:"effort", needs:"Cover so I can attend the PLC course"}]),
     {id:"ex6", name:"Example: Sofia K.", doc:{title:"Warehouse picker"}}
   ];
@@ -860,13 +871,13 @@ function renderMe(){
         <div class="row between"><div class="personas" role="group" aria-label="View as">${ps.map(x => `<button data-action="persona" data-id="${x.id}" aria-pressed="${x.id === p.id}">${esc(x.name.replace("Example: ", ""))} <span class="muted small">· ${esc(x.doc.title)}</span></button>`).join("")}</div>
         <button class="btn sm" data-action="start">Take the assessment yourself</button></div></div>
       <div class="grid2">
-      <section class="stack" style="gap:16px;min-width:0">${renderPlan(p.doc, true, renderSkills(p.doc, true, p.id))}</section>
+      <section class="stack" style="gap:16px;min-width:0">${renderOwnership(p.doc)}${renderPlan(p.doc, true, renderSkills(p.doc, true, p.id))}</section>
       <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(p.doc, true)}${renderProfile(p.doc, true)}${renderCheckins(p.doc, true)}</aside></div>`;
   }
   const a = S.myDoc.assessment;
   if (!a?.completedAt || !a.why) return banner() + renderIntro(!!a?.completedAt);
   return banner() + `<div class="grid2">
-    <section class="stack" style="gap:16px;min-width:0">${renderPlan(S.myDoc, true, renderSkills(S.myDoc, true, S.meId))}</section>
+    <section class="stack" style="gap:16px;min-width:0">${renderOwnership(S.myDoc)}${renderPlan(S.myDoc, true, renderSkills(S.myDoc, true, S.meId))}</section>
     <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(S.myDoc, true)}${renderProfile(S.myDoc, true)}${renderCheckins(S.myDoc, true)}</aside>
   </div>`;
 }
@@ -875,9 +886,9 @@ function renderIntro(outdated){
   return `${outdated ? `<div class="notice"><b>The assessment has been updated.</b> Retake it to get a profile and plan built on the new research foundations.</div>` : ""}
   <section class="card intro">
     <div class="stack" style="gap:14px">
-      <span class="eyebrow">Personal development, front and centre</span>
-      <h1>Build a growth plan around what actually motivates you</h1>
-      <p class="muted">The assessment looks at <i>why</i> you put in effort, which needs your job meets and what's behind any gaps, how you work best in your own words, which rewards matter to you, and what you believe about your own growth. It branches on your role type and time in role, then builds a 90-day plan with measurable goals. You and your manager both work from it.</p>
+      <span class="eyebrow">Personal development is personal</span>
+      <h1>Your growth, driven by you, built around what actually motivates you</h1>
+      <p class="muted">The assessment looks at <i>why</i> you put in effort, which needs your job meets and what's behind any gaps, how you work best in your own words, which rewards matter to you, and what you believe about your own growth. It branches on your role type and time in role, then builds a 90-day plan with measurable goals. You drive it; your manager supports it. The skills you build are yours to keep, wherever you work next.</p>
       <div class="row"><button class="btn" data-action="start">Start my assessment</button><button class="btn ghost" data-action="demo">See it with sample data</button><span class="muted small">10 short steps · about 15 minutes · retake any time</span></div>
       <p class="muted small">A development tool, not a test. Answers are for growth conversations, never for pay, discipline or hiring decisions. See <a href="#" data-action="view" data-v="science">Foundations</a> for the research behind it.</p>
     </div>
@@ -959,11 +970,16 @@ function renderAssessment(){
       ${dir?.follow ? `<div class="branch">${dir.follow.kind === "choice"
         ? `<b>${esc(dir.follow.q)}</b><div class="opts">${dir.follow.opts.map(o => `<label class="opt"><input type="radio" name="dirdet" value="${esc(o)}" data-action="set" data-f="dirDetail" ${A.dirDetail === o ? "checked" : ""}><span>${esc(o)}</span></label>`).join("")}</div>${A.tenure === "lt1" && A.direction === "up" ? `<p class="muted small">You are new in role, so we'll add steps to build a strong track record first.</p>` : ""}`
         : `<div class="field"><label for="dir-detail">${esc(dir.follow.q)}</label><input type="text" id="dir-detail" data-input="dirDetail" value="${esc(A.dirDetail || "")}"></div>`}</div>` : ""}`;
+    body += `<p class="small muted">Your manager can see your direction. Growth Compass treats a move to another company as a normal career step. The skills you build go with you.</p>
+      <div class="q field"><label for="learn-agenda">Besides pay, what do you want this job to teach you?</label><input type="text" id="learn-agenda" data-input="learnAgenda" value="${esc(A.learnAgenda || "")}" placeholder="e.g. how to lead a shift, how to read a P&L, PLC programming"><span class="small muted">Every job is also a place to learn. Skills stay with you wherever you go next.</span></div>`;
     canNext = !!A.direction;
   } else if (st === ST.practical){
     body = `<h2>Make it practical</h2>
       <div class="q"><b>What usually gets in the way of your development?</b> <span class="muted">Pick any.</span><div class="opts">${Object.entries(BLOCKERS).map(([k, b]) => `<label class="opt"><input type="checkbox" value="${k}" data-action="blocker" ${A.blockers.includes(k) ? "checked" : ""}><span>${esc(b.label)}</span></label>`).join("")}</div></div>
-      <div class="q"><b>How much time can you realistically give to development?</b><div class="opts">${HOURS.map((h, i) => `<label class="opt"><input type="radio" name="hours" value="${i}" data-action="hours" ${A.hours === i ? "checked" : ""}><span>${esc(h)}</span></label>`).join("")}</div></div>`;
+      <div class="q"><b>How much work time can you realistically give to development?</b><div class="opts">${HOURS.map((h, i) => `<label class="opt"><input type="radio" name="hours" value="${i}" data-action="hours" ${A.hours === i ? "checked" : ""}><span>${esc(h)}</span></label>`).join("")}</div></div>`;
+    body += `<div class="q"><b>How much of your own time will you invest each month? <span class="muted">(optional)</span></b>
+      <p class="small muted">Your development is yours. Employers can offer work time, but people who move fastest usually invest some of their own too. There is no wrong answer; your plan is sized to what you choose.</p>
+      <div class="opts">${OWN.map((h, i) => `<label class="opt"><input type="radio" name="own" value="${i}" data-action="own" ${(A.ownHours ?? 0) === i ? "checked" : ""}><span>${esc(h)}</span></label>`).join("")}</div></div>`;
     canNext = A.hours !== undefined;
   }
   return `<section class="card stack" style="gap:16px">${steps}<div class="stack" style="gap:6px">${body}</div>
@@ -1026,7 +1042,8 @@ function renderProfile(doc, mine){
       <dt>Role type</dt><dd>${esc(TRACKS[a.track]?.label)}${doc.title ? ` · ${esc(doc.title)}` : ""}</dd>
       <dt>Time in role</dt><dd>${esc(ten?.label)} · <b>${esc(ten?.stage)}</b> stage</dd>
       <dt>Direction</dt><dd>${esc(dir?.label)}${a.dirDetail ? ` · ${esc(a.dirDetail)}` : ""}</dd>
-      <dt>Time available</dt><dd>${esc(HOURS[a.hours])}</dd>
+      <dt>Time available</dt><dd>${esc(HOURS[a.hours])} of work time${a.ownHours ? ` + ${esc(OWN[a.ownHours].toLowerCase())} own time` : ""}</dd>
+      ${a.learnAgenda ? `<dt>Wants to learn</dt><dd>${esc(a.learnAgenda)}</dd>` : ""}
       <dt>Blockers</dt><dd>${a.blockers?.length ? a.blockers.map(k => esc(BLOCKERS[k].label)).join(", ") : "None named"}</dd>
     </dl>
   </section>`;
@@ -1053,7 +1070,7 @@ function renderPlan(doc, editable, extra = ""){
         </div></div>
       <div class="sep stack" style="gap:6px"><b>Reality check</b>
         <p class="small">${rc.over
-          ? `<span class="chip crit">Plan is bigger than the time available</span> This plan has <b>${rc.open}</b> open actions. With ${esc(HOURS[doc.assessment?.hours ?? 1].toLowerCase())}, ${who} have realistic time for about <b>${rc.feasible}</b> in 90 days (at roughly ${HOURS_PER_ACTION} hours per action). ${editable ? "You" : "They"} will not finish everything in 90 days. Work through the actions in order and expect the rest to run over, or agree more development time.`
+          ? `<span class="chip crit">Plan is bigger than the time available</span> This plan has <b>${rc.open}</b> open actions. With ${esc(timeText(doc.assessment || {}))}, ${who} have realistic time for about <b>${rc.feasible}</b> in 90 days (at roughly ${HOURS_PER_ACTION} hours per action). ${editable ? "You" : "They"} will not finish everything in 90 days. Work through the actions in order and expect the rest to run over, or agree more development time.`
           : `<span class="chip ok">Fits the time available</span> <b>${rc.open}</b> open actions against realistic time for about <b>${rc.feasible}</b> (roughly ${HOURS_PER_ACTION} hours per action).`}
           ${active.length < p.goals.length ? ` <b>${p.goals.length - active.length}</b> goal${p.goals.length - active.length > 1 ? "s are" : " is"} parked because ${who} don't have time for ${p.goals.length - active.length > 1 ? "them" : "it"} yet. Bring one back only when another is done.` : ""}</p>
         <p class="small muted">Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make ${editable ? "you" : "them"} ready and make the case. It cannot guarantee the outcome, and ${editable ? "your manager" : "you"} should not promise it.</p></div>
@@ -1061,6 +1078,31 @@ function renderPlan(doc, editable, extra = ""){
     ${extra}
     ${p.goals.map(g => renderGoal(g, editable, rc.verdicts[g.id])).join("")}
     ${editable ? `<section class="card stack" style="gap:10px"><h3>Add your own goal</h3><div class="add"><input type="text" id="new-goal" placeholder="e.g. Get my forklift licence" aria-label="New goal"><button class="btn sm" data-action="add-goal">Add goal</button></div></section>` : ""}`;
+}
+function renderOwnership(doc){
+  const a = doc.assessment; const P = profileOf(a);
+  const acts = (doc.plan?.goals || []).flatMap(g => g.actions || []).filter(x => x.done).length;
+  const reps = (doc.skills || []).reduce((n, x) => n + (x.reps || 0), 0);
+  const kept = (doc.skills || []).filter(x => x.stage === 3).length;
+  const lessons = (doc.checkins || []).filter(c => (c.portable || "").trim()).length;
+  const msg = P.quality.k === "amotivated"
+    ? "If this job isn't the right one for you, use it anyway: every skill you build here leaves with you."
+    : P.exPct - P.inPct >= 15
+    ? "Pay and security matter, and that's fine. Skills are what raise your pay over time, here or elsewhere. Every skill you master and certification you earn strengthens your next pay conversation or job application."
+    : P.inPct - P.exPct >= 15
+    ? "You already value the work itself. Be deliberate about it: treat this job as a place to collect skills you'll keep for the rest of your career."
+    : "Treat this job as two things: a way to earn, and a place to learn. The earning stops when you leave. The learning doesn't.";
+  return `<section class="card stack" style="gap:10px">
+    <div><span class="eyebrow">Personal development is personal</span><h2>This is yours</h2></div>
+    <p class="small">You drive your development. Your manager guides, supports and opens doors, but doesn't decide where you go next. The skills you build belong to you, wherever you work.</p>
+    <div class="kirk">
+      <div><span class="small muted">Actions done</span><div class="v">${acts}</div><span class="small muted">by you</span></div>
+      <div><span class="small muted">Practice logged</span><div class="v">${reps}</div><span class="small muted">independent reps</span></div>
+      <div><span class="small muted">Yours to keep</span><div class="v">${kept}</div><span class="small muted">skills mastered or certified</span></div>
+      <div><span class="small muted">Lessons for any job</span><div class="v">${lessons}</div><span class="small muted">from check-ins</span></div>
+    </div>
+    <p class="small muted">${esc(msg)}${a.learnAgenda ? ` You said you want this job to teach you: <b>${esc(a.learnAgenda)}</b>.` : ""}</p>
+  </section>`;
 }
 function renderTalentsGoals(doc, mine){
   const st = doc.assessment?.style || {}; const ts = talentStatus(st); const rc = realityCheck(doc);
@@ -1113,9 +1155,10 @@ function renderSkills(doc, editable, empId){
           <span>${resp ? `<span class="chip ${RESP[resp.status].cls}">${esc(RESP[resp.status].label)}</span>${resp.reply ? ` <span class="muted">${esc(resp.reply)}</span>` : ""}` : `<span class="chip warn">Waiting for manager</span>`}</span></div>`; }).join("")}
     </div>`; };
   return `<section class="card stack">
-    <div class="row between"><div><span class="eyebrow">${editable ? "You own this · your manager supports" : "Owned by the employee"}</span><h2>Skills and certifications</h2></div>
+    <div class="row between"><div><span class="eyebrow">${editable ? "You own this · your manager supports" : "Owned by the employee"}</span><h2>Skills passport</h2></div>
       <span class="small muted"><b class="mono">${st.done}</b> mastered · <b class="mono">${st.active}</b> in progress${st.open ? ` · <b class="mono">${st.open}</b> waiting` : ""}</span></div>
-    ${editable ? `<p class="small muted">Choose what to work towards next, move it through each stage yourself, and ask your manager for the support you need. Suggestions are for ${esc(track)} roles and ranked by your answers. Check which certifications your company recognises or funds.</p>` : `<p class="small muted">Read-only. They choose and update these; you respond to their support requests.</p>`}
+    ${editable ? `<p class="small muted">Your skills and certifications go with you, wherever you work. Choose what to work towards next, move it through each stage yourself, and ask your manager for the support you need. Suggestions are for ${esc(track)} roles and ranked by your answers. Check which certifications your company recognises or funds.</p>` : `<p class="small muted">Read-only. They choose and update these; you respond to their support requests.</p>`}
+    ${editable && st.done ? `<div class="row"><button class="btn ghost sm" data-action="passport">Copy my passport for a CV or profile</button><span class="small muted">Mastered and certified items with evidence, as plain text.</span></div><textarea id="passport-text" hidden readonly></textarea>` : ""}
     ${sk.length ? sk.map(item).join("") : `<p class="muted small">${editable ? "Nothing added yet. Pick a suggestion below or add your own." : "Nothing added yet."}</p>`}
     ${editable ? `<div class="sep stack" style="gap:8px"><b class="small">Suggested for you</b>
         <div class="sugg">${sugg.slice(0, 5).map(c => `<button data-action="sk-add" data-c="${c.id}">+ ${esc(c.name)} <span class="muted small">· ${c.kind === "cert" ? "cert" : "skill"}</span></button>`).join("")}</div>
@@ -1176,12 +1219,13 @@ function renderCheckins(doc, editable){
       <div class="scale" role="radiogroup" aria-label="Productivity">${[1,2,3,4,5].map(n => `<label><input type="radio" name="prod" value="${n}" data-action="prod" ${S.prod === n ? "checked" : ""}><span>${n}</span></label>`).join("")}</div>
       <div class="scale-legend"><span>Not at all</span><span>Very productive</span></div></div>
       <div class="field"><label for="ci-wins">Wins and progress</label><textarea id="ci-wins"></textarea></div>
+      <div class="field"><label for="ci-portable">What did you learn this month that you could use in any job?</label><textarea id="ci-portable" placeholder="A skill or lesson that goes with you, wherever you work"></textarea></div>
       <div class="field"><label for="ci-applied">Where did you use something new on the job?</label><textarea id="ci-applied" placeholder="Leave blank if you haven't yet"></textarea></div>
       <div class="field"><label for="ci-attrib">What made the biggest difference to your progress?</label><select id="ci-attrib" data-action="attrib"><option value="">Choose one</option>${Object.entries(ATTRIB).map(([k, l]) => `<option value="${k}" ${S.attrib === k ? "selected" : ""}>${l}</option>`).join("")}</select>
         ${tip ? `<p class="tip">Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.</p>` : ""}</div>
       <div class="field"><label for="ci-needs">What I need from my manager</label><textarea id="ci-needs"></textarea></div>
       <div><button class="btn sm" data-action="checkin">Save check-in</button></div>` : ""}
-    ${cs.length ? cs.slice(0, 5).map(c => `<div class="checkin"><div class="row between"><b>${fmtDate(c.date)}</b><span class="mono muted">Energy ${c.energy}/5${c.prod ? ` · Productivity ${c.prod}/5` : ""}</span></div>${c.wins ? `<p>${esc(c.wins)}</p>` : ""}${c.applied ? `<p class="muted"><b>Applied:</b> ${esc(c.applied)}</p>` : ""}${c.attrib ? `<p class="muted"><b>Credited:</b> ${esc(ATTRIB[c.attrib] || "")}</p>` : ""}${c.needs ? `<p class="muted"><b>Needs:</b> ${esc(c.needs)}</p>` : ""}</div>`).join("") : `<p class="muted">No check-ins yet.</p>`}
+    ${cs.length ? cs.slice(0, 5).map(c => `<div class="checkin"><div class="row between"><b>${fmtDate(c.date)}</b><span class="mono muted">Energy ${c.energy}/5${c.prod ? ` · Productivity ${c.prod}/5` : ""}</span></div>${c.wins ? `<p>${esc(c.wins)}</p>` : ""}${c.portable ? `<p class="muted"><b>Learned for any job:</b> ${esc(c.portable)}</p>` : ""}${c.applied ? `<p class="muted"><b>Applied:</b> ${esc(c.applied)}</p>` : ""}${c.attrib ? `<p class="muted"><b>Credited:</b> ${esc(ATTRIB[c.attrib] || "")}</p>` : ""}${c.needs ? `<p class="muted"><b>Needs:</b> ${esc(c.needs)}</p>` : ""}</div>`).join("") : `<p class="muted">No check-ins yet.</p>`}
   </section>`;
 }
 
@@ -1268,6 +1312,7 @@ function renderMember(p){
 // ---------- How to use (in-app summary of SOP.md) ----------
 const GUIDE = {
   employee: [
+    ["Own it", "Your development is personal. You decide what to work on and how fast; your manager guides and supports. Skills you build are yours to keep, here or at your next employer."],
     ["Take the assessment", "Open <b>My growth</b> and select <b>Take the assessment yourself</b>. It has 10 short steps and takes about 15 minutes. Answer for how things are now, not how they should be."],
     ["Read your profile", "Your profile shows why you put in effort, which needs your job meets (and what's behind any gaps), how you work best, which rewards matter and what you believe about growing."],
     ["Agree your plan", "Within 2 weeks, go through your plan with your manager. Edit actions, add your own and remove what doesn't fit. Each goal shows what success looks like and what to ask of your manager."],
@@ -1406,7 +1451,7 @@ document.addEventListener("click", e => {
       S.assess = {step: 0, order, track: prev?.track ?? S.myDoc.assessment?.track, tenure: prev?.tenure ?? S.myDoc.assessment?.tenure, title: S.myDoc.title || "",
         why: {...(prev?.why || {})}, needs: {...(prev?.needs || {})}, needSrc: {...(prev?.needSrc || {})}, style: {conds: [], ...clone(prev?.style || {})}, beliefs: {...(prev?.beliefs || {})}, goalO: prev?.goalO,
         ratings: {...(S.myDoc.assessment?.ratings || {})}, top: [...(S.myDoc.assessment?.top || [])], deep: {...(S.myDoc.assessment?.deep || {})},
-        direction: prev?.direction, dirDetail: prev?.dirDetail || "", blockers: [...(prev?.blockers || [])], hours: prev?.hours};
+        direction: prev?.direction, dirDetail: prev?.dirDetail || "", blockers: [...(prev?.blockers || [])], hours: prev?.hours, ownHours: prev?.ownHours ?? 0, learnAgenda: prev?.learnAgenda || ""};
       S.view = "me"; break; }
     case "cancel": S.assess = null; break;
     case "back": A.step--; scrollTo(0, 0); break;
@@ -1417,7 +1462,7 @@ document.addEventListener("click", e => {
       { const {step, order, title, ...ans} = A;
         if (S.myDoc.assessment?.completedAt && S.myDoc.plan) S.myDoc.history = [...(S.myDoc.history || []), {completedAt: S.myDoc.assessment.completedAt, top: S.myDoc.assessment.top, progress: planProgress(S.myDoc.plan)}].slice(-6);
         S.myDoc.title = title.trim();
-        S.myDoc.assessment = {...ans, dirDetail: (ans.dirDetail || "").trim(), completedAt: todayISO()};
+        S.myDoc.assessment = {...ans, dirDetail: (ans.dirDetail || "").trim(), learnAgenda: (ans.learnAgenda || "").trim(), completedAt: todayISO()};
         S.myDoc.plan = makePlan(S.myDoc.assessment);
         S.assess = null; S.demo = false; S.demoTouched = true; saveMe(true); scrollTo(0, 0); toast("Your plan is ready"); }
       break;
@@ -1434,7 +1479,7 @@ document.addEventListener("click", e => {
     case "checkin": {
       if (!S.energy){ toast("Pick an energy level first"); return; }
       const v = id => $(id).value.trim();
-      const d = curDoc(); d.checkins = [{date: todayISO(), energy: S.energy, prod: S.prod, wins: v("#ci-wins"), applied: v("#ci-applied"), attrib: S.attrib, needs: v("#ci-needs")}, ...(d.checkins || [])].slice(0, 24);
+      const d = curDoc(); d.checkins = [{date: todayISO(), energy: S.energy, prod: S.prod, wins: v("#ci-wins"), applied: v("#ci-applied"), portable: v("#ci-portable"), attrib: S.attrib, needs: v("#ci-needs")}, ...(d.checkins || [])].slice(0, 24);
       S.energy = null; S.prod = null; S.attrib = ""; document.activeElement?.blur(); saveMe(true); toast("Check-in saved"); break; }
     case "filter": S.filter = el.dataset.f; break;
     case "demo": S.demo = !S.demo; S.demoTouched = true; S.sel = S.demo && S.view === "team" ? "ex2" : null; S.assess = null; break;
@@ -1448,6 +1493,15 @@ document.addEventListener("click", e => {
       if (to === 3 && x.kind === "skill" && (x.reps || 0) < MASTERY_REPS){ toast(`Log ${MASTERY_REPS} independent practices first, or ask for sign-off.`); return; }
       x.stage = Math.max(0, Math.min(3, to)); saveMe(); if (x.stage === 3) toast(x.kind === "cert" ? "Certified. Add your evidence." : "Mastered. Add your evidence."); break; }
     case "sk-rep": { const x = curDoc().skills.find(y => y.id === el.dataset.s); x.reps = (x.reps || 0) + 1; if (x.stage < 2) x.stage = 2; saveMe(); break; }
+    case "passport": {
+      const d = curDoc(); const done = (d.skills || []).filter(x => x.stage === 3);
+      const lessons = (d.checkins || []).map(c => c.portable).filter(Boolean);
+      const txt = ["SKILLS AND CERTIFICATIONS", ...done.map(x => `- ${x.name} (${x.kind === "cert" ? "certified" : "mastered"})${x.evidence ? `: ${x.evidence}` : ""}`),
+        ...(d.assessment?.style?.talent && d.assessment.style.talentProof ? ["", "STRENGTH", `- ${d.assessment.style.talent}: ${d.assessment.style.talentProof}`] : []),
+        ...(lessons.length ? ["", "RECENT LEARNING", ...lessons.slice(0, 5).map(l => `- ${l}`)] : [])].join("\n");
+      const fallback = () => { const ta = $("#passport-text"); ta.hidden = false; ta.value = txt; ta.style.minHeight = "140px"; ta.focus(); ta.select(); toast("Select all and copy"); };
+      try { navigator.clipboard.writeText(txt).then(() => toast("Passport copied"), fallback); } catch { fallback(); }
+      return; }
     case "sk-ask": S.reqOpen = S.reqOpen === el.dataset.s ? null : el.dataset.s; break;
     case "sk-send": { const x = curDoc().skills.find(y => y.id === el.dataset.s);
       x.requests = [...(x.requests || []), {id: uid(), type: $("#rq-type-" + x.id).value, note: $("#rq-note-" + x.id).value.trim(), date: todayISO()}];
@@ -1486,6 +1540,7 @@ document.addEventListener("change", e => {
   }
   else if (act === "blocker") A.blockers = el.checked ? [...A.blockers, el.value] : A.blockers.filter(k => k !== el.value);
   else if (act === "hours") A.hours = +el.value;
+  else if (act === "own") A.ownHours = +el.value;
   else if (act === "energy"){ S.energy = +el.value; return; }
   else if (act === "prod"){ S.prod = +el.value; return; }
   else if (act === "sk-target"){ curDoc().skills.find(y => y.id === el.dataset.s).target = el.value; saveMe(); }

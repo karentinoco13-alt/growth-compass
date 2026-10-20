@@ -20,6 +20,13 @@ This SOP explains how employees and front-line managers use Growth Compass to ke
 - Give every employee a measurable 90-day plan, sized to the time they actually have, with an honest verdict on each goal.
 - Keep the employee in control of their own development, including skills and certifications. The manager is a **supporting layer**: they respond to requests and create conditions, but they do not dictate what comes next.
 
+### 1.1 Guiding principle: personal development is personal
+
+- The **employee** owns their development and is expected to invest the most in it: the choices, the effort, and, if they wish, some of their own time.
+- The **manager** is a supporting layer: they guide, give honest feedback, open doors (time, tasks, funding, mentors) and remove barriers. They do not decide the employee's direction or pace.
+- **Skills are portable.** What people learn and master stays with them, whether their next step is inside the company or at another one. Both are treated as legitimate career moves.
+- **A job is a way to earn and a way to learn.** Employees are encouraged to name what they want their job to teach them, and to keep a record of skills and lessons they can use anywhere. How strongly this lands depends on each person's motivation, and the app tailors its message accordingly.
+
 ## 2. Scope
 
 **In scope:** individual development planning, monthly check-ins, 1:1 coaching preparation and team-level development planning.
@@ -51,7 +58,7 @@ This SOP explains how employees and front-line managers use Growth Compass to ke
 | **Goal** | Something the person **can't do yet**, or not well enough, and has to work for. It has a measure ("Success looks like") and a due date. |
 | **Goal verdict** | An honest label on every goal: **Realistic**, **Stretch**, **Unlikely in 90 days**, **Not fully in your control** (it depends on other people, such as pay, promotion, recognition or flexibility) or **Parked for later**. |
 | **Reality check** | Compares open plan actions with the time the employee said they have (about 2 hours per action). Goals that don't fit are **parked**: kept visible but not counted. |
-| **Skills and certifications tracker** | The employee's own list of skills and certifications. Suggestions are tailored to technical or non-technical roles, and the employee moves each item through its stages. Skills: Planned → Learning → Practising → **Mastered** (3 independent practices with good feedback). Certifications: Planned → Studying → Exam booked → **Certified**. Mastery needs evidence. |
+| **Skills passport** (skills and certifications tracker) | The employee's own list of skills and certifications. Suggestions are tailored to technical or non-technical roles, and the employee moves each item through its stages. Skills: Planned → Learning → Practising → **Mastered** (3 independent practices with good feedback). Certifications: Planned → Studying → Exam booked → **Certified**. Mastery needs evidence. It belongs to the employee, and **Copy my passport** exports it for a CV or profile. |
 | **Support request** | A request from the employee to their manager for time, a real task to practise on, feedback, funding, a mentor, or sign-off of mastery. The manager replies: *I'll arrange it*, *Let's discuss in our 1:1*, *Not possible right now* or *Done*. |
 
 ## 5. Procedure
@@ -76,9 +83,9 @@ This SOP explains how employees and front-line managers use Growth Compass to ke
 | 3 | Review your generated plan. Each goal has a **Success looks like** measure, actions tagged 70 / 20 / 10, and what to **ask of your manager**. | Day 0 |
 | 4 | Meet your manager to agree the plan. Edit, add or remove actions so it fits. | By week 2 |
 | 5 | Work the plan and tick actions off as you complete them. Leave **parked** goals alone until an active goal is done. | Ongoing |
-| 5a | In **Skills and certifications**, choose what to work towards next, move each item through its stages, log practice, and add evidence when it's mastered or certified. | Ongoing |
+| 5a | In your **Skills passport**, choose what to work towards next, move each item through its stages, log practice, and add evidence when it's mastered or certified. | Ongoing |
 | 5b | When you need help, select **Ask for support** on that item. Say exactly what you need: time, a task, feedback, funding, a mentor or sign-off. | When needed |
-| 6 | Add a **Monthly check-in**: energy, productivity, wins, where you used something new on the job, what made the difference, what you need. | Monthly |
+| 6 | Add a **Monthly check-in**: energy, productivity, wins, a lesson you could use in any job, where you used something new on the job, what made the difference, what you need. | Monthly |
 | 7 | **Retake** the assessment. You get a new plan, and your previous results are kept in your history. | Day 90 |
 
 The 10 assessment steps:
@@ -91,8 +98,8 @@ The 10 assessment steps:
 6. **Top 3**: confirm your top three drivers.
 7. **Deep dive**: one follow-up question per top driver, tailored to technical or non-technical roles.
 8. **Beliefs**: mindset, goal focus, confidence to learn, whether effort leads to results and results to rewards, and fairness.
-9. **Direction**: move into leadership, become the go-to expert, explore another area, grow in your current role, or "not sure yet".
-10. **Practical**: what gets in the way, and how much time you can give.
+9. **Direction**: move into leadership, become the go-to expert, explore another area, grow in your current role, **build a career that can go anywhere** (here or at another company), or "not sure yet". Also: what you want this job to teach you, besides pay. Your manager can see your direction.
+10. **Practical**: what gets in the way, how much work time you can give, and (optional) how much of your own time you'll invest. Your plan is sized to the total.
 
 ### 5.2.1 Talents vs goals: setting honest expectations
 
