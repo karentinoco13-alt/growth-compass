@@ -2259,6 +2259,11 @@ document.addEventListener("input", e => {
 // ---------- Boot ----------
 const local = lsGet(LS_KEY); if (local) S.myDoc = local;
 S.demo = !S.myDoc.assessment?.why;
+// Direct links: #sop, #team, #guide, #foundations, #growth (add -es for Spanish, e.g. #sop-es)
+(() => { const m = (location.hash.slice(1) || "").match(/^(sop|team|guide|foundations|growth)(-es|-en)?$/); if (!m) return;
+  S.view = {sop: "blueprint", team: "team", guide: "guide", foundations: "science", growth: "me"}[m[1]];
+  if (S.view === "team" && S.demo) S.sel = "ex2";
+  if (m[2]) LANG = m[2].slice(1); })();
 render();
 
 (async () => {
