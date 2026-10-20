@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | **Document** | SOP: Using Growth Compass for personal and career development |
-| **Version** | 1.0 |
+| **Version** | 1.1 |
 | **Effective date** | 20 October 2026 |
 | **Applies to** | Front-line managers and their direct reports (technical and non-technical roles) |
 | **Review cycle** | Every 6 months, or when the app changes |
@@ -65,7 +65,7 @@ This SOP explains how employees and front-line managers use Growth Compass to ke
 
 ### 5.1 Setup (programme owner, once)
 
-1. Open the app and check the **How to use** and **Foundations** tabs.
+1. Open the app and read the **Blueprint** (this procedure), then the **How to use** and **Foundations** tabs.
 2. Share the app with all participating managers and employees with **Contributor** access. People with view-only access can read but cannot save.
 3. Send a short announcement to employees that covers:
    - The purpose: their development, in their words.
@@ -208,3 +208,4 @@ The app's logic draws on the frameworks in these five books (see the **Foundatio
 | Version | Date | Change |
 |---|---|---|
 | 1.0 | 20 Oct 2026 | First release: assessment, plans, check-ins, manager view, employee-owned skills and certifications tracker, support requests, talents vs goals reality check |
+| 1.1 | 20 Oct 2026 | Employee-controlled sharing, English and Spanish, this procedure available inside the app as the **Blueprint** tab |

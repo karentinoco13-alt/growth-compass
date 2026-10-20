@@ -61,9 +61,10 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
 
 ![Manager view: support requests and coaching playbook](docs/screenshots/manager-coaching.png)
 
-### How to use and Foundations
+### How to use, Blueprint and Foundations
 
-- **How to use**: an in-app summary of the [SOP](SOP.md), including how to respond to each status flag.
+- **How to use**: a quick-start guide, including how to respond to each status flag.
+- **Blueprint**: the full standard operating procedure inside the app, in English and Spanish, with a clickable table of contents. Also available as [SOP.md](SOP.md) and [SOP.es.md](SOP.es.md).
 - **Foundations**: which research framework drives each part of the app.
 
 ## Research foundations
@@ -90,6 +91,8 @@ The assessment logic, plan generation and coaching guidance draw on the framewor
 | In-app SOP summary | Phone, dark mode |
 | ![Who can see my development](docs/screenshots/sharing.png) | ![Spanish](docs/screenshots/spanish-employee-view.png) |
 | The employee decides who sees what | Full Spanish version |
+| ![Blueprint](docs/screenshots/blueprint.png) | |
+| The full procedure inside the app | |
 
 ## Technical notes
 
@@ -110,6 +113,7 @@ The assessment logic, plan generation and coaching guidance draw on the framewor
 
 ```
 index.html             The app (open it directly or serve with GitHub Pages)
-SOP.md                 Standard operating procedure for employees, managers and programme owners
+SOP.md                 Standard operating procedure (English), also shown in the app as the Blueprint tab
+SOP.es.md              Procedimiento operativo estándar (Spanish edition)
 docs/screenshots/      Images used in this README
 ```
