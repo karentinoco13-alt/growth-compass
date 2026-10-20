@@ -1,0 +1,1548 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Growth Compass: a research-grounded personal development app for front-line managers and their teams.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Growth Compass</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: app bar + three workspaces (My growth / My team / Foundations); a stepped assessment tree grounded in SDT, achievement-goal, social-cognitive and I/O work-motivation theory feeds a 70-20-10 plan */
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --sunk:#E9EDF1; --ink:#162231; --muted:#586577; --line:#D8DFE6;
+  --in:#0D7A6B; --in-soft:#D7EFEA; --ex:#A9640A; --ex-soft:#F6E7D0;
+  --ok:#1E7A3C; --warn:#A35F00; --crit:#B3261E; --focus:#2B59C3;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E141B; --surface:#161F29; --sunk:#1D2834; --ink:#E5EBF1; --muted:#99A6B5; --line:#2A3644;
+  --in:#45C7B3; --in-soft:#173A36; --ex:#F0A845; --ex-soft:#3E2E17;
+  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#86A8FF; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E141B; --surface:#161F29; --sunk:#1D2834; --ink:#E5EBF1; --muted:#99A6B5; --line:#2A3644;
+  --in:#45C7B3; --in-soft:#173A36; --ex:#F0A845; --ex-soft:#3E2E17;
+  --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#86A8FF; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:1.6rem} h2{font-size:1.3rem} h3{font-size:1.05rem}
+p{margin:0}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.bar{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.bar .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:1.15rem}
+.brand svg{flex:none}
+.tabs{display:flex;gap:4px;background:var(--sunk);padding:4px;border-radius:10px;margin-left:auto;flex-wrap:wrap}
+.tab{border:0;background:transparent;padding:6px 12px;border-radius:7px;cursor:pointer;font-weight:600;color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgb(0 0 0 / .12)}
+main.wrap{padding-block:24px 64px;display:grid;gap:20px}
+.notice{border:1px solid var(--line);background:var(--sunk);border-radius:10px;padding:10px 14px;font-size:.92rem;color:var(--muted)}
+.notice b{color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.eyebrow{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:8px;cursor:pointer;font-weight:700}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn.sm{padding:5px 10px;font-size:.88rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.between{justify-content:space-between}
+.stack{display:grid;gap:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:860px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.chip.in{background:var(--in-soft);color:var(--in)} .chip.ex{background:var(--ex-soft);color:var(--ex)}
+.chip.neutral{background:var(--sunk);color:var(--muted)}
+.chip.ok{background:var(--sunk);color:var(--ok)} .chip.warn{background:var(--sunk);color:var(--warn)} .chip.crit{background:var(--sunk);color:var(--crit)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.dot.in{background:var(--in)} .dot.ex{background:var(--ex)}
+.src{font-family:var(--f-mono);font-size:.7rem;padding:1px 6px;border-radius:4px;border:1px solid var(--line);color:var(--muted);white-space:nowrap;vertical-align:1px}
+
+/* Intro */
+.intro{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:760px){.intro{grid-template-columns:minmax(0,1fr)}}
+.intro h1{font-size:clamp(1.8rem,4vw,2.5rem)}
+.intro p{max-width:60ch}
+.tree{display:grid;gap:6px;font-size:.9rem}
+.tree .node{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.tree .n{font-family:var(--f-mono);color:var(--muted);flex:none;width:1.4em}
+
+/* Assessment */
+.steps{display:flex;gap:6px;flex-wrap:wrap}
+.step{flex:1 1 70px;min-width:0;font-size:.74rem;color:var(--muted)}
+.step i{display:block;height:4px;border-radius:2px;background:var(--line);margin-bottom:6px}
+.step.done i{background:var(--ink)} .step.cur i{background:var(--in)}
+.step.cur{color:var(--ink);font-weight:700}
+.q{display:grid;gap:10px;padding-block:14px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.scale label,.opt{position:relative;cursor:pointer}
+.scale input,.opt input{position:absolute;opacity:0;pointer-events:none}
+.scale span{display:block;text-align:center;padding:8px 2px;border:1px solid var(--line);border-radius:8px;font-family:var(--f-mono);font-size:.95rem}
+.scale input:checked+span{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.scale input:focus-visible+span,.opt input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.scale-legend{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted)}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:8px}
+.opt span{display:block;padding:12px 14px;border:1px solid var(--line);border-radius:10px;height:100%}
+.opt span small{display:block;color:var(--muted);font-size:.85rem}
+.opt input:checked+span{border-color:var(--in);background:var(--in-soft);box-shadow:inset 0 0 0 1px var(--in)}
+.field{display:grid;gap:6px}
+.field label{font-weight:600}
+input[type=text],textarea,select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
+textarea{min-height:70px;resize:vertical}
+.nav{display:flex;justify-content:space-between;gap:12px;padding-top:16px;border-top:1px solid var(--line);margin-top:8px}
+.branch{border-left:3px solid var(--in);padding-left:14px;display:grid;gap:10px}
+
+/* Profile */
+.balance{display:grid;gap:6px}
+.balance .track{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--sunk)}
+.bars{display:grid;gap:7px}
+.barrow{display:grid;grid-template-columns:minmax(0,8.5em) minmax(0,1fr) 2.6em;gap:10px;align-items:center;font-size:.9rem}
+.barrow .t{height:10px;background:var(--sunk);border-radius:5px;overflow:hidden}
+.barrow .t b{display:block;height:100%;border-radius:5px}
+.barrow.top span:first-child{font-weight:700}
+.continuum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;align-items:end}
+.continuum .col{display:grid;gap:4px;justify-items:center;text-align:center;font-size:.72rem;color:var(--muted);min-width:0}
+.continuum .col .bx{width:100%;height:64px;background:var(--sunk);border-radius:6px;display:flex;align-items:flex-end;overflow:hidden}
+.continuum .col .bx b{display:block;width:100%;border-radius:6px 6px 0 0}
+.continuum-axis{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted);border-top:1px solid var(--line);padding-top:4px}
+.needs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.need{border:1px solid var(--line);border-radius:10px;padding:10px;display:grid;gap:4px;min-width:0}
+.need .v{font-family:var(--f-display);font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;font-size:.92rem}
+.kv dt{color:var(--muted)} .kv dd{margin:0}
+.sep{border-top:1px solid var(--line);padding-top:14px}
+
+/* Plan */
+.goal{border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:12px;background:var(--surface)}
+.goal-h{display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap}
+.goal-h>div{min-width:0}
+.measure{font-size:.9rem;border:1px dashed var(--line);border-radius:8px;padding:6px 10px}
+.prog{height:6px;background:var(--sunk);border-radius:3px;overflow:hidden}
+.prog b{display:block;height:100%;background:var(--ink)}
+.acts{display:grid;gap:4px}
+.act{display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:10px;align-items:start;padding:6px 0;border-top:1px dashed var(--line)}
+.act input{margin-top:4px;width:18px;height:18px}
+.act.done .txt{text-decoration:line-through;color:var(--muted)}
+.tag7{font-family:var(--f-mono);font-size:.72rem;padding:1px 6px;border-radius:4px;background:var(--sunk);color:var(--muted);margin-top:3px;white-space:nowrap}
+.x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:1.1rem;line-height:1;padding:2px 6px}
+.support{font-size:.9rem;background:var(--sunk);border-radius:8px;padding:8px 12px}
+.add{display:flex;gap:8px}
+.add input{flex:1}
+.kirk{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:600px){.kirk{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kirk>div{border:1px solid var(--line);border-radius:10px;padding:10px;min-width:0}
+.kirk .v{font-family:var(--f-display);font-weight:700;font-size:1.2rem;font-variant-numeric:tabular-nums}
+
+/* Team */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:980px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.stat .v{font-family:var(--f-display);font-size:1.8rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:1120px;font-size:.92rem}
+th{text-align:left;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.click{cursor:pointer} tr.click:hover td{background:var(--sunk)}
+tr.sel td{background:var(--sunk)}
+.flag{display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:.85rem}
+.flag::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.flag.ok{color:var(--ok)} .flag.warn{color:var(--warn)} .flag.crit{color:var(--crit)} .flag.none{color:var(--muted)}
+.nd{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;font-family:var(--f-mono);font-size:.7rem;font-weight:700;color:var(--surface)}
+.nd.ok{background:var(--ok)} .nd.warn{background:var(--warn)} .nd.crit{background:var(--crit)}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.88rem}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.person{display:flex;align-items:center;gap:10px;min-width:0}
+.person img{width:28px;height:28px;border-radius:50%;flex:none}
+.guide{margin:0;padding-left:1.2em;display:grid;gap:6px;font-size:.92rem}
+.empty{text-align:center;padding:32px 16px;display:grid;gap:10px;justify-items:center}
+.empty p{max-width:52ch}
+.checkin{border-top:1px solid var(--line);padding-top:10px;display:grid;gap:4px;font-size:.92rem}
+.tip{font-size:.88rem;color:var(--warn)}
+
+/* Foundations */
+.books{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.book{display:grid;gap:10px;align-content:start}
+.book h3{font-size:1.1rem}
+.book ul{margin:0;padding-left:1.1em;display:grid;gap:4px;font-size:.92rem}
+.spine{width:44px;height:6px;border-radius:3px}
+
+.demo-tog{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted)}
+.demo-tog .sw{width:30px;height:18px;border-radius:9px;background:var(--line);position:relative;transition:background .15s}
+.demo-tog .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--surface);transition:transform .15s}
+.demo-tog[aria-pressed="true"]{color:var(--ink);border-color:var(--ex)}
+.demo-tog[aria-pressed="true"] .sw{background:var(--ex)}
+.demo-tog[aria-pressed="true"] .sw::after{transform:translateX(12px)}
+@media (prefers-reduced-motion:reduce){.demo-tog .sw,.demo-tog .sw::after{transition:none}}
+.demo-note{border-color:var(--ex);background:var(--ex-soft);color:var(--ink)}
+.personas{display:flex;gap:6px;flex-wrap:wrap}
+.personas button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.88rem}
+.personas button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.personas button[aria-pressed="true"] .muted{color:inherit;opacity:.75}
+.patterns{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:20px}
+.move{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;padding:8px 0;border-top:1px dashed var(--line)}
+.move input{margin-top:4px;width:18px;height:18px}
+.move.done .txt{text-decoration:line-through;color:var(--muted)}
+input[type=date]{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0}
+.skill{border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:10px}
+.skill.mastered{border-color:var(--ok)}
+.stepper{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.stepper span{font-size:.74rem;text-align:center;padding:5px 2px;border-radius:6px;background:var(--sunk);color:var(--muted);min-width:0;overflow-wrap:anywhere}
+.stepper span.on{background:var(--ink);color:var(--surface);font-weight:700}
+.stepper span.past{background:var(--in-soft);color:var(--in)}
+.skill.mastered .stepper span.on{background:var(--ok)}
+.req{font-size:.88rem;border-left:3px solid var(--line);padding-left:10px;display:grid;gap:4px}
+.req.open{border-left-color:var(--warn)}
+.sugg{display:flex;gap:6px;flex-wrap:wrap}
+.sugg button{border:1px dashed var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;font-size:.86rem;text-align:left}
+.sugg button:hover{border-style:solid;border-color:var(--in)}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--surface);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 28 28" aria-hidden="true"><circle cx="14" cy="14" r="12.5" fill="none" stroke="var(--ink)" stroke-width="1.5"/><path d="M14 4 L17 14 L14 24 L11 14 Z" fill="var(--in)"/><path d="M14 14 L17 14 L14 24 Z" fill="var(--ex)"/></svg>
+      Growth Compass
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Workspace">
+      <button class="tab" role="tab" id="tab-me" data-action="view" data-v="me">My growth</button>
+      <button class="tab" role="tab" id="tab-team" data-action="view" data-v="team">My team</button>
+      <button class="tab" role="tab" id="tab-guide" data-action="view" data-v="guide">How to use</button>
+      <button class="tab" role="tab" id="tab-science" data-action="view" data-v="science">Foundations</button>
+    </nav>
+    <button class="demo-tog" id="demo-tog" data-action="demo" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Sample data</button>
+  </div>
+</header>
+<main class="wrap" id="app"></main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ---------- Sources (short tags shown next to guidance) ----------
+const SRC = {
+  SDT: "Ryan & Deci, Self-Determination Theory",
+  HCM: "Elliot, Dweck & Yeager, Handbook of Competence and Motivation (2nd ed.)",
+  HL: "Ormrod, Human Learning (8th ed.)",
+  PAW: "Howes & Muchinsky, Psychology Applied to Work (13th ed.)",
+  APTM: "Cascio & Aguinis, Applied Psychology in Talent Management (9th ed.)"
+};
+const src = k => `<span class="src" title="${SRC[k]}">${k}</span>`;
+
+// ---------- Branch 1: who you are ----------
+const TRACKS = {
+  tech: {label: "Technical", hint: "Engineering, IT, maintenance, technicians, data, specialist tools or equipment"},
+  non:  {label: "Non-technical", hint: "Operations, customer service, sales, admin, people and business roles"}
+};
+const TENURE = {
+  lt1: {label: "Less than 1 year", stage: "Foundation", note: "Focus on mastering the basics and building relationships before stretching wide.", extra: "Agree with your manager on what \"fully proficient\" looks like in this role and check against it at 30, 60 and 90 days.", mgr: "Make expectations explicit, pair them with a buddy and check in more often than usual."},
+  y1_3: {label: "1 to 3 years", stage: "Build", note: "You know the role. Now is the time to add depth and results you can point to.", extra: "Pick one result this quarter you can show with numbers.", mgr: "Give stretch work with specific feedback, and start talking openly about next steps."},
+  y3_5: {label: "3 to 5 years", stage: "Stretch", note: "You are experienced here. Growth now comes from bigger scope, new challenges or a next role.", extra: "Agree with your manager on a scope increase or a next-role conversation within 60 days.", mgr: "Watch for plateau. Discuss the next role openly and broaden their scope."},
+  y5: {label: "5+ years", stage: "Renew", note: "Deep experience is an asset. Keep it fresh and multiply it through others.", extra: "Mentor or teach one colleague something you know well this quarter.", mgr: "Use their expertise to develop others and refresh their challenge. Check they still feel stretched."}
+};
+
+// ---------- Branch 2: why you work (SDT motivation continuum) ----------
+// Items written for this app, structured on SDT's regulation types; not a reproduction of a published scale.
+const REGS = [
+  {k:"amotivation", label:"Amotivation", w:null, desc:"No clear reason to put in effort"},
+  {k:"external", label:"External", w:-2, desc:"Effort for rewards or to avoid consequences"},
+  {k:"introjected", label:"Introjected", w:-1, desc:"Effort from guilt, pressure or ego"},
+  {k:"identified", label:"Identified", w:1, desc:"Effort because you value the outcome"},
+  {k:"intrinsic", label:"Intrinsic", w:2, desc:"Effort because the work itself is enjoyable"}
+];
+const WHY = [
+  {k:"ext1", reg:"external", text:"To get rewards like pay, a bonus or a promotion"},
+  {k:"ide1", reg:"identified", text:"Because this work is personally important to me"},
+  {k:"int1", reg:"introjected", text:"Because I'd feel guilty or ashamed if I didn't"},
+  {k:"intr1", reg:"intrinsic", text:"Because I enjoy the work itself"},
+  {k:"amo", reg:"amotivation", text:"Honestly, I don't see much reason to put effort into this job"},
+  {k:"ext2", reg:"external", text:"To avoid criticism or consequences from my manager or others"},
+  {k:"ide2", reg:"identified", text:"Because the effort helps me reach goals I value"},
+  {k:"int2", reg:"introjected", text:"Because I need to prove to myself and others that I'm capable"},
+  {k:"intr2", reg:"intrinsic", text:"Because the work is interesting and I like the challenge"}
+];
+// ---------- Branch 3: basic psychological needs (SDT) ----------
+// When a need scores low, a branch asks what it is related to; each source maps to a specific fix.
+const NEEDS = [
+  {k:"autonomy", label:"Autonomy", s:"I feel I have real choice in how I do my work", f:"I feel pressured to do my work in ways I don't agree with",
+   mgr:"Offer choice in how work gets done, explain the reason behind the non-negotiables, and acknowledge their point of view.", style:"autonomy support",
+   act:{type:"20", text:"List the parts of your work where you'd like more say, and bring the list to your next 1:1."},
+   q:"What is this mostly related to?",
+   src:{micro:{label:"Being closely monitored or micromanaged", fix:"Agree on outcomes and check-in points, then stop checking the how in between."},
+        rigid:{label:"Rigid scripts, rules or processes", fix:"Explain the reason behind each rule, and invite ideas on where flexibility is safe."},
+        sched:{label:"No say over my schedule or tasks", fix:"Offer choices within the constraints: shift preferences, task order, who they partner with."},
+        voice:{label:"My ideas aren't asked for or used", fix:"Ask for their input before decisions, and close the loop on what you did with it."}}},
+  {k:"competence", label:"Competence", s:"I feel capable and effective at my job", f:"I often doubt whether I can do my job well",
+   mgr:"Set clear expectations, break work into achievable steps and give informational feedback (what worked, what to try next) rather than controlling feedback.", style:"structure",
+   act:{type:"70", text:"Start with one small, winnable task this week. Afterwards, write down what you did that made it work."},
+   q:"What is this mostly related to?",
+   src:{training:{label:"Not enough training for what's asked of me", fix:"Pin down the specific skill gap and arrange hands-on training or a buddy."},
+        unclear:{label:"Unclear expectations or standards", fix:"Write down what good looks like, with real examples."},
+        feedback:{label:"Little or no feedback on how I'm doing", fix:"Give short, specific feedback weekly: what worked and what to try next."},
+        underused:{label:"My skills aren't being used", fix:"Redesign part of the role around the strengths they named in \"How you work best\"."},
+        overload:{label:"Too much work to do it well", fix:"Review workload together and remove or delay lower-value tasks."}}},
+  {k:"relatedness", label:"Relatedness", s:"I feel connected to and cared about by people at work", f:"I feel left out or like I don't belong at work",
+   mgr:"Make time to connect personally, include them in team decisions and pair them with a buddy.", style:"involvement",
+   act:{type:"20", text:"Set up a regular 20-minute catch-up with one teammate."},
+   q:"What is this mostly related to?",
+   src:{isolated:{label:"I work apart from the team most of the time", fix:"Build in regular touchpoints: shared huddles, a buddy, or a joint task each week."},
+        conflict:{label:"Tension or conflict in the team", fix:"Address the conflict directly and fairly. Set team norms for how disagreements are handled."},
+        newbie:{label:"I'm new and still building relationships", fix:"Assign a buddy and make introductions across the team and neighbouring teams."},
+        manager:{label:"I don't feel my manager knows me as a person", fix:"Spend part of each 1:1 on them, not the work: interests, goals, what's going on."},
+        excluded:{label:"I feel different or left out of the group", fix:"Watch who is included in conversations and decisions. Make inclusion explicit and set the tone yourself."}}}
+];
+// ---------- Branch: how you work best (self-identified) ----------
+const MODES = {
+  alone: {label:"On my own", sub:"Independent tasks I can focus on", mgr:"Protect focused solo time and give them independent pieces of work. Don't force group work where it adds nothing."},
+  pair:  {label:"With one partner", sub:"A buddy or a pair", mgr:"Pair them deliberately on the work that matters most to them, and choose partners with care."},
+  group: {label:"In a group or team", sub:"Shared tasks and lots of interaction", mgr:"Put them on shared team tasks, huddles and projects. Avoid long stretches of isolated work."},
+  mix:   {label:"It depends on the task", sub:"Solo for some things, group for others", mgr:"Ask which tasks they want to do solo and which with others, and plan assignments that way."}
+};
+const CONDS = {
+  plan:"A clear plan and priorities", choice:"Freedom to choose the order of my work", quiet:"Quiet, uninterrupted time", people:"The energy of people around me",
+  quickfb:"Frequent, quick feedback", deadline:"Deadlines and some pressure", variety:"Variety and switching between tasks", deep:"Long stretches on one task",
+  hands:"Hands-on work, not screens or paperwork", tools:"The right tools and equipment ready"
+};
+const PEAK = ["Early in my shift or day","Middle of my shift or day","Later in my shift or day","It varies"];
+// ---------- Branch 4: rewards that matter (intrinsic vs extrinsic) ----------
+const DRIVERS = [
+  {key:"mastery", type:"in", need:"competence", label:"Mastery", stmt:"Getting noticeably better at what I do",
+   q:"Which skill do you most want to sharpen in the next 90 days?",
+   opts:{tech:["a core technical skill (systems, tools, code or equipment)","troubleshooting and root-cause analysis","technical documentation and standards","designing solutions, not just fixing them"],
+         non:["customer conversations","communication and influence","planning and organisation","coaching and supporting others"]},
+   goal:f=>`Sharpen ${f}`,
+   measure:f=>`Two pieces of work that show stronger ${f}, confirmed in feedback from your manager or a peer.`,
+   a70:f=>`Take on one task a month that stretches ${f}. Practise the hardest part deliberately and ask for feedback within a week.`,
+   a20:f=>`Watch someone strong in ${f} work through a real task twice this quarter, then try their approach yourself.`,
+   a10:(f,t)=>t==="tech"?`Complete a hands-on lab, course or certification module on ${f}. Space it over several weeks rather than one sitting.`:`Complete a short workshop or e-learning on ${f}, then explain 3 takeaways to a teammate in your own words.`,
+   mgr:f=>`Route stretch work involving ${f} their way and give specific feedback within a week.`,
+   ask:"What did you get better at this month, and what felt hard?"},
+  {key:"autonomy", type:"in", need:"autonomy", label:"Autonomy", stmt:"Having freedom to decide how I do my work",
+   q:"Where would more ownership matter most?",
+   opts:["how I plan and prioritise my day","how my team solves problems","owning a project end to end","improving a process I use every day"],
+   goal:f=>`Own more of ${f}`,
+   measure:f=>`You own one decision area in ${f} without needing sign-off, agreed in writing with your manager.`,
+   a70:f=>`Agree on one decision area within ${f} that you own outright for 60 days.`,
+   a20:()=>`Hold a 15-minute monthly review with your manager on results, not activity.`,
+   a10:()=>`Learn a simple planning method (weekly priorities or a kanban board) and use it for a month.`,
+   mgr:()=>`Define the decision boundary clearly, then step back. Review outcomes, not tasks.`,
+   ask:"Where do you want more say in how the work gets done?"},
+  {key:"purpose", type:"in", need:"identified", label:"Purpose", stmt:"Seeing how my work helps customers, colleagues or the community",
+   q:"Whose impact do you most want to see?",
+   opts:["our customers","my teammates","the wider business","the community"],
+   goal:f=>`Connect daily work to its impact on ${f}`,
+   measure:f=>`You can name one measurable outcome your work drove for ${f} this quarter.`,
+   a70:f=>`Track one outcome your work drives for ${f} and review it monthly.`,
+   a20:f=>`Talk with someone close to ${f} about what helps them most.`,
+   a10:f=>`Learn how the business measures success for ${f}.`,
+   mgr:()=>`Share impact stories and data in 1:1s, and explain the why when assigning work.`,
+   ask:"When did your work feel most meaningful recently?"},
+  {key:"growth", type:"in", need:"intrinsic", label:"Learning", stmt:"Learning new things and being challenged",
+   q:"What would you most like to learn?",
+   opts:{tech:["a new tool, platform or language","an industry certification","data, automation or AI tools","another part of our technical systems"],
+         non:["another part of the business","a professional certification","data and digital tools","leadership and people skills"]},
+   goal:f=>`Learn ${f}`,
+   measure:f=>`You have used ${f} on a real piece of work and can show the result.`,
+   a70:f=>`Apply ${f} in a real piece of work within 60 days, so the learning transfers to the job.`,
+   a20:f=>`Find a mentor who knows ${f} and meet monthly.`,
+   a10:f=>`Enrol in a structured course on ${f}. Block learning time and test yourself after each module.`,
+   mgr:()=>`Protect learning time and help find a real project to apply it in.`,
+   ask:"What have you learned recently, and where could you use it?"},
+  {key:"belonging", type:"in", need:"relatedness", label:"Belonging", stmt:"Feeling connected to and trusted by my team",
+   q:"What would strengthen your connection at work?",
+   opts:["getting to know my teammates better","being included in decisions","mentoring someone newer","building relationships with other teams"],
+   goal:f=>`Strengthen connection through ${f}`,
+   measure:()=>`Three new or deeper working relationships, and a higher connection score at your next check.`,
+   a70:f=>`Take one concrete step each month toward ${f}.`,
+   a20:()=>`Set up a regular coffee or walk-and-talk with a colleague.`,
+   a10:()=>`Join an employee group, community of practice or volunteering day.`,
+   mgr:()=>`Include them in team decisions and create chances to collaborate.`,
+   ask:"Who at work do you feel most connected to, and who would you like to know better?"},
+  {key:"pay", type:"ex", label:"Pay and bonus", stmt:"Earning more through pay, bonus or incentives",
+   q:"What would help you most on earnings?",
+   opts:["understanding how pay is decided here","qualifying for a bonus or incentive","building the skills for a higher pay band","getting more hours, shifts or overtime"],
+   goal:f=>`Make progress on earnings: ${f}`,
+   measure:()=>`A written list of 2 or 3 results that support your next pay conversation, agreed with your manager.`,
+   a70:()=>`Agree with your manager on 2 or 3 results that would support a pay conversation at the next review.`,
+   a20:()=>`Ask your manager or HR to walk you through the pay band and criteria for your role.`,
+   a10:()=>`Keep a monthly wins log with numbers to bring to your review.`,
+   mgr:()=>`Be transparent about how pay decisions work and which parts are within their control.`,
+   ask:"Do you know what it would take to reach the next pay step? What is unclear?"},
+  {key:"promotion", type:"ex", label:"Promotion", stmt:"Moving up to a bigger title or role",
+   q:"Which role are you aiming for?",
+   opts:{tech:["a senior or lead technician / engineer","a technical team lead","a specialist or architect role","not sure yet"],
+         non:["a shift or team lead","a supervisor or manager","a senior specialist role","not sure yet"]},
+   goal:f=>f==="not sure yet"?"Find the next role that fits you":`Get ready to step up to ${f}`,
+   measure:()=>`A self-rating against the next role's competencies, reviewed with your manager, with gaps named.`,
+   a70:()=>`Act up in parts of the next role: cover for the lead, run a huddle or own a handover.`,
+   a20:()=>`Interview someone in the role you want about what success looks like.`,
+   a10:()=>`Review the competency profile for the role and rate yourself against it.`,
+   mgr:()=>`Name readiness gaps honestly and create act-up opportunities.`,
+   ask:"What would you need to see in yourself to feel ready for the next role?"},
+  {key:"recognition", type:"ex", label:"Recognition", stmt:"Having my contributions noticed and appreciated",
+   q:"What kind of recognition means the most to you?",
+   opts:["private feedback from my manager","public shout-outs in the team","recognition from senior leaders","formal awards"],
+   goal:()=>"Make your contributions visible",
+   measure:()=>`Three monthly wins notes sent and one piece of work presented to a wider group.`,
+   a70:()=>`Send your manager a short monthly note of wins and what they made possible.`,
+   a20:()=>`Present one piece of your work to a wider group this quarter.`,
+   a10:()=>`Learn to describe impact clearly: situation, action, result.`,
+   mgr:f=>`Recognise them through ${f}, specifically and soon after the work. Make it informational ("this worked because…") rather than a reward for compliance.`,
+   ask:"What have you done lately that you feel did not get noticed?"},
+  {key:"stability", type:"ex", label:"Stability", stmt:"Security and predictability in my job",
+   q:"What would make you feel more secure?",
+   opts:{tech:["clearer expectations","skills and certifications that keep me in demand","knowing where the business is heading","a predictable schedule or on-call rota"],
+         non:["clearer expectations","skills that keep me in demand","knowing where the business is heading","a predictable schedule"]},
+   goal:f=>`Build security through ${f}`,
+   measure:()=>`Written expectations for your role, agreed with your manager, and one in-demand skill in progress.`,
+   a70:f=>`Agree with your manager on what success looks like in your role, focused on ${f}.`,
+   a20:()=>`Ask your manager to share team and business plans in your 1:1s.`,
+   a10:()=>`Pick one in-demand skill for your role and complete training in it.`,
+   mgr:()=>`Give early, honest information about changes and confirm expectations in writing.`,
+   ask:"Is anything about the role or the business making you uneasy right now?"},
+  {key:"flex", type:"ex", label:"Flexibility", stmt:"Flexibility in schedule, location or workload",
+   q:"Which kind of flexibility matters most?",
+   opts:["choice of shifts or schedule","remote or hybrid days","time for study or family","help with workload peaks"],
+   goal:f=>`Find a sustainable arrangement for ${f}`,
+   measure:()=>`A trial arrangement agreed and reviewed after 4 weeks.`,
+   a70:f=>`Propose a trial arrangement for ${f} with clear measures of success.`,
+   a20:()=>`Talk with teammates about swapping or sharing to cover peaks.`,
+   a10:()=>`Review the company's flexible-work policy and what options exist.`,
+   mgr:()=>`Trial a flexible arrangement and judge it on results.`,
+   ask:"Is your current schedule and workload sustainable? What would help?"}
+];
+const DMAP = Object.fromEntries(DRIVERS.map(d=>[d.key,d]));
+
+// ---------- Branch 5: beliefs about growth (mindset, goals, efficacy, expectancy, fairness) ----------
+const BELIEFS = [
+  {k:"fixed", text:"Your talent for this kind of work is something you can't change much"},
+  {k:"growth", text:"Anyone can get significantly better at their job with the right practice"},
+  {k:"efficacy", text:"I'm confident I can learn the skills I'll need for my next step"},
+  {k:"expectancy", text:"If I put in the effort, I can perform well on what I'm measured on"},
+  {k:"instrumentality", text:"Performing well here leads to outcomes I care about"},
+  {k:"equity", text:"Rewards and recognition here are fair for what I put in"}
+];
+const GOALO = {
+  mapp: {label:"Develop my skills as much as I can", short:"Mastery-approach"},
+  papp: {label:"Show I'm one of the strongest performers", short:"Performance-approach"},
+  pav:  {label:"Avoid looking less capable than others", short:"Performance-avoidance"},
+  mav:  {label:"Avoid falling behind or losing skills I have", short:"Mastery-avoidance"}
+};
+
+// ---------- Branch 6: career direction (job characteristics informs "stay") ----------
+const DIRS = {
+  up: {label:"Move into leadership", sub:"Lead people or a team", follow:{kind:"choice", q:"When would you like to be ready?", opts:["Within 6 months","Within a year","In 2+ years"]},
+    goal:d=>`Prepare for a leadership role${d?` (${d.toLowerCase()})`:""}`, measure:()=>"Led at least 3 huddles, handovers or small projects, with written feedback from your manager.",
+    a70:()=>"Lead one team huddle, handover or small project each month.", a20:()=>"Ask a current leader to mentor you monthly.", a10:()=>"Complete a first-time leader course.",
+    mgr:"Give act-up opportunities and honest readiness feedback."},
+  deep: {label:"Become the go-to expert", sub:"Grow deeper in my specialty", follow:{kind:"text", q:"What do you want to be known for?"},
+    goal:d=>`Become the go-to person for ${d||"your specialty"}`, measure:()=>"Teammates regularly bring you questions in this area, and you have run one teach-back.",
+    a70:d=>`Handle the hardest ${d||"specialist"} questions on the team for a quarter.`, a20:()=>"Run a 20-minute teach-back for the team.", a10:(d,t)=>t==="tech"?"Pursue an advanced certification in your specialty.":"Pursue advanced training or a professional qualification.",
+    mgr:"Make their expertise visible and send the hard questions their way."},
+  across: {label:"Explore a different area", sub:"Another team, function or site", follow:{kind:"text", q:"Which area interests you?"},
+    goal:d=>`Explore ${d||"another area"}`, measure:()=>"Three conversations held and a clear decision about the next step.",
+    a70:()=>"Join a cross-team project or cover in that area for a few shifts.", a20:d=>`Have coffee chats with 3 people who work in ${d||"that area"}.`, a10:()=>"Learn the basics of how that area works and what it looks for.",
+    mgr:"Broker introductions and allow time for a short rotation or shadowing."},
+  stay: {label:"Grow in my current role", sub:"Get more out of the job I have", follow:{kind:"text", q:"What would make your role more rewarding?"},
+    goal:d=>d?`Make your role more rewarding: ${d}`:"Make your current role more rewarding", measure:()=>"One redesigned part of your job in place and reviewed after 6 weeks.",
+    a70:()=>"Redesign one part of your job with your manager to add variety, ownership of a whole piece of work, or more direct feedback.", a20:()=>"Ask peers for one idea to improve your day-to-day.", a10:()=>"Learn one skill that would make the work easier.",
+    mgr:"Look for job-crafting options: more skill variety, a whole task they can own, visible significance and direct feedback."},
+  unsure: {label:"I'm not sure yet", sub:"Help me figure it out", follow:null,
+    goal:()=>"Explore what's next for you", measure:()=>"A short list of 2 directions to test next quarter.",
+    a70:()=>"Note which tasks give you energy each week for a month.", a20:()=>"Talk with 3 people in different roles about their path.", a10:()=>"Browse internal roles and note what appeals and why.",
+    mgr:"Help them reflect on energy and strengths, and share options you see for them."}
+};
+const BLOCKERS = {
+  time:{label:"Time during work", mgr:"Protect a set amount of development time each month."},
+  clarity:{label:"Clear expectations", mgr:"Write down what good looks like in their role and next role."},
+  feedback:{label:"Regular feedback", mgr:"Give short, specific feedback weekly, not just at review time."},
+  resources:{label:"Training budget or tools", mgr:"Find low-cost options or request budget for one priority item."},
+  confidence:{label:"Confidence", mgr:"Start with small stretch wins and name progress when you see it."},
+  schedule:{label:"Shift or schedule conflicts", mgr:"Schedule development activities around their shifts."}
+};
+const HOURS = ["1 to 2 hours a month","About 4 hours a month","8+ hours a month"];
+const ATTRIB = {effort:"My effort", strategy:"The approach I used", help:"Help from others", ability:"Natural ability", luck:"Luck or circumstances"};
+const STEPS = ["About you","Why you work","Your needs","How you work best","Rewards","Top 3","Deep dive","Beliefs","Direction","Practical"];
+const ST = Object.fromEntries(["about","why","needs","style","rewards","top","deep","beliefs","dir","practical"].map((k, i) => [k, i]));
+const MECH = {"70":"On the job: deliberate practice", "20":"With people: modelling and feedback", "10":"Formal learning"};
+
+// ---------- Helpers ----------
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Math.random().toString(36).slice(2, 10);
+const todayISO = () => new Date().toISOString().slice(0, 10);
+const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
+const fmtDate = iso => iso ? new Date(iso + (iso.length === 10 ? "T12:00:00" : "")).toLocaleDateString(undefined, {month:"short", day:"numeric", year:"numeric"}) : "—";
+const daysSince = iso => iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 864e5) : Infinity;
+const optsFor = (d, track) => Array.isArray(d.opts) ? d.opts : d.opts[track || "non"];
+const clone = o => JSON.parse(JSON.stringify(o));
+const avg = xs => { const v = xs.filter(x => typeof x === "number"); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+const lvl = v => v == null ? "none" : v <= 2.5 ? "crit" : v < 3.5 ? "warn" : "ok";
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2200); }
+function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
+function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
+
+// ---------- Scoring ----------
+function profileOf(a){
+  const why = a.why || {}, nd = a.needs || {}, b = a.beliefs || {}, r = a.ratings || {};
+  const reg = Object.fromEntries(REGS.map(g => [g.k, avg(WHY.filter(w => w.reg === g.k).map(w => why[w.k]))]));
+  const rai = REGS.filter(g => g.w).reduce((s, g) => s + g.w * (reg[g.k] || 0), 0);
+  const quality = (reg.amotivation || 0) >= 4 ? {k:"amotivated", label:"Disengaged", cls:"crit"}
+    : rai >= 3 ? {k:"autonomous", label:"Autonomous", cls:"ok"} : rai <= -1 ? {k:"controlled", label:"Controlled", cls:"warn"} : {k:"mixed", label:"Mixed", cls:"neutral"};
+  const needs = Object.fromEntries(NEEDS.map(n => [n.k, nd[n.k + "_s"] && nd[n.k + "_f"] ? (nd[n.k + "_s"] + 6 - nd[n.k + "_f"]) / 2 : null]));
+  const mindsetV = b.fixed && b.growth ? (b.growth + 6 - b.fixed) / 2 : null;
+  const mindset = mindsetV == null ? null : mindsetV >= 3.5 ? "Growth" : mindsetV <= 2.5 ? "Fixed" : "Mixed";
+  const pct = v => v ? Math.round((v - 1) / 4 * 100) : 0;
+  const inPct = pct(avg(DRIVERS.filter(d => d.type === "in").map(d => r[d.key])));
+  const exPct = pct(avg(DRIVERS.filter(d => d.type === "ex").map(d => r[d.key])));
+  const st = a.style || {};
+  const identity = avg([st.id1, st.id2]);
+  return {reg, rai: Math.round(rai * 10) / 10, quality, needs, mindset, mindsetV, b, inPct, exPct, identity};
+}
+const needLow = v => v != null && v <= 2.5;
+// Need → what it's related to → what to do about it
+function needsMap(a){
+  const P = profileOf(a);
+  return NEEDS.map(n => { const v = P.needs[n.k]; const s = needLow(v) ? n.src[a.needSrc?.[n.k]] : null;
+    return {n, v, low: needLow(v), source: s?.label || "", fix: s ? s.fix : needLow(v) ? n.mgr : ""}; });
+}
+function qualityText(q){
+  return {
+    autonomous: "Most of your effort comes from valuing or enjoying the work. That kind of motivation tends to last and supports well-being and learning.",
+    mixed: "Your effort comes from a mix of valuing the work and outside pressure or rewards. Connecting tasks to goals you care about can shift the balance.",
+    controlled: "Much of your effort comes from rewards, pressure or obligation. That can work short-term but is harder to sustain. Your plan focuses on finding personal value in the work.",
+    amotivated: "Right now you may not see much reason to put effort in. That's important to talk about openly with your manager. The plan starts small."
+  }[q.k];
+}
+function rewardText(p){
+  if (p.inPct - p.exPct >= 15) return "Growth, meaning and ownership matter more to you than incentives right now.";
+  if (p.exPct - p.inPct >= 15) return "Tangible rewards (pay, title, recognition, stability) matter most right now. Your plan makes the path to them explicit.";
+  return "Both the work itself and its rewards matter to you.";
+}
+
+// ---------- Plan generation ----------
+function makePlan(a){
+  const t = a.track, P = profileOf(a);
+  const goals = a.top.map((k, i) => {
+    const d = DMAP[k]; const f = optsFor(d, t)[a.deep?.[k] ?? 0];
+    return {id: uid(), driver: k, title: d.goal(f), measure: d.measure(f), due: addDays(30 * (i + 1)), status: "Not started", support: d.mgr(f),
+      actions: [{id: uid(), type: "70", text: d.a70(f, t), done: false}, {id: uid(), type: "20", text: d.a20(f, t), done: false}, {id: uid(), type: "10", text: d.a10(f, t), done: false}]};
+  });
+  // Foundation goal: only when needs are frustrated or beliefs could block growth
+  const fuel = [];
+  NEEDS.forEach(n => { if (needLow(P.needs[n.k])) fuel.push(n.act); });
+  if ((P.b.efficacy || 5) <= 2 && !fuel.some(x => x === NEEDS[1].act)) fuel.push(NEEDS[1].act);
+  if ((P.b.efficacy || 5) <= 2) fuel.push({type:"20", text:"Watch a peer at a similar level handle something you find hard, then try it yourself the same week."});
+  if (P.mindset === "Fixed") fuel.push({type:"70", text:"Keep a weekly \"mistake → lesson\" note: one thing that went wrong and what you'll try next time."});
+  if (a.goalO === "pav" || a.goalO === "mav") fuel.push({type:"10", text:"Each month, compare your work with your own work last month, not with other people's."});
+  fuel.splice(3);
+  if (fuel.length) goals.unshift({id: uid(), driver: "fuel", title: "Build the confidence and conditions to grow", measure: "Your needs and confidence scores improve when you retake the assessment in 90 days.",
+    due: addDays(45), status: "Not started", support: "Start with small wins and informational feedback. Ask about what's getting in the way before adding stretch.",
+    actions: fuel.map(x => ({id: uid(), ...x, done: false}))});
+  // Strengths goal: built from what the person said about their own talents and best conditions
+  const st = a.style || {};
+  const talent = (st.talent || "").trim(), flow = (st.flow || "").trim();
+  const conds = (st.conds || []).map(k => CONDS[k]?.toLowerCase()).filter(Boolean);
+  if (talent || flow){
+    const acts = [];
+    if (talent) acts.push({type:"70", text:`Agree with your manager on one way to use "${talent}" more in your regular work.`});
+    if (flow) acts.push({type:"70", text:`Find ways to do more of the work where you lose track of time ("${flow}"), and note how it affects your output.`});
+    if (conds.length) acts.push({type:"70", text:`Set up at least one block each week with your best conditions: ${conds.slice(0, 3).join(", ")}.`});
+    acts.push({type:"20", text: st.mode === "alone" ? "Share one thing you're good at with a colleague in a short one-to-one walkthrough." : "Teach or support a teammate using your strength."});
+    goals.push({id: uid(), driver: "talent", title: "Use your strengths more, in the way you work best", measure: "More of your week goes to work that uses your strengths, and your productivity rating rises at check-ins.",
+      due: addDays(60), status: "Not started", support: `Build their strengths into their assignments.${MODES[st.mode] ? " " + MODES[st.mode].mgr : ""}`,
+      actions: acts.map(x => ({id: uid(), ...x, done: false}))});
+  }
+  const dir = DIRS[a.direction];
+  if (dir){
+    const det = (a.dirDetail || "").trim(); const ten = TENURE[a.tenure];
+    const acts = [{type:"70", text: dir.a70(det, t)}, {type:"20", text: dir.a20(det, t)}, {type:"10", text: dir.a10(det, t)}];
+    if (ten) acts.splice(1, 0, {type:"70", text: ten.extra});
+    goals.push({id: uid(), driver: "career", title: dir.goal(det), measure: dir.measure(det), due: addDays(90), status: "Not started",
+      support: dir.mgr + (ten ? " " + ten.mgr : ""), actions: acts.map(x => ({id: uid(), ...x, done: false}))});
+  }
+  // Size the plan to the time the person said they have: goals that don't fit are parked, not hidden
+  const feasible = Math.max(1, Math.floor(HOURS_90[a.hours ?? 1] / HOURS_PER_ACTION));
+  let used = 0;
+  goals.forEach((g, i) => { const n = g.actions.length; if (i > 0 && used + n > feasible) g.status = "Later"; else used += n; });
+  return {createdAt: todayISO(), goals};
+}
+// ---------- Reality check: honest feasibility, no sugar-coating ----------
+const HOURS_90 = [4.5, 12, 24];     // development hours over 90 days for each HOURS option
+const HOURS_PER_ACTION = 2;         // rough guide, stated to the user
+const VERDICT = {parked:{label:"Parked for later", cls:"neutral"}, ok:{label:"Realistic", cls:"ok"}, stretch:{label:"Stretch", cls:"warn"}, unlikely:{label:"Unlikely in 90 days", cls:"crit"}, outside:{label:"Not fully in your control", cls:"neutral"}};
+function realityCheck(doc){
+  const a = doc.assessment || {}, goals = doc.plan?.goals || [];
+  const hours = HOURS_90[a.hours ?? 1]; const feasible = Math.max(1, Math.floor(hours / HOURS_PER_ACTION));
+  const open = goals.filter(g => g.status !== "Later").reduce((n, g) => n + (g.actions || []).filter(x => !x.done).length, 0);
+  let used = 0; const verdicts = {};
+  goals.forEach(g => {
+    if (g.status === "Later"){ verdicts[g.id] = {level:"parked", text:"Not in these 90 days. There isn't time for it alongside the goals above. Bring it back when one is done, or agree more development time first."}; return; }
+    const left = (g.actions || []).filter(x => !x.done).length;
+    let v = {level:"ok", text:"Within your control and sized for 90 days, if you do the actions."};
+    if (g.driver === "mastery") v = {level:"ok", text:"Realistic progress in 90 days. Real mastery takes months of repeated practice; one course won't do it."};
+    if (g.driver === "growth") v = {level:"ok", text:"Realistic to start and apply in 90 days. Certifications usually take weeks to months of study; check the official exam guide."};
+    if (g.driver === "pay") v = {level:"outside", text:"Pay depends on the company's pay process and budget, not only on you. This goal builds your case. It does not guarantee a rise."};
+    if (g.driver === "promotion") v = a.tenure === "lt1"
+      ? {level:"unlikely", text:"With less than a year in role, a promotion in 90 days is unlikely. Most organisations want a track record first. Realistic target: ready to act up within 12 months."}
+      : {level:"outside", text:"Promotion depends on an opening and on other people's decisions. This goal makes you ready. It cannot guarantee the role."};
+    if (g.driver === "recognition") v = {level:"outside", text:"You control making your work visible. You don't control how others respond."};
+    if (g.driver === "flex") v = {level:"outside", text:"Depends on business needs and policy. A trial is realistic. A guaranteed arrangement is not."};
+    if (g.driver === "career" && a.direction === "up"){
+      if (a.dirDetail === "Within 6 months" && a.tenure === "lt1") v = {level:"unlikely", text:"Going from new in role to leading others in 6 months is unlikely. A realistic timeline is 12 to 24 months."};
+      else if (a.dirDetail === "Within 6 months") v = {level:"stretch", text:"Possible only with consistent effort and an opening. Plan for 12 months and treat 6 as a bonus."};
+      else v = {level:"ok", text:"A realistic timeline, if you build a track record of leading small things now."};
+    }
+    if (left && used + left > feasible && used >= feasible) v = {level:"unlikely", text:`Won't fit. With ${HOURS[a.hours ?? 1].toLowerCase()} you have time for about ${feasible} actions in 90 days, and earlier goals use them up. Drop this goal for now or free up more time.`};
+    else if (left && used + left > feasible) v = {level: v.level === "ok" ? "stretch" : v.level, text: v.text + ` Only part of this fits the time you have.`};
+    used += left; verdicts[g.id] = v;
+  });
+  return {hours, feasible, open, over: open > feasible, verdicts};
+}
+function talentStatus(st){
+  if (!st?.talent) return null;
+  return (st.talentProof || "").trim() ? {cls:"ok", label:"Confirmed", text: st.talentProof} : {cls:"warn", label:"Self-reported", text:"Not yet confirmed. Ask a colleague or your manager whether they'd agree."};
+}
+function planProgress(p){
+  const acts = (p?.goals || []).filter(g => g.status !== "Later").flatMap(g => g.actions || []);
+  return acts.length ? Math.round(acts.filter(a => a.done).length / acts.length * 100) : 0;
+}
+function statusFor(doc, empId){
+  const a = doc?.assessment;
+  if (!a?.completedAt) return {cls:"none", text:"Assessment not started"};
+  const P = profileOf(a);
+  const last = (doc.checkins || [])[0]?.date || a.completedAt;
+  const prog = planProgress(doc.plan);
+  const stalled = prog < 20 && daysSince(doc.plan?.createdAt) > 30;
+  const overdue = daysSince(last) > 35;
+  const longTenure = a.tenure === "y3_5" || a.tenure === "y5";
+  const lowEnergy = (doc.checkins || [])[0]?.energy <= 2;
+  if (P.quality.k === "amotivated") return {cls:"crit", text:"Disengagement risk"};
+  if ((stalled || lowEnergy) && longTenure) return {cls:"crit", text:"Retention risk"};
+  if (lowEnergy) return {cls:"crit", text:"Low energy at last check-in"};
+  if ((P.b.equity || 5) <= 2) return {cls:"warn", text:"Fairness concern"};
+  if (stalled) return {cls:"warn", text:"Plan stalled"};
+  if (empId && skillStats(doc, empId).open) return {cls:"warn", text:"Support ask waiting"};
+  if (overdue) return {cls:"warn", text:"Check-in overdue"};
+  return {cls:"ok", text:"On track"};
+}
+function playbook(a){
+  const P = profileOf(a), out = [], ten = TENURE[a.tenure];
+  if (ten) out.push(["APTM", `<b>${esc(ten.stage)} stage.</b> ${esc(ten.mgr)}`]);
+  const q = {
+    autonomous: "Protect what's working. Avoid micromanaging, and don't turn rewards into levers of control, which can crowd out motivation that comes from the work itself.",
+    mixed: "Help them see how tasks connect to goals they value. Explain the why behind requests so the reasons become their own.",
+    controlled: "Rewards and pressure drive most of their effort. Give a meaningful rationale for tasks, acknowledge their perspective and offer choices so they can come to value the work.",
+    amotivated: "Talk privately and listen first. Ask what would make the work worth doing, and check workload, fit and well-being before adding goals."
+  }[P.quality.k];
+  out.push(["SDT", `<b>Motivation quality: ${esc(P.quality.label)}.</b> ${esc(q)}`]);
+  needsMap(a).forEach(m => { if (m.low) out.push(["SDT", `<b>${esc(m.n.label)} is low${m.source ? `, mostly related to: ${esc(m.source.toLowerCase())}` : ""}.</b> ${esc(m.fix)}`]); });
+  const st = a.style || {};
+  const tsm = talentStatus(st);
+  if (tsm && tsm.cls === "warn") out.push(["APTM", "<b>Their talent is self-reported.</b> Give honest feedback on whether you see it too. If it's really a goal, say so kindly and help them plan for it."]);
+  if (st.talent || st.flow) out.push(["APTM", `<b>Tap into their talent.</b> ${st.talent ? `Colleagues come to them for "${esc(st.talent)}". ` : ""}${st.flow ? `They lose track of time when "${esc(st.flow)}". ` : ""}Build more of that into their assignments, and let them teach it to others.`]);
+  if (MODES[st.mode]) out.push(["SDT", `<b>Works best ${esc(MODES[st.mode].label.toLowerCase())}.</b> ${esc(MODES[st.mode].mgr)}`]);
+  if ((st.conds || []).length) out.push(["PAW", `<b>Most productive with:</b> ${esc(st.conds.map(k => CONDS[k]).filter(Boolean).join(", ").toLowerCase())}${st.peak != null ? `, ${esc(PEAK[st.peak].toLowerCase())}` : ""}. Schedule their most important work in those conditions.`]);
+  if (P.identity != null && P.identity <= 2.5) out.push(["SDT", "<b>Low team identity.</b> Build a shared sense of \"us\": a common team goal, team rituals, and making their contribution to the team visible."]);
+  else if (P.identity != null && P.identity >= 4) out.push(["SDT", "<b>Strong team identity.</b> They are invested in the team. Use it: give them a role in team goals, onboarding or team improvements."]);
+  if (P.mindset === "Fixed") out.push(["HCM", "<b>Leans to a fixed mindset.</b> Praise strategy, effort and progress rather than talent. Treat mistakes as information, not verdicts."]);
+  if (a.goalO === "pav" || a.goalO === "mav") out.push(["HCM", "<b>Avoidance goals.</b> Frame feedback around personal progress, not comparison with others, and avoid public rankings."]);
+  if (a.goalO === "papp") out.push(["HCM", "<b>Performance-approach goals.</b> Visible benchmarks motivate them. Keep attention on skill growth too, so setbacks don't derail them."]);
+  if ((P.b.efficacy || 5) <= 2) out.push(["HL", "<b>Low confidence to learn.</b> Build self-efficacy through small successes, modelling by a similar peer, and specific encouragement."]);
+  if ((P.b.expectancy || 5) <= 2) out.push(["PAW", "<b>Doubts effort leads to performance.</b> Check for missing skills, tools or unclear standards."]);
+  if ((P.b.instrumentality || 5) <= 2) out.push(["PAW", "<b>Doesn't see performance paying off.</b> Spell out what good performance leads to here, and only promise what you control."]);
+  if ((P.b.equity || 5) <= 2) out.push(["PAW", "<b>Sees rewards as unfair.</b> Explain how decisions are made, listen to who they compare themselves with, and correct anything that is unfair."]);
+  if (P.exPct - P.inPct >= 15) out.push(["SDT", "<b>Reward-focused right now.</b> Be concrete about how pay, promotion and recognition are decided. Present rewards as information about their progress, not as control."]);
+  (a.blockers || []).forEach(k => out.push(["APTM", `<b>Blocker: ${esc(BLOCKERS[k].label.toLowerCase())}.</b> ${esc(BLOCKERS[k].mgr)}`]));
+  return out;
+}
+
+// ---------- Skills and certifications (employee-owned tracker) ----------
+// fits: drivers or directions an item suits, used only to rank suggestions
+const CATALOG = {
+  tech: [
+    {id:"t-aplus", kind:"cert", name:"CompTIA A+", area:"IT support", fits:["growth","mastery","stability"]},
+    {id:"t-netplus", kind:"cert", name:"CompTIA Network+", area:"Networking", fits:["growth","mastery","deep"]},
+    {id:"t-secplus", kind:"cert", name:"CompTIA Security+", area:"Security", fits:["growth","deep","stability","pay"]},
+    {id:"t-awscp", kind:"cert", name:"AWS Certified Cloud Practitioner", area:"Cloud", fits:["growth","deep","pay"]},
+    {id:"t-az900", kind:"cert", name:"Microsoft Azure Fundamentals (AZ-900)", area:"Cloud", fits:["growth","deep"]},
+    {id:"t-itil", kind:"cert", name:"ITIL 4 Foundation", area:"IT service management", fits:["up","promotion","stability"]},
+    {id:"t-cmrt", kind:"cert", name:"Certified Maintenance & Reliability Technician (CMRT)", area:"Maintenance", fits:["mastery","deep","pay"]},
+    {id:"t-70e", kind:"cert", name:"NFPA 70E electrical safety training", area:"Safety", fits:["stability","mastery"]},
+    {id:"t-plc", kind:"cert", name:"PLC programming certificate", area:"Controls and automation", fits:["growth","deep","mastery"]},
+    {id:"t-lssy", kind:"cert", name:"Lean Six Sigma Yellow Belt", area:"Continuous improvement", fits:["autonomy","purpose","up","across"]},
+    {id:"t-rca", kind:"skill", name:"Root-cause analysis", area:"Troubleshooting", fits:["mastery","deep"]},
+    {id:"t-pm", kind:"skill", name:"Preventive maintenance planning", area:"Maintenance", fits:["autonomy","mastery","stability"]},
+    {id:"t-script", kind:"skill", name:"Scripting and automation", area:"Automation", fits:["growth","autonomy","deep"]},
+    {id:"t-docs", kind:"skill", name:"Clear technical documentation", area:"Communication", fits:["recognition","deep","stability"]},
+    {id:"t-data", kind:"skill", name:"Analysing data to find problems", area:"Data", fits:["growth","purpose"]},
+    {id:"t-teach", kind:"skill", name:"Training others on equipment or systems", area:"Leadership", fits:["belonging","up","recognition"]},
+    {id:"t-lead", kind:"skill", name:"Leading a technical handover or huddle", area:"Leadership", fits:["promotion","up"]}
+  ],
+  non: [
+    {id:"n-sup", kind:"cert", name:"First-line supervisor / team leader certificate", area:"Leadership", fits:["promotion","up"]},
+    {id:"n-capm", kind:"cert", name:"Certified Associate in Project Management (CAPM)", area:"Project management", fits:["promotion","up","growth"]},
+    {id:"n-gpm", kind:"cert", name:"Google Project Management Certificate", area:"Project management", fits:["growth","across"]},
+    {id:"n-mos", kind:"cert", name:"Microsoft Office Specialist: Excel", area:"Digital skills", fits:["growth","stability","pay"]},
+    {id:"n-lssy", kind:"cert", name:"Lean Six Sigma Yellow Belt", area:"Continuous improvement", fits:["autonomy","purpose","up","across"]},
+    {id:"n-cs", kind:"cert", name:"Customer service professional certificate", area:"Customer service", fits:["mastery","recognition","purpose"]},
+    {id:"n-osha", kind:"cert", name:"OSHA 10-hour general industry", area:"Safety", fits:["stability"]},
+    {id:"n-forklift", kind:"cert", name:"Forklift / powered equipment licence", area:"Operations", fits:["pay","flex","stability"]},
+    {id:"n-mhfa", kind:"cert", name:"Mental Health First Aid", area:"People", fits:["belonging","purpose"]},
+    {id:"n-hr", kind:"cert", name:"HR fundamentals certificate", area:"People", fits:["across","growth"]},
+    {id:"n-deesc", kind:"skill", name:"De-escalating upset customers", area:"Customer service", fits:["mastery","purpose"]},
+    {id:"n-fb", kind:"skill", name:"Giving and receiving feedback", area:"Communication", fits:["belonging","up","recognition"]},
+    {id:"n-huddle", kind:"skill", name:"Running a team huddle", area:"Leadership", fits:["promotion","up","autonomy"]},
+    {id:"n-sched", kind:"skill", name:"Scheduling and prioritising work", area:"Planning", fits:["autonomy","flex","up"]},
+    {id:"n-coach", kind:"skill", name:"Coaching a new starter", area:"Leadership", fits:["belonging","up","purpose"]},
+    {id:"n-data", kind:"skill", name:"Solving problems with data", area:"Data", fits:["growth","across"]},
+    {id:"n-present", kind:"skill", name:"Presenting to a group", area:"Communication", fits:["recognition","promotion"]}
+  ]
+};
+const STAGES = {cert:["Planned","Studying","Exam booked","Certified"], skill:["Planned","Learning","Practising","Mastered"]};
+const MASTERY_REPS = 3;
+const REQ_TYPES = {time:"Time to study or practise", task:"A real task to practise on", feedback:"Feedback or coaching", funding:"Funding for a course or exam", mentor:"Shadowing or a mentor", signoff:"Sign-off that I've mastered it"};
+const RESP = {yes:{label:"I'll arrange it", cls:"ok"}, discuss:{label:"Let's discuss in our 1:1", cls:"neutral"}, no:{label:"Not possible right now", cls:"warn"}, done:{label:"Done", cls:"ok"}};
+function suggestFor(a, have){
+  const tags = [...(a.top || []), a.direction];
+  return (CATALOG[a.track] || CATALOG.non).filter(c => !have.has(c.id))
+    .map(c => ({c, score: c.fits.filter(f => tags.includes(f)).length})).sort((x, y) => y.score - x.score).map(x => x.c);
+}
+function responseFor(empId, reqId){
+  if (S.demo) return S.demoResp[empId]?.[reqId] || null;
+  let best = null;
+  Object.values(S.people).forEach(d => { const r = d?.responses?.[empId]?.[reqId]; if (r && (!best || r.date > best.date)) best = r; });
+  const mine = S.myDoc.responses?.[empId]?.[reqId]; if (mine && (!best || mine.date >= best.date)) best = mine;
+  return best;
+}
+function skillStats(doc, empId){
+  const sk = doc.skills || [];
+  const done = sk.filter(x => x.stage === 3).length, active = sk.filter(x => x.stage > 0 && x.stage < 3).length;
+  const open = sk.flatMap(x => x.requests || []).filter(r => !responseFor(empId, r.id)).length;
+  return {total: sk.length, done, active, open};
+}
+
+// ---------- Manager development moves (concrete actions per direct report) ----------
+const MOVE_TYPE = {mastery:"Stretch assignment", autonomy:"Delegation", purpose:"Meaning and impact", growth:"Learning time", belonging:"Connection",
+  pay:"Rewards clarity", promotion:"Act-up opportunity", recognition:"Recognition", stability:"Clarity", flex:"Flexibility trial"};
+function devMoves(a){
+  const moves = [], st = a.style || {};
+  needsMap(a).filter(m => m.low).forEach(m => moves.push({id:"need-" + m.n.k, type:"Fix a root cause", src:"SDT", text:`${m.n.label}: ${m.fix}`}));
+  a.top.forEach(k => { const d = DMAP[k]; const f = optsFor(d, a.track)[a.deep?.[k] ?? 0]; moves.push({id:"drv-" + k, type: MOVE_TYPE[k], src: d.type === "in" ? "SDT" : "PAW", text: d.mgr(f)}); });
+  if (st.talent) moves.push({id:"talent", type:"Use their strengths", src:"APTM", text:`Give them one assignment this month built around "${st.talent}", and ask them to show a teammate how they do it.`});
+  if (MODES[st.mode]) moves.push({id:"mode", type:"Set up their work", src:"PAW", text: MODES[st.mode].mgr});
+  const dir = DIRS[a.direction]; if (dir) moves.push({id:"career", type:"Career conversation", src:"APTM", text: dir.mgr});
+  moves.push({id:"feedback", type:"Feedback", src:"HL", text:"This week, give one piece of specific feedback on a plan action: what worked, why, and what to try next."});
+  return moves;
+}
+const MENTOR_OK = a => a && (a.tenure === "y5" || a.tenure === "y3_5" || (a.top.includes("belonging") && a.deep?.belonging === 2));
+function teamPatterns(list){
+  const people = list.filter(p => p.doc.assessment?.why);
+  if (people.length < 2) return "";
+  const A = people.map(p => ({p, a: p.doc.assessment, P: profileOf(p.doc.assessment)}));
+  const first = n => n.split(" ")[1] || n;
+  const count = (arr) => arr.reduce((m, k) => (m[k] = (m[k] || 0) + 1, m), {});
+  const drivers = Object.entries(count(A.flatMap(x => x.a.top))).sort((x, y) => y[1] - x[1]);
+  const lowNeeds = NEEDS.map(n => ({n, who: A.filter(x => needLow(x.P.needs[n.k]))}));
+  const modes = count(A.map(x => x.a.style?.mode).filter(Boolean));
+  const blockers = Object.entries(count(A.flatMap(x => x.a.blockers || []))).sort((x, y) => y[1] - x[1]);
+  const moves = [];
+  const low = k => lowNeeds.find(x => x.n.k === k).who;
+  if (low("autonomy").length >= 2) moves.push(["SDT", `${low("autonomy").length} people have low autonomy. Run a 30-minute huddle on where the team can have more say, and act on one idea.`]);
+  if (low("competence").length >= 2) moves.push(["HL", `${low("competence").length} people doubt their competence. Set up peer skill-swaps where people teach each other one thing a month.`]);
+  if (low("relatedness").length >= 2) moves.push(["SDT", `${low("relatedness").length} people feel disconnected. Start a short weekly team ritual and rotate who leads it.`]);
+  const exHeavy = A.filter(x => x.a.top.some(k => k === "pay" || k === "promotion"));
+  if (exHeavy.length >= 2) moves.push(["PAW", `${exHeavy.length} people rank pay or promotion in their top 3. Hold a team session on how pay and progression decisions are made here.`]);
+  const learners = A.filter(x => x.a.top.includes("growth") || x.a.top.includes("mastery"));
+  if (learners.length >= 2) moves.push(["HL", `${learners.length} people are driven by learning or mastery. Protect a shared team learning hour each month where people present what they're learning.`]);
+  const timeB = A.filter(x => (x.a.blockers || []).includes("time"));
+  if (timeB.length >= 2) moves.push(["APTM", `${timeB.length} people say time is the blocker. Block a fixed development hour on the rota for each person.`]);
+  const mentor = A.find(x => MENTOR_OK(x.a)), mentee = A.find(x => x !== mentor && (x.a.tenure === "lt1" || needLow(x.P.needs.competence)));
+  if (mentor && mentee) moves.push(["HL", `Pair ${first(mentor.p.name)} (${TENURE[mentor.a.tenure].label.toLowerCase()} in role${mentor.a.style?.talent ? `, go-to for ${mentor.a.style.talent}` : ""}) with ${first(mentee.p.name)} (${TENURE[mentee.a.tenure].label.toLowerCase()} in role) as a buddy. Both benefit: one builds confidence, the other uses their expertise.`]);
+  const bar = (n, max, c) => `<span class="t" style="display:block;height:8px;background:var(--sunk);border-radius:4px;overflow:hidden"><b style="display:block;height:100%;width:${n / max * 100}%;background:${c}"></b></span>`;
+  return `<section class="card stack">
+    <div class="row between"><h2>Team patterns</h2><span class="muted small">${people.length} people assessed</span></div>
+    <div class="patterns">
+      <div class="stack" style="gap:8px"><b class="small">Most common top drivers</b>
+        ${drivers.slice(0, 5).map(([k, n]) => `<div class="barrow"><span><span class="dot ${DMAP[k].type}"></span> ${esc(DMAP[k].label)}</span>${bar(n, people.length, `var(--${DMAP[k].type})`)}<span class="mono muted">${n}</span></div>`).join("")}</div>
+      <div class="stack" style="gap:8px"><b class="small">Low needs and what's behind them</b>
+        ${lowNeeds.map(({n, who}) => { const srcs = count(who.map(x => x.a.needSrc?.[n.k]).filter(Boolean)); const top = Object.entries(srcs).sort((x, y) => y[1] - x[1])[0];
+          return `<div class="barrow"><span>${esc(n.label)}</span>${bar(who.length, people.length, "var(--crit)")}<span class="mono muted">${who.length}</span></div>${top ? `<span class="small muted" style="margin-top:-4px">Mostly: ${esc(n.src[top[0]].label.toLowerCase())}</span>` : ""}`; }).join("")}</div>
+      <div class="stack" style="gap:8px"><b class="small">How people work best</b>
+        ${Object.entries(MODES).map(([k, m]) => `<div class="barrow"><span>${esc(m.label)}</span>${bar(modes[k] || 0, people.length, "var(--ink)")}<span class="mono muted">${modes[k] || 0}</span></div>`).join("")}
+        ${blockers.length ? `<span class="small muted">Top blocker: <b>${esc(BLOCKERS[blockers[0][0]].label)}</b> (${blockers[0][1]} people)</span>` : ""}</div>
+    </div>
+    ${moves.length ? `<div class="sep stack" style="gap:8px"><b>Team-level moves</b><ul class="guide">${moves.map(([s, t]) => `<li>${esc(t)} ${src(s)}</li>`).join("")}</ul></div>` : ""}
+  </section>`;
+}
+
+// ---------- Example team (shown only on request, never saved) ----------
+function exampleTeam(){
+  const W = (e, i, d, n, amo) => ({ext1:e, ext2:e, int1:i, int2:i, ide1:d, ide2:d, intr1:n, intr2:n, amo});
+  const N = (a, c, r) => ({autonomy_s:a, autonomy_f:6 - a, competence_s:c, competence_f:6 - c, relatedness_s:r, relatedness_f:6 - r});
+  const mk = (id, name, title, a, done, checkins) => {
+    const plan = makePlan(a); plan.createdAt = addDays(-50);
+    plan.goals.forEach(g => { if (g.status !== "Later") g.actions.forEach((x, i) => { x.done = i < done; }); });
+    return {id, name, doc: {title, assessment: {...a, completedAt: addDays(-50)}, plan, checkins, skills: SAMPLE_SKILLS[id] || []}};
+  };
+  const cat = (id, stage, extra = {}) => { const c = [...CATALOG.tech, ...CATALOG.non].find(x => x.id === id); return {id: "s-" + id, cat: id, name: c.name, kind: c.kind, area: c.area, stage, reps: 0, target: "", evidence: "", requests: [], ...extra}; };
+  const SAMPLE_SKILLS = {
+    ex1: [cat("t-rca", 3, {reps:3, evidence:"Led 3 root-cause reviews on my own; signed off by the maintenance lead"}), cat("t-cmrt", 1, {target:addDays(80), requests:[{id:"r-a1", type:"funding", note:"Exam fee and two study days", date:addDays(-24)}]}), cat("t-plc", 0, {requests:[{id:"r-a2", type:"time", note:"Two hours a week on the training rig", date:addDays(-3)}]})],
+    ex2: [cat("n-deesc", 2, {reps:2, requests:[{id:"r-l1", type:"feedback", note:"Can you listen in on a difficult call this week?", date:addDays(-2)}]}), cat("n-mos", 0, {target:addDays(120)})],
+    ex3: [cat("n-coach", 3, {reps:3, evidence:"Onboarded 3 new starters this year"}), cat("n-sup", 1, {target:addDays(150), requests:[{id:"r-m1", type:"funding", note:"Evening course at the community college", date:addDays(-8)}]})],
+    ex4: [cat("t-awscp", 3, {evidence:"Passed on 14 Oct"}), cat("t-az900", 2, {target:addDays(25), requests:[{id:"r-d1", type:"funding", note:"Exam voucher", date:addDays(-12)}]}), cat("t-script", 2, {reps:3, requests:[{id:"r-d2", type:"signoff", note:"I've automated three ticket types. Can you review them?", date:addDays(-1)}]})],
+    ex5: [cat("t-70e", 3, {evidence:"Renewed in March"}), cat("t-plc", 1, {requests:[{id:"r-t1", type:"time", note:"Half a day a week for the course", date:addDays(-33)}]})]
+  };
+  const r = (o) => Object.fromEntries(DRIVERS.map(d => [d.key, o[d.key] || 3]));
+  return [
+    mk("ex1", "Example: Amara O.", "Field service technician", {track:"tech", tenure:"y3_5", why:W(3,2,5,5,1), needs:N(4,4,4), beliefs:{fixed:2,growth:5,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{}, style:{mode:"pair", id1:4, id2:4, conds:["hands","tools","quickfb"], peak:0, talent:"diagnosing conveyor and sensor faults", talentProof:"Other sites call me when their lines go down; lowest repeat-fault rate on the team", flow:"tracing an intermittent fault to its root cause", best:"Last spring's line rebuild: clear goal, the right parts on hand, and a partner to bounce ideas off."}, ratings:r({mastery:5,growth:5,autonomy:4,promotion:4,pay:3}), top:["mastery","growth","promotion"], deep:{mastery:1,growth:2,promotion:1}, direction:"up", dirDetail:"Within a year", blockers:["time","clarity"], hours:1}, 2, [{date:addDays(-12), energy:4, wins:"Led root-cause review on the conveyor fault", applied:"Used the 5-whys method from the course", attrib:"strategy", needs:"Time to finish the automation course", prod:4}, {date:addDays(-41), energy:4, prod:3, wins:"Shadowed the shift lead for two handovers", applied:"Ran the Tuesday handover myself", attrib:"help", needs:"Clarity on what the lead role expects"}]),
+    mk("ex2", "Example: Luis R.", "Customer service associate", {track:"non", tenure:"lt1", why:W(5,4,2,2,2), needs:N(2,2,3), beliefs:{fixed:4,growth:3,efficacy:2,expectancy:3,instrumentality:2,equity:2}, goalO:"pav", needSrc:{autonomy:"rigid", competence:"training"}, style:{mode:"group", id1:3, id2:2, conds:["plan","people","quickfb"], peak:1, talent:"staying calm with upset customers", flow:"", best:"Busy Saturday with the whole team on the floor and a clear plan for the day."}, ratings:r({pay:5,stability:5,flex:4,belonging:4,recognition:4}), top:["pay","stability","flex"], deep:{pay:0,stability:0,flex:0}, direction:"unsure", blockers:["clarity","schedule"], hours:0}, 0, []),
+    mk("ex3", "Example: Mei T.", "Shift supervisor", {track:"non", tenure:"y5", why:W(2,3,4,3,2), needs:N(2,4,4), beliefs:{fixed:2,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{autonomy:"voice"}, style:{mode:"mix", id1:5, id2:5, conds:["choice","variety","people"], peak:0, talent:"training new starters", talentProof:"HR asks me to onboard every new starter; 3 of 3 passed probation", flow:"coaching someone through their first week", best:"When I was trusted to redesign the break rota and the team ran smoother for it."}, ratings:r({purpose:5,belonging:5,recognition:4,autonomy:4}), top:["purpose","belonging","autonomy"], deep:{purpose:0,belonging:2,autonomy:3}, direction:"stay", dirDetail:"More say in how we schedule the floor", blockers:["feedback"], hours:1}, 0, [{date:addDays(-40), energy:2, wins:"Covered two extra shifts", applied:"", attrib:"luck", needs:"Feeling a bit stuck", prod:3}]),
+    mk("ex4", "Example: Dev P.", "IT support analyst", {track:"tech", tenure:"y1_3", why:W(4,3,4,5,1), needs:N(4,4,3), beliefs:{fixed:2,growth:5,efficacy:5,expectancy:4,instrumentality:4,equity:4}, goalO:"papp", needSrc:{}, style:{mode:"alone", id1:2, id2:3, conds:["quiet","deep","deadline"], peak:2, talent:"scripting fixes for recurring tickets", talentProof:"My scripts cut repeat tickets by a third last quarter", flow:"automating something repetitive", best:"A quiet afternoon with no tickets coming in, rebuilding the backup job end to end."}, ratings:r({growth:5,mastery:4,recognition:5,pay:4}), top:["growth","recognition","mastery"], deep:{growth:1,recognition:0,mastery:0}, direction:"deep", dirDetail:"cloud infrastructure", blockers:["resources"], hours:2}, 2, [{date:addDays(-6), energy:5, prod:5, wins:"Passed the first cloud practitioner exam", applied:"Rebuilt the backup job using what I learned", attrib:"effort", needs:"Budget for the next exam"}, {date:addDays(-36), energy:4, prod:3, wins:"Finished modules 1 to 4", applied:"", attrib:"strategy", needs:"Fewer interruptions on Thursday afternoons"}]),
+    mk("ex5", "Example: Tom B.", "Maintenance electrician", {track:"tech", tenure:"y5", why:W(3,2,4,4,1), needs:N(4,5,3), beliefs:{fixed:3,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mav", needSrc:{}, style:{mode:"alone", id1:3, id2:3, conds:["hands","tools","deep"], peak:0, talent:"reading old wiring diagrams", flow:"commissioning new equipment", best:"The week we installed the new compressor: my own job list, the right tools, no meetings."}, ratings:r({mastery:4,stability:5,flex:4,growth:3}), top:["stability","mastery","flex"], deep:{stability:1,mastery:2,flex:0}, direction:"deep", dirDetail:"PLC controls", blockers:["time"], hours:1}, 1, [{date:addDays(-52), energy:3, prod:4, wins:"Documented the panel B rewiring", applied:"Used the new labelling standard", attrib:"effort", needs:"Cover so I can attend the PLC course"}]),
+    {id:"ex6", name:"Example: Sofia K.", doc:{title:"Warehouse picker"}}
+  ];
+}
+
+// ---------- State ----------
+const S = {
+  demo: false, demoTouched: false, persona: "ex1", demoTeam: exampleTeam(), reqOpen: null,
+  demoResp: {ex1: {"r-a1": {status:"yes", reply:"Approved from the training budget. Book the exam for January.", date:addDays(-20)}},
+    ex3: {"r-m1": {status:"discuss", reply:"Good idea. Let's look at dates on Thursday.", date:addDays(-5)}},
+    ex4: {"r-d1": {status:"yes", reply:"Covered. Expense it as usual.", date:addDays(-9)}},
+    ex5: {"r-t1": {status:"no", reply:"Not during the shutdown. Let's book December instead.", date:addDays(-30)}}},
+  view: "me", live: false, readOnly: false, db: null, user: null,
+  meId: null, myDoc: {}, people: {}, names: {}, avatars: {},
+  notes: {ex1: {moves: {"drv-mastery": true, "career": true, "feedback": true}}, ex4: {moves: {"drv-growth": true, "talent": true}}}, // sample managers' ticks; real ids never collide
+  assess: null, sel: null, filter: "all", example: false, showAdd: false, energy: null, prod: null, attrib: ""
+};
+const LS_KEY = "growth-compass-mydoc";
+
+// ---------- Rendering ----------
+let pendingRender = false;
+function render(force){
+  const ae = document.activeElement;
+  if (!force && ae && $("#app").contains(ae) && ae.matches("textarea, input[type=text]")) { pendingRender = true; return; }
+  pendingRender = false;
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.v === S.view)));
+  $("#demo-tog").setAttribute("aria-pressed", String(S.demo));
+  $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : renderFoundations();
+}
+document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 0));
+
+function banner(){
+  if (S.demo) return "";
+  if (!S.live) return `<div class="notice"><b>Saved on this device only.</b> Your answers stay in this browser. When the app is shared through claude.ai, plans are shared with your manager and team.</div>`;
+  if (S.readOnly) return `<div class="notice"><b>View only.</b> You can read plans here but not save. Ask the page owner for Contributor access.</div>`;
+  return "";
+}
+
+function renderMe(){
+  if (S.assess) return banner() + renderAssessment();
+  if (S.demo){
+    const ps = S.demoTeam.filter(p => p.doc.assessment?.why);
+    const p = ps.find(x => x.id === S.persona) || ps[0];
+    return `<div class="notice demo-note stack" style="gap:8px">
+        <div><b>Sample data.</b> You're seeing the employee view as a sample person, with a finished assessment, a plan in progress and check-ins. Tick actions or add a check-in to try it. Nothing is saved.</div>
+        <div class="row between"><div class="personas" role="group" aria-label="View as">${ps.map(x => `<button data-action="persona" data-id="${x.id}" aria-pressed="${x.id === p.id}">${esc(x.name.replace("Example: ", ""))} <span class="muted small">· ${esc(x.doc.title)}</span></button>`).join("")}</div>
+        <button class="btn sm" data-action="start">Take the assessment yourself</button></div></div>
+      <div class="grid2">
+      <section class="stack" style="gap:16px;min-width:0">${renderPlan(p.doc, true, renderSkills(p.doc, true, p.id))}</section>
+      <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(p.doc, true)}${renderProfile(p.doc, true)}${renderCheckins(p.doc, true)}</aside></div>`;
+  }
+  const a = S.myDoc.assessment;
+  if (!a?.completedAt || !a.why) return banner() + renderIntro(!!a?.completedAt);
+  return banner() + `<div class="grid2">
+    <section class="stack" style="gap:16px;min-width:0">${renderPlan(S.myDoc, true, renderSkills(S.myDoc, true, S.meId))}</section>
+    <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(S.myDoc, true)}${renderProfile(S.myDoc, true)}${renderCheckins(S.myDoc, true)}</aside>
+  </div>`;
+}
+
+function renderIntro(outdated){
+  return `${outdated ? `<div class="notice"><b>The assessment has been updated.</b> Retake it to get a profile and plan built on the new research foundations.</div>` : ""}
+  <section class="card intro">
+    <div class="stack" style="gap:14px">
+      <span class="eyebrow">Personal development, front and centre</span>
+      <h1>Build a growth plan around what actually motivates you</h1>
+      <p class="muted">The assessment looks at <i>why</i> you put in effort, which needs your job meets and what's behind any gaps, how you work best in your own words, which rewards matter to you, and what you believe about your own growth. It branches on your role type and time in role, then builds a 90-day plan with measurable goals. You and your manager both work from it.</p>
+      <div class="row"><button class="btn" data-action="start">Start my assessment</button><button class="btn ghost" data-action="demo">See it with sample data</button><span class="muted small">10 short steps · about 15 minutes · retake any time</span></div>
+      <p class="muted small">A development tool, not a test. Answers are for growth conversations, never for pay, discipline or hiring decisions. See <a href="#" data-action="view" data-v="science">Foundations</a> for the research behind it.</p>
+    </div>
+    <div class="tree" aria-label="How the assessment branches">
+      <div class="node"><span class="n">1</span><div><b>About you</b> <span class="muted">· technical or not, years in role</span></div></div>
+      <div class="node"><span class="n">2</span><div><b>Why you work</b> <span class="muted">· the motivation continuum</span></div></div>
+      <div class="node"><span class="n">3</span><div><b>Your needs</b> <span class="muted">· autonomy, competence, relatedness</span></div></div>
+      <div class="node"><span class="n">4</span><div><b>How you work best</b> <span class="muted">· alone or in a group, team identity, your talents</span></div></div>
+      <div class="node"><span class="n">5</span><div><b>Rewards</b> <span class="muted">· 5 intrinsic, 5 extrinsic</span></div></div>
+      <div class="node"><span class="n">6</span><div><b>Top 3 + deep dives</b> <span class="muted">· each driver branches</span></div></div>
+      <div class="node"><span class="n">7</span><div><b>Beliefs</b> <span class="muted">· mindset, goals, confidence, fairness</span></div></div>
+      <div class="node"><span class="n">8</span><div><b>Direction + practical</b> <span class="muted">· career path, blockers, time</span></div></div>
+    </div>
+  </section>`;
+}
+
+const scale = (group, k, val, label, lo = "Strongly disagree", hi = "Strongly agree") => `<div class="q"><b>${esc(label)}</b>
+  <div class="scale" role="radiogroup" aria-label="${esc(label)}">${[1,2,3,4,5].map(n => `<label><input type="radio" name="${group}-${k}" value="${n}" data-action="rate" data-g="${group}" data-k="${k}" ${val === n ? "checked" : ""}><span>${n}</span></label>`).join("")}</div>
+  <div class="scale-legend"><span>${lo}</span><span>${hi}</span></div></div>`;
+
+function renderAssessment(){
+  const A = S.assess, st = A.step;
+  const steps = `<div class="steps" aria-label="Progress">${STEPS.map((s, i) => `<div class="step ${i < st ? "done" : i === st ? "cur" : ""}"><i></i>${esc(s)}</div>`).join("")}</div>`;
+  let body = "", canNext = true;
+  if (st === 0){
+    body = `<h2>About you</h2><p class="muted">This first branch tailors the questions and plan to your kind of work and your stage in the role.</p>
+      <div class="q"><b>What kind of role do you have?</b><div class="opts">${Object.entries(TRACKS).map(([k, t]) => `<label class="opt"><input type="radio" name="track" value="${k}" data-action="set" data-f="track" ${A.track === k ? "checked" : ""}><span><b>${t.label}</b><small>${t.hint}</small></span></label>`).join("")}</div></div>
+      <div class="q"><b>How long have you been in your current role?</b><div class="opts">${Object.entries(TENURE).map(([k, t]) => `<label class="opt"><input type="radio" name="tenure" value="${k}" data-action="set" data-f="tenure" ${A.tenure === k ? "checked" : ""}><span><b>${t.label}</b><small>${t.stage} stage</small></span></label>`).join("")}</div></div>
+      <div class="q field"><label for="job-title">Job title <span class="muted">(optional)</span></label><input type="text" id="job-title" data-input="title" value="${esc(A.title || "")}" placeholder="e.g. Maintenance technician"></div>`;
+    canNext = A.track && A.tenure;
+  } else if (st === 1){
+    body = `<h2>Why do you put effort into your job?</h2><p class="muted">Rate how true each reason is for you. Most people have several reasons at once. Answer honestly; nobody is graded on this.</p>
+      ${WHY.map(w => scale("why", w.k, A.why[w.k], w.text, "Not at all true", "Completely true")).join("")}`;
+    canNext = WHY.every(w => A.why[w.k]);
+  } else if (st === ST.needs){
+    const lows = NEEDS.filter(n => A.needs[n.k + "_s"] && A.needs[n.k + "_f"] && needLow((A.needs[n.k + "_s"] + 6 - A.needs[n.k + "_f"]) / 2));
+    body = `<h2>How does your job feel day to day?</h2><p class="muted">These cover three needs everyone has at work: having a say, feeling capable, and feeling connected. If one comes out low, we'll ask what it's related to so it can be fixed at the source.</p>
+      ${NEEDS.map(n => `${scale("needs", n.k + "_s", A.needs[n.k + "_s"], n.s)}${scale("needs", n.k + "_f", A.needs[n.k + "_f"], n.f)}
+        ${lows.includes(n) ? `<div class="branch" style="margin-bottom:12px"><span class="chip warn" style="justify-self:start">${esc(n.label)} looks low</span><b>${esc(n.q)}</b>
+          <div class="opts">${Object.entries(n.src).map(([k, s]) => `<label class="opt"><input type="radio" name="src-${n.k}" value="${k}" data-action="needsrc" data-k="${n.k}" ${A.needSrc[n.k] === k ? "checked" : ""}><span>${esc(s.label)}</span></label>`).join("")}</div></div>` : ""}`).join("")}`;
+    canNext = NEEDS.every(n => A.needs[n.k + "_s"] && A.needs[n.k + "_f"]) && lows.every(n => A.needSrc[n.k]);
+  } else if (st === ST.style){
+    const s = A.style;
+    body = `<h2>How do you work best?</h2><p class="muted">Only you know this. Your answers go straight into your plan and into how your manager sets up your work.</p>
+      <div class="q"><b>Where do you do your best work?</b><div class="opts">${Object.entries(MODES).map(([k, m]) => `<label class="opt"><input type="radio" name="mode" value="${k}" data-action="style" data-k="mode" ${s.mode === k ? "checked" : ""}><span><b>${esc(m.label)}</b><small>${esc(m.sub)}</small></span></label>`).join("")}</div></div>
+      ${scale("style", "id1", s.id1, "Being part of my team is an important part of who I am at work")}
+      ${scale("style", "id2", s.id2, "When someone praises my team, it feels like praise for me too")}
+      <div class="q"><b>What helps you be most productive?</b> <span class="muted">Pick up to 4.</span><div class="opts">${Object.entries(CONDS).map(([k, l]) => `<label class="opt"><input type="checkbox" value="${k}" data-action="cond" ${s.conds.includes(k) ? "checked" : ""}><span>${esc(l)}</span></label>`).join("")}</div></div>
+      <div class="q"><b>When are you at your sharpest?</b><div class="opts">${PEAK.map((p, i) => `<label class="opt"><input type="radio" name="peak" value="${i}" data-action="style" data-k="peak" ${s.peak === i ? "checked" : ""}><span>${esc(p)}</span></label>`).join("")}</div></div>
+      <div class="q field"><label for="st-best">Think of a time you were at your most productive. What were you doing, and what made it work?</label><textarea id="st-best" data-sinput="best" placeholder="In your own words">${esc(s.best || "")}</textarea></div>
+      <div class="q"><div class="support"><b>Talent or goal? Be honest here.</b> A <b>talent</b> is something you already do well, again and again, that others notice and rely on. A <b>goal</b> is something you can't do yet, or not well enough, and will have to work for. Listing a goal as a talent sets you up for disappointment. Goals come later in the assessment.</div></div>
+      <div class="q field"><label for="st-talent">What do colleagues come to you for? (a talent)</label><input type="text" id="st-talent" data-sinput="talent" value="${esc(s.talent || "")}" placeholder="e.g. calming upset customers, fixing the label printer"></div>
+      <div class="q field"><label for="st-proof">How do you know it's a talent? Who has told you, or what results show it?</label><input type="text" id="st-proof" data-sinput="talentProof" value="${esc(s.talentProof || "")}" placeholder="e.g. my lead sends the hard calls to me; zero repeat faults on my jobs"><span class="small muted">If you can't answer this, it may be a goal rather than a talent. That's fine, but it will be labelled as self-reported until someone confirms it.</span></div>
+      <div class="q field"><label for="st-flow">Which part of your work makes you lose track of time?</label><input type="text" id="st-flow" data-sinput="flow" value="${esc(s.flow || "")}"><span class="small muted">Enjoying something is a strong signal of where to grow. It is not proof that you're already good at it.</span></div>`;
+    canNext = s.mode && s.id1 && s.id2;
+  } else if (st === ST.rewards){
+    body = `<h2>Which rewards matter to you right now?</h2><p class="muted">Rate how much each would motivate you over the next year.</p>
+      ${A.order.map(k => scale("ratings", k, A.ratings[k], DMAP[k].stmt, "Not important", "Essential")).join("")}`;
+    canNext = DRIVERS.every(d => A.ratings[d.key]);
+  } else if (st === ST.top){
+    const sorted = [...DRIVERS].sort((a, b) => (A.ratings[b.key] || 0) - (A.ratings[a.key] || 0));
+    body = `<h2>Pick your top 3</h2><p class="muted">We pre-selected your highest ratings. Change them if something else matters more today. Each one becomes a goal. <b class="mono">${A.top.length}/3</b></p>
+      <div class="opts">${sorted.map(d => `<label class="opt"><input type="checkbox" value="${d.key}" data-action="top" ${A.top.includes(d.key) ? "checked" : ""}><span><span class="row" style="gap:8px"><span class="dot ${d.type}"></span><b>${esc(d.label)}</b><span class="mono muted" style="margin-left:auto">${A.ratings[d.key]}/5</span></span><small>${esc(d.stmt)}</small></span></label>`).join("")}</div>
+      <p class="muted small" style="margin-top:10px"><span class="dot in"></span> intrinsic &nbsp; <span class="dot ex"></span> extrinsic</p>`;
+    canNext = A.top.length === 3;
+  } else if (st === ST.deep){
+    body = `<h2>Go deeper on your top 3</h2><p class="muted">Each driver opens its own branch. Options are tailored for ${esc(TRACKS[A.track].label.toLowerCase())} roles.</p>
+      ${A.top.map(k => { const d = DMAP[k]; return `<div class="q"><span class="chip ${d.type}" style="justify-self:start">${esc(d.label)}</span><div class="branch"><b>${esc(d.q)}</b><div class="opts">${optsFor(d, A.track).map((o, i) => `<label class="opt"><input type="radio" name="deep-${k}" value="${i}" data-action="deep" data-k="${k}" ${A.deep[k] === i ? "checked" : ""}><span>${esc(o[0].toUpperCase() + o.slice(1))}</span></label>`).join("")}</div></div></div>`; }).join("")}`;
+    canNext = A.top.every(k => A.deep[k] !== undefined);
+  } else if (st === ST.beliefs){
+    body = `<h2>What do you believe about growing at work?</h2><p class="muted">Beliefs shape how people respond to challenge and feedback. Your answers change how your plan and your manager's coaching are framed.</p>
+      ${BELIEFS.map(b => scale("beliefs", b.k, A.beliefs[b.k], b.text)).join("")}
+      <div class="q"><b>At work, what are you mostly trying to do?</b><div class="opts">${Object.entries(GOALO).map(([k, g]) => `<label class="opt"><input type="radio" name="goalO" value="${k}" data-action="set" data-f="goalO" ${A.goalO === k ? "checked" : ""}><span>${esc(g.label)}</span></label>`).join("")}</div></div>`;
+    canNext = BELIEFS.every(b => A.beliefs[b.k]) && A.goalO;
+  } else if (st === ST.dir){
+    const dir = DIRS[A.direction]; const ten = TENURE[A.tenure];
+    body = `<h2>Where do you want your career to go?</h2><p class="muted">You are in the <b>${esc(ten.stage)}</b> stage (${esc(ten.label.toLowerCase())} in role). ${esc(ten.note)}</p>
+      <div class="q"><div class="opts">${Object.entries(DIRS).map(([k, d]) => `<label class="opt"><input type="radio" name="dir" value="${k}" data-action="set" data-f="direction" ${A.direction === k ? "checked" : ""}><span><b>${esc(d.label)}</b><small>${esc(d.sub)}</small></span></label>`).join("")}</div></div>
+      ${dir?.follow ? `<div class="branch">${dir.follow.kind === "choice"
+        ? `<b>${esc(dir.follow.q)}</b><div class="opts">${dir.follow.opts.map(o => `<label class="opt"><input type="radio" name="dirdet" value="${esc(o)}" data-action="set" data-f="dirDetail" ${A.dirDetail === o ? "checked" : ""}><span>${esc(o)}</span></label>`).join("")}</div>${A.tenure === "lt1" && A.direction === "up" ? `<p class="muted small">You are new in role, so we'll add steps to build a strong track record first.</p>` : ""}`
+        : `<div class="field"><label for="dir-detail">${esc(dir.follow.q)}</label><input type="text" id="dir-detail" data-input="dirDetail" value="${esc(A.dirDetail || "")}"></div>`}</div>` : ""}`;
+    canNext = !!A.direction;
+  } else if (st === ST.practical){
+    body = `<h2>Make it practical</h2>
+      <div class="q"><b>What usually gets in the way of your development?</b> <span class="muted">Pick any.</span><div class="opts">${Object.entries(BLOCKERS).map(([k, b]) => `<label class="opt"><input type="checkbox" value="${k}" data-action="blocker" ${A.blockers.includes(k) ? "checked" : ""}><span>${esc(b.label)}</span></label>`).join("")}</div></div>
+      <div class="q"><b>How much time can you realistically give to development?</b><div class="opts">${HOURS.map((h, i) => `<label class="opt"><input type="radio" name="hours" value="${i}" data-action="hours" ${A.hours === i ? "checked" : ""}><span>${esc(h)}</span></label>`).join("")}</div></div>`;
+    canNext = A.hours !== undefined;
+  }
+  return `<section class="card stack" style="gap:16px">${steps}<div class="stack" style="gap:6px">${body}</div>
+    <div class="nav"><button class="btn ghost" data-action="${st === 0 ? "cancel" : "back"}">${st === 0 ? "Cancel" : "Back"}</button>
+    <button class="btn" data-action="next" ${canNext ? "" : "disabled"}>${st === STEPS.length - 1 ? "See my results and plan" : "Next"}</button></div></section>`;
+}
+
+function renderProfile(doc, mine){
+  const a = doc.assessment; const P = profileOf(a);
+  const sorted = [...DRIVERS].sort((x, y) => (a.ratings[y.key] || 0) - (a.ratings[x.key] || 0));
+  const dir = DIRS[a.direction]; const ten = TENURE[a.tenure];
+  const regColor = k => k === "amotivation" ? "var(--crit)" : k === "external" || k === "introjected" ? "var(--ex)" : "var(--in)";
+  return `<section class="card stack" style="gap:14px">
+    <div class="row between"><h2>${mine ? "My motivation profile" : "Motivation profile"}</h2>${mine && !S.demo ? `<button class="btn ghost sm" data-action="retake">Retake</button>` : ""}</div>
+
+    <div class="stack" style="gap:8px">
+      <div class="row between"><b>Why you put in effort ${src("SDT")}</b><span class="chip ${P.quality.cls}">${esc(P.quality.label)} · <span class="mono">${P.rai > 0 ? "+" : ""}${P.rai}</span></span></div>
+      <div class="continuum" role="img" aria-label="Motivation continuum: ${REGS.map(g => `${g.label} ${P.reg[g.k]?.toFixed(1)}`).join(", ")}">
+        ${REGS.map(g => `<div class="col" title="${esc(g.desc)}"><span class="mono">${(P.reg[g.k] || 0).toFixed(1)}</span><div class="bx"><b style="height:${(P.reg[g.k] || 0) / 5 * 100}%;background:${regColor(g.k)}"></b></div><span>${esc(g.label)}</span></div>`).join("")}
+      </div>
+      <div class="continuum-axis"><span>Controlled</span><span>Autonomous</span></div>
+      <p class="small muted">${esc(qualityText(P.quality))}</p>
+    </div>
+
+    <div class="stack sep" style="gap:8px">
+      <b>Needs met at work ${src("SDT")}</b>
+      <div class="needs">${NEEDS.map(n => { const v = P.needs[n.k]; return `<div class="need"><span class="small muted">${esc(n.label)}</span><span class="v" style="color:var(--${lvl(v)})">${v?.toFixed(1) ?? "—"}<span class="small muted">/5</span></span></div>`; }).join("")}</div>
+      ${needsMap(a).filter(m => m.low).map(m => `<div class="support"><b>${esc(m.n.label)}</b>${m.source ? ` is related to: ${esc(m.source.toLowerCase())}` : " is low"}.<br><span class="muted">${mine ? "What would help" : "What to do"}: ${esc(m.fix)}</span></div>`).join("") || `<p class="small muted">All three needs are at least partly met. Keep doing what supports them.</p>`}
+    </div>
+
+    ${a.style?.mode ? `<div class="stack sep" style="gap:8px">
+      <b>${mine ? "How I work best" : "How they work best"} <span class="muted small">(self-identified)</span></b>
+      <dl class="kv">
+        <dt>Works best</dt><dd>${esc(MODES[a.style.mode]?.label)}</dd>
+        <dt>Team identity</dt><dd><span class="mono" style="color:var(--${lvl(P.identity)})">${P.identity?.toFixed(1) ?? "—"}/5</span> ${P.identity >= 4 ? "strong" : P.identity <= 2.5 ? "weak" : "moderate"}</dd>
+        ${(a.style.conds || []).length ? `<dt>Productive with</dt><dd>${esc(a.style.conds.map(k => CONDS[k]).filter(Boolean).join(" · "))}</dd>` : ""}
+        ${a.style.peak != null ? `<dt>Sharpest</dt><dd>${esc(PEAK[a.style.peak])}</dd>` : ""}
+        ${a.style.talent ? `<dt>Go-to for</dt><dd>${esc(a.style.talent)}</dd>` : ""}
+        ${a.style.flow ? `<dt>Loses track of time</dt><dd>${esc(a.style.flow)}</dd>` : ""}
+      </dl>
+      ${a.style.best ? `<p class="support"><b>At their most productive:</b> “${esc(a.style.best)}”</p>` : ""}
+    </div>` : ""}
+
+    <div class="stack sep" style="gap:8px">
+      <b>Rewards that matter</b>
+      <div class="balance">
+        <div class="row between small"><span><span class="dot in"></span> Intrinsic <b class="mono">${P.inPct}%</b></span><span>Extrinsic <b class="mono">${P.exPct}%</b> <span class="dot ex"></span></span></div>
+        <div class="track" role="img" aria-label="Intrinsic ${P.inPct}%, extrinsic ${P.exPct}%"><b style="width:${P.inPct + P.exPct ? P.inPct / (P.inPct + P.exPct) * 100 : 50}%;background:var(--in)"></b><b style="flex:1;background:var(--ex)"></b></div>
+        <p class="small muted">${esc(rewardText(P))}</p>
+      </div>
+      <div class="bars">${sorted.map(d => `<div class="barrow ${a.top.includes(d.key) ? "top" : ""}"><span>${esc(d.label)}${a.top.includes(d.key) ? " ★" : ""}</span><span class="t"><b style="width:${(a.ratings[d.key] || 0) * 20}%;background:var(--${d.type})"></b></span><span class="mono muted">${a.ratings[d.key]}/5</span></div>`).join("")}</div>
+    </div>
+
+    <dl class="kv sep">
+      <dt>Mindset ${src("HCM")}</dt><dd>${esc(P.mindset || "—")}</dd>
+      <dt>Goal focus ${src("HCM")}</dt><dd>${esc(GOALO[a.goalO]?.short || "—")}</dd>
+      <dt>Confidence ${src("HL")}</dt><dd><span style="color:var(--${lvl(P.b.efficacy)})" class="mono">${P.b.efficacy ?? "—"}/5</span> confident they can learn what's next</dd>
+      <dt>Effort → results ${src("PAW")}</dt><dd><span class="mono" style="color:var(--${lvl(P.b.expectancy)})">${P.b.expectancy ?? "—"}/5</span> · results → rewards <span class="mono" style="color:var(--${lvl(P.b.instrumentality)})">${P.b.instrumentality ?? "—"}/5</span></dd>
+      <dt>Fairness ${src("PAW")}</dt><dd><span class="mono" style="color:var(--${lvl(P.b.equity)})">${P.b.equity ?? "—"}/5</span></dd>
+      <dt>Role type</dt><dd>${esc(TRACKS[a.track]?.label)}${doc.title ? ` · ${esc(doc.title)}` : ""}</dd>
+      <dt>Time in role</dt><dd>${esc(ten?.label)} · <b>${esc(ten?.stage)}</b> stage</dd>
+      <dt>Direction</dt><dd>${esc(dir?.label)}${a.dirDetail ? ` · ${esc(a.dirDetail)}` : ""}</dd>
+      <dt>Time available</dt><dd>${esc(HOURS[a.hours])}</dd>
+      <dt>Blockers</dt><dd>${a.blockers?.length ? a.blockers.map(k => esc(BLOCKERS[k].label)).join(", ") : "None named"}</dd>
+    </dl>
+  </section>`;
+}
+
+function renderPlan(doc, editable, extra = ""){
+  const p = doc.plan; const prog = planProgress(p);
+  if (!p?.goals?.length) return `<section class="card empty"><h2>No plan yet</h2><p class="muted">Complete the assessment to generate a plan.</p></section>`;
+  const cs = doc.checkins || [];
+  const active = p.goals.filter(g => g.status !== "Later");
+  const goalsDone = active.filter(g => g.status === "Done").length;
+  const applied = cs.filter(c => (c.applied || "").trim()).length;
+  const rc = realityCheck(doc); const who = editable ? "you" : "they";
+  return `<section class="card stack" style="gap:10px">
+      <div class="row between"><div><span class="eyebrow">90-day development plan</span><h2>${editable ? "My plan" : "Their plan"}</h2></div><span class="mono" style="font-size:1.4rem">${prog}%</span></div>
+      <div class="prog" role="img" aria-label="${prog}% of actions done"><b style="width:${prog}%"></b></div>
+      <p class="muted small">Started ${fmtDate(p.createdAt)} · actions follow 70-20-10: <span class="tag7">70</span> practice on the job, <span class="tag7">20</span> learning from people, <span class="tag7">10</span> formal learning.</p>
+      <div class="sep stack" style="gap:8px"><b>Is it working? ${src("PAW")} ${src("APTM")}</b>
+        <div class="kirk">
+          <div><span class="small muted">Reaction</span><div class="v">${cs[0] ? cs[0].energy + "/5" : "—"}</div><span class="small muted">energy${cs[0]?.prod ? ` · productivity ${cs[0].prod}/5` : ""} at last check-in</span></div>
+          <div><span class="small muted">Learning</span><div class="v">${prog}%</div><span class="small muted">of actions done</span></div>
+          <div><span class="small muted">Behaviour</span><div class="v">${applied}</div><span class="small muted">times applied on the job</span></div>
+          <div><span class="small muted">Results</span><div class="v">${goalsDone}/${active.length}</div><span class="small muted">active goals met${active.length < p.goals.length ? ` · ${p.goals.length - active.length} parked` : ""}</span></div>
+        </div></div>
+      <div class="sep stack" style="gap:6px"><b>Reality check</b>
+        <p class="small">${rc.over
+          ? `<span class="chip crit">Plan is bigger than the time available</span> This plan has <b>${rc.open}</b> open actions. With ${esc(HOURS[doc.assessment?.hours ?? 1].toLowerCase())}, ${who} have realistic time for about <b>${rc.feasible}</b> in 90 days (at roughly ${HOURS_PER_ACTION} hours per action). ${editable ? "You" : "They"} will not finish everything in 90 days. Work through the actions in order and expect the rest to run over, or agree more development time.`
+          : `<span class="chip ok">Fits the time available</span> <b>${rc.open}</b> open actions against realistic time for about <b>${rc.feasible}</b> (roughly ${HOURS_PER_ACTION} hours per action).`}
+          ${active.length < p.goals.length ? ` <b>${p.goals.length - active.length}</b> goal${p.goals.length - active.length > 1 ? "s are" : " is"} parked because ${who} don't have time for ${p.goals.length - active.length > 1 ? "them" : "it"} yet. Bring one back only when another is done.` : ""}</p>
+        <p class="small muted">Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make ${editable ? "you" : "them"} ready and make the case. It cannot guarantee the outcome, and ${editable ? "your manager" : "you"} should not promise it.</p></div>
+    </section>
+    ${extra}
+    ${p.goals.map(g => renderGoal(g, editable, rc.verdicts[g.id])).join("")}
+    ${editable ? `<section class="card stack" style="gap:10px"><h3>Add your own goal</h3><div class="add"><input type="text" id="new-goal" placeholder="e.g. Get my forklift licence" aria-label="New goal"><button class="btn sm" data-action="add-goal">Add goal</button></div></section>` : ""}`;
+}
+function renderTalentsGoals(doc, mine){
+  const st = doc.assessment?.style || {}; const ts = talentStatus(st); const rc = realityCheck(doc);
+  const mastered = (doc.skills || []).filter(x => x.stage === 3);
+  const building = (doc.skills || []).filter(x => x.stage < 3);
+  const you = mine ? "you" : "they";
+  return `<section class="card stack">
+    <h2>Talents vs goals</h2>
+    <p class="small muted">A talent is what ${you} already do well, with evidence. A goal is what ${you} still have to build. Keep them separate so expectations stay realistic.</p>
+    <div class="patterns" style="gap:16px">
+      <div class="stack" style="gap:8px"><b class="small">Talents: already strong today</b>
+        ${ts ? `<div class="req"><span><b>${esc(st.talent)}</b> <span class="chip ${ts.cls}">${ts.label}</span></span><span class="muted">${esc(ts.text)}</span></div>` : ""}
+        ${mastered.map(x => `<div class="req"><span><b>${esc(x.name)}</b> <span class="chip ok">${x.kind === "cert" ? "Certified" : "Mastered"}</span></span>${x.evidence ? `<span class="muted">${esc(x.evidence)}</span>` : `<span class="muted">No evidence added yet.</span>`}</div>`).join("")}
+        ${!ts && !mastered.length ? `<p class="small muted">None recorded yet. Be specific and add evidence: what do people rely on ${mine ? "you" : "them"} for?</p>` : ""}
+        ${st.flow ? `<p class="small muted"><b>Energised by:</b> ${esc(st.flow)}. A signal for where to grow, not proof of skill.</p>` : ""}
+      </div>
+      <div class="stack" style="gap:8px"><b class="small">Goals: still to build</b>
+        ${(doc.plan?.goals || []).map(g => { const v = rc.verdicts[g.id]; return `<div class="row between small" style="gap:6px;flex-wrap:nowrap;align-items:flex-start"><span style="min-width:0">${esc(g.title)}</span>${v ? `<span class="chip ${VERDICT[v.level].cls}">${VERDICT[v.level].label}</span>` : ""}</div>`; }).join("")}
+        ${building.map(x => `<div class="row between small" style="gap:6px;flex-wrap:nowrap"><span style="min-width:0">${esc(x.name)}</span><span class="chip neutral">${esc(STAGES[x.kind][x.stage])}</span></div>`).join("")}
+      </div>
+    </div>
+    <p class="small" style="border-top:1px solid var(--line);padding-top:10px">${mine
+      ? "Your manager can open doors: time, tasks, feedback, funding. They can't do the work for you, and they can't guarantee pay or promotion. What you put in decides most of what you get out."
+      : "Support, don't promise. Create the conditions (time, tasks, feedback, funding), be straight about what's realistic, and never promise pay or promotion you don't control."}</p>
+  </section>`;
+}
+function renderSkills(doc, editable, empId){
+  const a = doc.assessment; const sk = doc.skills || []; const st = skillStats(doc, empId);
+  const have = new Set(sk.map(x => x.cat).filter(Boolean));
+  const sugg = a ? suggestFor(a, have) : [];
+  const track = TRACKS[a?.track]?.label.toLowerCase() || "your";
+  const item = x => { const stages = STAGES[x.kind]; const last = x.stage === 3;
+    return `<div class="skill ${last ? "mastered" : ""}">
+      <div class="row between" style="align-items:flex-start"><div style="min-width:0"><b>${esc(x.name)}</b><br><span class="small muted">${x.kind === "cert" ? "Certification" : "Skill"}${x.area ? " · " + esc(x.area) : ""}${x.target ? ` · target ${fmtDate(x.target)}` : ""}</span></div>
+        ${editable ? `<button class="x" data-action="sk-del" data-s="${x.id}" aria-label="Remove ${esc(x.name)}">×</button>` : ""}</div>
+      <div class="stepper" role="img" aria-label="Stage: ${esc(stages[x.stage])}">${stages.map((t, i) => `<span class="${i === x.stage ? "on" : i < x.stage ? "past" : ""}">${esc(t)}</span>`).join("")}</div>
+      ${x.kind === "skill" ? `<div class="row small"><span>Practised independently: <b class="mono">${x.reps || 0}/${MASTERY_REPS}</b></span>${editable && !last ? `<button class="btn ghost sm" data-action="sk-rep" data-s="${x.id}">+1 practice</button>` : ""}<span class="muted">Mastery: done ${MASTERY_REPS} times without help, with good feedback.</span></div>` : ""}
+      ${editable ? `<div class="row">
+          ${x.stage > 0 ? `<button class="btn ghost sm" data-action="sk-stage" data-s="${x.id}" data-d="-1">Back</button>` : ""}
+          ${!last ? `<button class="btn sm" data-action="sk-stage" data-s="${x.id}" data-d="1">Move to ${esc(stages[x.stage + 1])}</button>` : ""}
+          <label class="small muted row" style="gap:6px">Target <input type="date" value="${esc(x.target || "")}" data-action="sk-target" data-s="${x.id}" aria-label="Target date"></label>
+          ${!last ? `<button class="btn ghost sm" data-action="sk-ask" data-s="${x.id}">Ask for support</button>` : ""}</div>` : ""}
+      ${last ? `<p class="small"><b>Evidence:</b> ${editable ? `<input type="text" id="ev-${x.id}" data-ev="${x.id}" value="${esc(x.evidence || "")}" placeholder="e.g. passed 12 Oct, or handled 3 escalations alone">` : esc(x.evidence || "Not added")}</p>` : ""}
+      ${editable && S.reqOpen === x.id ? `<div class="branch"><b class="small">What support would help with ${esc(x.name)}?</b>
+          <select id="rq-type-${x.id}" aria-label="Type of support">${Object.entries(REQ_TYPES).map(([k, l]) => `<option value="${k}">${esc(l)}</option>`).join("")}</select>
+          <input type="text" id="rq-note-${x.id}" placeholder="Add detail (optional): what, when, how much">
+          <div class="row"><button class="btn sm" data-action="sk-send" data-s="${x.id}">Send to my manager</button><button class="btn ghost sm" data-action="sk-ask" data-s="${x.id}">Cancel</button></div></div>` : ""}
+      ${(x.requests || []).slice().reverse().map(r => { const resp = responseFor(empId, r.id);
+        return `<div class="req ${resp ? "" : "open"}"><span><b>${esc(REQ_TYPES[r.type])}</b> <span class="muted">· asked ${fmtDate(r.date)}</span></span>${r.note ? `<span class="muted">${esc(r.note)}</span>` : ""}
+          <span>${resp ? `<span class="chip ${RESP[resp.status].cls}">${esc(RESP[resp.status].label)}</span>${resp.reply ? ` <span class="muted">${esc(resp.reply)}</span>` : ""}` : `<span class="chip warn">Waiting for manager</span>`}</span></div>`; }).join("")}
+    </div>`; };
+  return `<section class="card stack">
+    <div class="row between"><div><span class="eyebrow">${editable ? "You own this · your manager supports" : "Owned by the employee"}</span><h2>Skills and certifications</h2></div>
+      <span class="small muted"><b class="mono">${st.done}</b> mastered · <b class="mono">${st.active}</b> in progress${st.open ? ` · <b class="mono">${st.open}</b> waiting` : ""}</span></div>
+    ${editable ? `<p class="small muted">Choose what to work towards next, move it through each stage yourself, and ask your manager for the support you need. Suggestions are for ${esc(track)} roles and ranked by your answers. Check which certifications your company recognises or funds.</p>` : `<p class="small muted">Read-only. They choose and update these; you respond to their support requests.</p>`}
+    ${sk.length ? sk.map(item).join("") : `<p class="muted small">${editable ? "Nothing added yet. Pick a suggestion below or add your own." : "Nothing added yet."}</p>`}
+    ${editable ? `<div class="sep stack" style="gap:8px"><b class="small">Suggested for you</b>
+        <div class="sugg">${sugg.slice(0, 5).map(c => `<button data-action="sk-add" data-c="${c.id}">+ ${esc(c.name)} <span class="muted small">· ${c.kind === "cert" ? "cert" : "skill"}</span></button>`).join("")}</div>
+        ${sugg.length > 5 ? `<details><summary>Browse all ${esc(track)} options (${sugg.length})</summary><div class="sugg" style="margin-top:8px">${sugg.slice(5).map(c => `<button data-action="sk-add" data-c="${c.id}">+ ${esc(c.name)} <span class="muted small">· ${c.kind === "cert" ? "cert" : "skill"}</span></button>`).join("")}</div></details>` : ""}
+        <div class="add"><select id="sk-kind" aria-label="Type" style="width:auto"><option value="skill">Skill</option><option value="cert">Certification</option></select><input type="text" id="sk-name" placeholder="Add your own skill or certification" aria-label="Skill or certification name"><button class="btn ghost sm" data-action="sk-own">Add</button></div></div>` : ""}
+  </section>`;
+}
+function renderRequests(p){
+  const sk = p.doc.skills || [];
+  const reqs = sk.flatMap(x => (x.requests || []).map(r => ({x, r, resp: responseFor(p.id, r.id)}))).sort((u, v) => (!!u.resp - !!v.resp) || (v.r.date > u.r.date ? 1 : -1));
+  if (!reqs.length) return "";
+  const open = reqs.filter(q => !q.resp).length;
+  return `<section class="card stack">
+    <div class="row between"><div><span class="eyebrow">They lead, you support</span><h2>Support requests</h2></div>${open ? `<span class="chip warn">${open} waiting</span>` : `<span class="chip ok">All answered</span>`}</div>
+    ${reqs.map(({x, r, resp}) => `<div class="req ${resp ? "" : "open"}" style="padding-block:6px">
+      <span><b>${esc(REQ_TYPES[r.type])}</b> for <b>${esc(x.name)}</b> <span class="muted">· ${esc(STAGES[x.kind][x.stage])} · asked ${fmtDate(r.date)}</span></span>
+      ${r.note ? `<span class="muted">"${esc(r.note)}"</span>` : ""}
+      ${resp ? `<span><span class="chip ${RESP[resp.status].cls}">${esc(RESP[resp.status].label)}</span>${resp.reply ? ` <span class="muted">${esc(resp.reply)}</span>` : ""}</span>` : ""}
+      ${S.readOnly ? "" : `<input type="text" id="reply-${r.id}" placeholder="Reply (optional): when, how, or why not yet" value="${esc(resp?.reply || "")}" style="margin-top:4px">
+      <div class="row" style="gap:6px">${Object.entries(RESP).map(([k, v]) => `<button class="btn ${resp?.status === k ? "" : "ghost"} sm" data-action="respond" data-p="${esc(p.id)}" data-r="${r.id}" data-st="${k}">${esc(v.label)}</button>`).join("")}</div>`}
+    </div>`).join("")}
+  </section>`;
+}
+function renderGoal(g, editable, verdict){
+  const d = DMAP[g.driver]; const done = (g.actions || []).filter(a => a.done).length; const n = (g.actions || []).length;
+  const chip = d ? `<span class="chip ${d.type}">${esc(d.label)} · ${d.type === "in" ? "intrinsic" : "extrinsic"}</span>`
+    : g.driver === "career" ? `<span class="chip neutral">Career direction</span>`
+    : g.driver === "fuel" ? `<span class="chip neutral">Foundation · needs and confidence</span>`
+    : g.driver === "talent" ? `<span class="chip in">Strengths · how you work best</span>` : `<span class="chip neutral">Own goal</span>`;
+  return `<article class="goal">
+    <div class="goal-h"><div class="stack" style="gap:6px">${chip}<h3>${esc(g.title)}</h3></div>
+      <div class="stack" style="gap:6px;justify-items:end;text-align:right">
+        ${editable ? `<select data-action="status" data-g="${g.id}" aria-label="Goal status">${["Not started","In progress","Done","Later"].map(s => `<option ${g.status === s ? "selected" : ""}>${s}</option>`).join("")}</select>` : `<span class="chip neutral">${esc(g.status)}</span>`}
+        <span class="muted mono small">Due ${fmtDate(g.due)} · ${done}/${n}</span>
+      </div></div>
+    ${g.measure ? `<p class="measure"><b>Success looks like:</b> ${esc(g.measure)}</p>` : ""}
+    ${verdict ? `<p class="small"><span class="chip ${VERDICT[verdict.level].cls}">${VERDICT[verdict.level].label}</span> ${esc(verdict.text)}</p>` : ""}
+    <div class="acts">${(g.actions || []).map(a => `<div class="act ${a.done ? "done" : ""}">
+      <input type="checkbox" ${a.done ? "checked" : ""} ${editable ? `data-action="toggle" data-g="${g.id}" data-a="${a.id}"` : "disabled"} aria-label="Mark done">
+      <span class="tag7" title="${esc(MECH[a.type || "70"])}">${a.type || "70"}</span><span class="txt">${esc(a.text)}</span>
+      ${editable ? `<button class="x" data-action="del-act" data-g="${g.id}" data-a="${a.id}" aria-label="Remove action">×</button>` : "<span></span>"}</div>`).join("")}</div>
+    ${editable ? `<div class="add"><select id="nt-${g.id}" aria-label="Action type" style="width:auto"><option value="70">70</option><option value="20">20</option><option value="10">10</option></select><input type="text" id="na-${g.id}" placeholder="Add an action" aria-label="New action"><button class="btn ghost sm" data-action="add-act" data-g="${g.id}">Add</button></div>` : ""}
+    ${g.support ? `<p class="support"><b>${editable ? "Ask of your manager:" : "How you can help:"}</b> ${esc(g.support)}</p>` : ""}
+    ${editable && g.driver === "own" ? `<div><button class="btn ghost sm" data-action="del-goal" data-g="${g.id}">Remove goal</button></div>` : ""}
+  </article>`;
+}
+
+function renderCheckins(doc, editable){
+  const cs = doc.checkins || [];
+  const tip = S.attrib === "ability" || S.attrib === "luck";
+  return `<section class="card stack">
+    <div class="row between"><h2>Monthly check-in</h2>${src("HL")}</div>
+    ${editable ? `<p class="small muted">A short monthly reflection helps you notice progress and adjust, which is how self-directed learners keep improving.</p>
+      <div class="field"><label>How energised do you feel about your work?</label>
+      <div class="scale" role="radiogroup" aria-label="Energy">${[1,2,3,4,5].map(n => `<label><input type="radio" name="energy" value="${n}" data-action="energy" ${S.energy === n ? "checked" : ""}><span>${n}</span></label>`).join("")}</div>
+      <div class="scale-legend"><span>Drained</span><span>Energised</span></div></div>
+      <div class="field"><label>How productive did you feel this month?</label>
+      <div class="scale" role="radiogroup" aria-label="Productivity">${[1,2,3,4,5].map(n => `<label><input type="radio" name="prod" value="${n}" data-action="prod" ${S.prod === n ? "checked" : ""}><span>${n}</span></label>`).join("")}</div>
+      <div class="scale-legend"><span>Not at all</span><span>Very productive</span></div></div>
+      <div class="field"><label for="ci-wins">Wins and progress</label><textarea id="ci-wins"></textarea></div>
+      <div class="field"><label for="ci-applied">Where did you use something new on the job?</label><textarea id="ci-applied" placeholder="Leave blank if you haven't yet"></textarea></div>
+      <div class="field"><label for="ci-attrib">What made the biggest difference to your progress?</label><select id="ci-attrib" data-action="attrib"><option value="">Choose one</option>${Object.entries(ATTRIB).map(([k, l]) => `<option value="${k}" ${S.attrib === k ? "selected" : ""}>${l}</option>`).join("")}</select>
+        ${tip ? `<p class="tip">Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.</p>` : ""}</div>
+      <div class="field"><label for="ci-needs">What I need from my manager</label><textarea id="ci-needs"></textarea></div>
+      <div><button class="btn sm" data-action="checkin">Save check-in</button></div>` : ""}
+    ${cs.length ? cs.slice(0, 5).map(c => `<div class="checkin"><div class="row between"><b>${fmtDate(c.date)}</b><span class="mono muted">Energy ${c.energy}/5${c.prod ? ` · Productivity ${c.prod}/5` : ""}</span></div>${c.wins ? `<p>${esc(c.wins)}</p>` : ""}${c.applied ? `<p class="muted"><b>Applied:</b> ${esc(c.applied)}</p>` : ""}${c.attrib ? `<p class="muted"><b>Credited:</b> ${esc(ATTRIB[c.attrib] || "")}</p>` : ""}${c.needs ? `<p class="muted"><b>Needs:</b> ${esc(c.needs)}</p>` : ""}</div>`).join("") : `<p class="muted">No check-ins yet.</p>`}
+  </section>`;
+}
+
+// ---------- Team view ----------
+function teamList(){
+  if (S.demo) return S.demoTeam;
+  return (S.myDoc.team || []).filter(id => id !== S.meId).map(id => ({id, name: S.names[id] || "Team member", avatar: S.avatars[id], doc: S.people[id] || {}}));
+}
+function renderTeam(){
+  const list = teamList();
+  const filtered = list.filter(p => S.filter === "all" || p.doc.assessment?.track === S.filter);
+  const assessed = list.filter(p => p.doc.assessment?.completedAt && p.doc.assessment.why);
+  const avgProg = assessed.length ? Math.round(assessed.reduce((s, p) => s + planProgress(p.doc.plan), 0) / assessed.length) : 0;
+  const attention = list.filter(p => ["warn","crit"].includes(statusFor(p.doc, p.id).cls)).length;
+  const asks = list.reduce((n, p) => n + skillStats(p.doc, p.id).open, 0);
+  const others = Object.keys(S.people).filter(id => id !== S.meId && !(S.myDoc.team || []).includes(id) && S.people[id]?.assessment?.completedAt);
+  const head = `${banner()}${S.demo ? `<div class="notice demo-note"><b>Sample team.</b> These people and numbers are made up to show what a manager sees once a team is using the app. Try selecting different people. Nothing here is saved.</div>` : ""}
+    <div class="row between"><div><span class="eyebrow">Front-line manager view</span><h1>My team</h1></div>
+    <div class="row">${!S.demo && S.live ? `<button class="btn ghost sm" data-action="toggle-add">${S.showAdd ? "Done adding" : "Add people"}</button>` : ""}${!S.demo ? `<button class="btn ghost sm" data-action="demo">Show sample team</button>` : ""}</div></div>`;
+  const addPanel = S.showAdd && !S.demo ? `<section class="card stack" style="gap:10px"><h3>Add people who completed their assessment</h3>
+    ${others.length ? others.map(id => `<div class="row between" style="border-top:1px solid var(--line);padding-top:8px"><span class="person">${S.avatars[id] ? `<img src="${esc(S.avatars[id])}" alt="">` : ""}<span>${esc(S.names[id] || "Team member")}${S.people[id].title ? ` <span class="muted">· ${esc(S.people[id].title)}</span>` : ""}</span></span><button class="btn sm" data-action="add-member" data-id="${esc(id)}">Add to my team</button></div>`).join("")
+      : `<p class="muted">Nobody else has completed an assessment yet. Share this page with your team as Contributors and ask them to open <b>My growth</b>. They'll appear here once they finish.</p>`}</section>` : "";
+  if (!list.length) return head + addPanel + `<section class="card empty"><h2>No one on your team yet</h2>
+    <p class="muted">Share this page with your direct reports (Contributor access) and ask them to complete the assessment under <b>My growth</b>. Then use <b>Add people</b> to bring them into your view. You'll see each person's motivation profile, plan progress and a coaching playbook.</p>
+    <div class="row">${S.live ? `<button class="btn" data-action="toggle-add">Add people</button>` : ""}<button class="btn ghost" data-action="demo">Show sample team</button></div></section>`;
+  const sel = list.find(p => p.id === S.sel);
+  return head + addPanel + `
+    <div class="stats">
+      <div class="stat"><div class="eyebrow">People</div><div class="v">${list.length}</div></div>
+      <div class="stat"><div class="eyebrow">Assessed</div><div class="v">${assessed.length}<span class="muted" style="font-size:1rem">/${list.length}</span></div></div>
+      <div class="stat"><div class="eyebrow">Avg plan progress</div><div class="v">${avgProg}%</div></div>
+      <div class="stat"><div class="eyebrow">Need attention</div><div class="v" style="color:${attention ? "var(--crit)" : "inherit"}">${attention}</div></div>
+      <div class="stat"><div class="eyebrow">Support asks waiting</div><div class="v" style="color:${asks ? "var(--warn)" : "inherit"}">${asks}</div></div>
+    </div>
+    ${teamPatterns(list)}
+    <section class="card stack" style="padding:16px">
+      <div class="row between"><h2>Team overview</h2>
+        <div class="filters" role="group" aria-label="Filter by role type">${[["all","All"],["tech","Technical"],["non","Non-technical"]].map(([k, l]) => `<button data-action="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("")}</div></div>
+      <div class="tablewrap"><table><thead><tr><th>Person</th><th>Role type</th><th>Time in role</th><th>Motivation</th><th title="Autonomy, competence, relatedness">Needs A·C·R</th><th>Works best</th><th>Top drivers</th><th>Plan</th><th>Skills</th><th>Last check-in</th><th>Status</th></tr></thead><tbody>
+      ${filtered.map(p => { const a = p.doc.assessment?.why ? p.doc.assessment : null; const P = a ? profileOf(a) : null; const st = statusFor(p.doc, p.id); const last = (p.doc.checkins || [])[0]?.date;
+        return `<tr class="click ${S.sel === p.id ? "sel" : ""}" data-action="select" data-id="${esc(p.id)}" tabindex="0">
+          <td><span class="person">${p.avatar ? `<img src="${esc(p.avatar)}" alt="">` : ""}<span><b>${esc(p.name)}</b><br><span class="muted small">${esc(p.doc.title || "")}</span></span></span></td>
+          <td>${a ? esc(TRACKS[a.track]?.label) : "—"}</td>
+          <td>${a ? `${esc(TENURE[a.tenure]?.label)}<br><span class="muted small">${esc(TENURE[a.tenure]?.stage)}</span>` : "—"}</td>
+          <td>${P ? `<span class="chip ${P.quality.cls}">${esc(P.quality.label)}</span>` : "—"}</td>
+          <td>${P ? `<span class="row" style="gap:4px">${NEEDS.map(n => `<span class="nd ${lvl(P.needs[n.k])}" title="${n.label} ${P.needs[n.k]?.toFixed(1)}/5">${n.label[0]}</span>`).join("")}</span>` : "—"}</td>
+          <td>${a?.style?.mode ? esc(MODES[a.style.mode].label) : "—"}</td>
+          <td>${a ? `<div class="row" style="gap:4px">${a.top.map(k => `<span class="chip ${DMAP[k].type}">${esc(DMAP[k].label)}</span>`).join("")}</div>` : "—"}</td>
+          <td class="mono">${a ? planProgress(p.doc.plan) + "%" : "—"}</td>
+          <td>${(() => { const k = skillStats(p.doc, p.id); return k.total ? `<span class="small"><b class="mono">${k.done}</b> mastered · <b class="mono">${k.active}</b> active</span>${k.open ? `<br><span class="chip warn">${k.open} support ask${k.open > 1 ? "s" : ""}</span>` : ""}` : `<span class="muted">—</span>`; })()}</td>
+          <td>${last ? fmtDate(last) : `<span class="muted">None</span>`}</td>
+          <td><span class="flag ${st.cls}">${esc(st.text)}</span></td></tr>`; }).join("") || `<tr><td colspan="11" class="muted">No one matches this filter.</td></tr>`}
+      </tbody></table></div>
+      <p class="muted small">Select a person to open their profile, plan and coaching playbook. Needs: <span class="nd ok">✓</span> met · <span class="nd warn">~</span> partly · <span class="nd crit">!</span> low.</p>
+    </section>
+    ${sel ? renderMember(sel) : ""}`;
+}
+function renderMember(p){
+  const a = p.doc.assessment;
+  const remove = S.demo ? "" : `<button class="btn ghost sm" data-action="remove-member" data-id="${esc(p.id)}">Remove from my team</button>`;
+  if (!a?.completedAt || !a.why) return `<section class="card stack" style="gap:10px"><h2>${esc(p.name)}</h2><p class="muted">Hasn't completed the current assessment yet. Ask them to open <b>My growth</b> on this page.</p><div>${remove}</div></section>`;
+  const qs = a.top.map(k => DMAP[k].ask);
+  const note = S.demo ? "" : (S.notes[p.id]?.text || "");
+  return `<div class="grid2" id="sel-panel" style="scroll-margin-top:90px">
+    <section class="stack" style="gap:16px;min-width:0">
+      <div class="row between"><div><span class="eyebrow">Selected</span><h2>${esc(p.name)}</h2></div>${remove}</div>
+      ${renderRequests(p)}
+      ${renderMoves(p)}
+      ${renderPlan(p.doc, false, renderSkills(p.doc, false, p.id))}
+    </section>
+    <aside class="stack" style="gap:16px;min-width:0">
+      <section class="card stack">
+        <h2>Coaching playbook</h2>
+        <ul class="guide">${playbook(a).map(([s, h]) => `<li>${h} ${src(s)}</li>`).join("")}</ul>
+        <div class="sep"><b class="small">Questions for your next 1:1</b><ul class="guide" style="margin-top:6px">${qs.map(q => `<li>${esc(q)}</li>`).join("")}</ul></div>
+        ${S.demo ? "" : `<div class="field sep"><label for="note-${esc(p.id)}">Private coaching notes <span class="muted">(only you can see these)</span></label><textarea id="note-${esc(p.id)}" data-note="${esc(p.id)}" placeholder="Agreements, follow-ups, observations">${esc(note)}</textarea></div>`}
+      </section>
+      ${renderTalentsGoals(p.doc, false)}
+      ${renderProfile(p.doc, false)}
+      ${renderCheckins(p.doc, false)}
+    </aside></div>`;
+}
+
+// ---------- How to use (in-app summary of SOP.md) ----------
+const GUIDE = {
+  employee: [
+    ["Take the assessment", "Open <b>My growth</b> and select <b>Take the assessment yourself</b>. It has 10 short steps and takes about 15 minutes. Answer for how things are now, not how they should be."],
+    ["Read your profile", "Your profile shows why you put in effort, which needs your job meets (and what's behind any gaps), how you work best, which rewards matter and what you believe about growing."],
+    ["Agree your plan", "Within 2 weeks, go through your plan with your manager. Edit actions, add your own and remove what doesn't fit. Each goal shows what success looks like and what to ask of your manager."],
+    ["Work the plan", "Tick actions off as you go. Most of your growth comes from the 70 actions: practice in your real work."],
+    ["Know your talents from your goals", "A talent is something you already do well, with evidence others would agree with. A goal is something you still have to build. Each goal gets an honest verdict (Realistic, Stretch, Unlikely in 90 days, Not fully in your control), and the plan tells you if it's bigger than the time you have."],
+    ["Own your skills and certifications", "In <b>Skills and certifications</b>, pick what to work towards next (suggestions are for your role type), move each item through its stages and log practice. Ask your manager for support (time, a real task, feedback, funding, a mentor or sign-off) whenever you need it."],
+    ["Check in monthly", "Once a month, add a check-in: energy, productivity, wins, where you used something new, what made the difference and what you need."],
+    ["Retake every 90 days", "Select <b>Retake</b> on your profile. You get a new plan, and your previous results are kept in your history."]
+  ],
+  manager: [
+    ["Build your team", "Share the app with your direct reports as Contributors. Once they finish the assessment, open <b>My team</b> → <b>Add people</b>."],
+    ["Scan weekly", "Check the team table once a week. Needs dots (A·C·R) and the status column show who needs attention first. Respond to flags using the table below."],
+    ["Prepare each 1:1", "Select a person to open their coaching playbook: what's behind any low needs, how to tap into their talent, how they work best and questions to ask. Tags show which research each tip comes from."],
+    ["Be straight about expectations", "Use the <b>Talents vs goals</b> card and each goal's verdict. Confirm or challenge self-reported talents. Never promise pay or promotion you don't control. Help people cut plans that don't fit their time."],
+    ["Answer support requests", "Your direct reports own their skills tracker; you can't change it. When they ask for support, reply from <b>Support requests</b> within a week: arrange it, discuss it in your 1:1, or explain why not yet."],
+    ["Keep private notes", "Use <b>Private coaching notes</b> to record agreements and follow-ups. Only you can see them."],
+    ["Review quarterly", "At day 90, review the \"Is it working?\" panel with each person, then ask them to retake the assessment."]
+  ],
+  flags: [
+    ["Disengagement risk", "crit", "Private conversation within 1 week. Listen first; check workload, fit and well-being. Involve HR if needed."],
+    ["Retention risk", "crit", "Career conversation within 2 weeks: scope, next role, what would make them stay."],
+    ["Low energy at last check-in", "crit", "Check in within 1 week. Ask what's draining them and what would help."],
+    ["Fairness concern", "warn", "Explain how pay and recognition decisions are made. Take pay-equity questions to HR."],
+    ["Plan stalled", "warn", "Use the next 1:1 to remove blockers. Shrink the plan to one action they can finish this week."],
+    ["Support ask waiting", "warn", "Reply within 1 week. Even \"not yet\" with a reason and a date keeps ownership with the employee."],
+    ["Check-in overdue", "warn", "Do the check-in together in your next 1:1."],
+    ["Assessment not started", "none", "Invite them personally and explain it's for their development only."],
+    ["On track", "ok", "Recognise progress specifically and keep the monthly rhythm."]
+  ],
+  cadence: [["Day 0","Employee takes the assessment"],["By week 2","1:1 to agree the plan"],["Every week","Manager scans the team table"],["Every month","Employee check-in + 1:1 on progress"],["Day 45","Foundation goal review (if any)"],["Day 90","Review results, then retake"]]
+};
+function renderGuide(){
+  const steps = (list) => `<ol class="guide" style="gap:12px">${list.map(([t, d]) => `<li><b>${esc(t)}.</b> ${d}</li>`).join("")}</ol>`;
+  return `<section class="stack" style="gap:6px"><span class="eyebrow">Standard operating procedure</span><h1>How to use Growth Compass</h1>
+    <p class="muted" style="max-width:68ch">A short version of the full SOP. Turn on <b>Sample data</b> (top right) to follow along with a team already using the app.</p></section>
+    <div class="grid2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr))">
+      <section class="card stack"><h2>For employees</h2>${steps(GUIDE.employee)}</section>
+      <section class="card stack"><h2>For managers</h2>${steps(GUIDE.manager)}</section>
+    </div>
+    <section class="card stack"><h2>Rhythm</h2>
+      <div class="kirk" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">${GUIDE.cadence.map(([w, t]) => `<div><span class="small muted">${esc(w)}</span><div style="font-weight:600">${esc(t)}</div></div>`).join("")}</div></section>
+    <section class="card stack"><h2>Responding to status flags</h2>
+      <div class="tablewrap"><table style="min-width:560px"><thead><tr><th>Status</th><th>What to do</th></tr></thead><tbody>
+      ${GUIDE.flags.map(([f, c, d]) => `<tr><td style="white-space:nowrap"><span class="flag ${c}">${esc(f)}</span></td><td>${esc(d)}</td></tr>`).join("")}</tbody></table></div></section>
+    <section class="card stack" style="gap:8px"><h2>Ground rules</h2><ul class="guide">
+      <li>Results are for development conversations only. Never use them for pay, hiring, ratings or discipline.</li>
+      <li>Everyone the app is shared with can read profiles and plans. Only managers' coaching notes are private.</li>
+      <li>Scores are a snapshot, not a label. People change, which is why the assessment is retaken every 90 days.</li></ul></section>`;
+}
+
+function renderMoves(p){
+  const ms = devMoves(p.doc.assessment); const done = S.notes[p.id]?.moves || {};
+  const n = ms.filter(m => done[m.id]).length;
+  return `<section class="card stack">
+    <div class="row between"><div><span class="eyebrow">What you can do as their manager</span><h2>Development moves</h2></div><span class="mono">${n}/${ms.length}</span></div>
+    <p class="small muted">Concrete actions built from their answers. Tick them off as you do them.</p>
+    <div>${ms.map(m => `<label class="move ${done[m.id] ? "done" : ""}"><input type="checkbox" data-action="move" data-p="${esc(p.id)}" data-m="${m.id}" ${done[m.id] ? "checked" : ""}>
+      <span><span class="row" style="gap:6px"><span class="chip neutral">${esc(m.type)}</span>${src(m.src)}</span><span class="txt" style="display:block;margin-top:4px">${esc(m.text)}</span></span></label>`).join("")}</div>
+  </section>`;
+}
+
+// ---------- Foundations ----------
+function renderFoundations(){
+  const books = [
+    {k:"SDT", color:"var(--in)", title:"Self-Determination Theory", by:"Richard M. Ryan & Edward L. Deci",
+     use:["The motivation continuum, from amotivation through external, introjected and identified regulation to intrinsic motivation, summarised as a relative autonomy score","The three basic psychological needs: autonomy, competence and relatedness","How rewards and feedback can feel controlling or informational, and how controlling ones can undermine intrinsic motivation","Autonomy support, structure and involvement as the manager's levers"],
+     where:"\"Why you work\" and \"Your needs\" steps, including what each low need is related to · motivation quality on the profile and team table · Foundation goal · coaching playbook"},
+    {k:"HCM", color:"var(--focus)", title:"Handbook of Competence and Motivation (2nd ed.)", by:"Andrew J. Elliot, Carol S. Dweck & David S. Yeager (eds.)",
+     use:["Competence as the core of achievement motivation","Achievement goals: mastery vs performance, approach vs avoidance","Implicit theories of ability (growth vs fixed mindset) and how they shape responses to setbacks"],
+     where:"\"Beliefs\" step · mindset and goal-focus on the profile · mistake-to-lesson and self-comparison actions · process-focused praise guidance"},
+    {k:"HL", color:"var(--ex)", title:"Human Learning (8th ed.)", by:"Jeanne Ellis Ormrod",
+     use:["Social cognitive theory: self-efficacy and its sources (mastery experiences, modelling, encouragement)","Self-regulated learning: goal setting, self-monitoring and reflection","Attribution theory: crediting controllable causes like effort and strategy","Spaced practice, self-testing and transfer of learning to the job"],
+     where:"Confidence score · small-wins and peer-modelling actions · monthly check-in with transfer and attribution prompts · study tips inside learning actions"},
+    {k:"PAW", color:"var(--crit)", title:"Psychology Applied to Work (13th ed.)", by:"Satoris S. Howes & Paul M. Muchinsky",
+     use:["Goal-setting theory: specific, challenging goals with feedback","Expectancy theory: effort → performance → valued outcome","Equity and organisational justice","The job characteristics model for job crafting","Evaluating training at reaction, learning, behaviour and results levels","Work teams and group processes, including identification with the team"],
+     where:"\"Success looks like\" on every goal · effort, reward and fairness beliefs · fairness flag · job-crafting actions · team identity and work-mode questions · \"Is it working?\" panel"},
+    {k:"APTM", color:"var(--ok)", title:"Applied Psychology in Talent Management (9th ed.)", by:"Wayne F. Cascio & Herman Aguinis",
+     use:["Person-level development needs assessment","Performance management as ongoing coaching and feedback rather than a once-a-year event","Career development across career stages","Fair, job-related and appropriate use of assessment information"],
+     where:"The assessment tree itself · career-stage branch · monthly check-ins and manager view · use limits below"}
+  ];
+  return `<section class="stack" style="gap:6px"><span class="eyebrow">The research behind the app</span><h1>Foundations</h1>
+    <p class="muted" style="max-width:68ch">Every step of the assessment, every plan action and every coaching tip traces back to one of these five works. Look for the short tags (for example ${src("SDT")}) next to guidance in the app.</p></section>
+    <div class="books">${books.map(b => `<article class="card book"><div class="spine" style="background:${b.color}"></div>
+      <div class="row between"><h3>${esc(b.title)}</h3>${src(b.k)}</div><p class="muted small">${esc(b.by)}</p>
+      <div><b class="small">What we use</b><ul>${b.use.map(u => `<li>${esc(u)}</li>`).join("")}</ul></div>
+      <p class="small"><b>Where you see it:</b> <span class="muted">${esc(b.where)}</span></p></article>`).join("")}</div>
+    <section class="card stack" style="gap:8px"><h2>Use with care</h2>
+      <ul class="guide">
+        <li>The questions were written for this app, following the structure of these frameworks. They are not reproductions of published scales and have not been validated as a psychometric test.</li>
+        <li>Use results to start development conversations only. Do not use them for hiring, pay, promotion, ratings or discipline decisions.</li>
+        <li>The 70-20-10 split is a practitioner rule of thumb, not a research finding. Here it simply organises actions into practice, learning from people, and formal learning.</li>
+        <li>People change. Encourage a retake every 90 days, and treat scores as a snapshot, not a label.</li>
+      </ul></section>`;
+}
+
+// ---------- Persistence ----------
+let saveT = null;
+function saveMe(now){
+  if (S.demo) return; // sample data is never saved
+  S.myDoc.updatedAt = new Date().toISOString();
+  if (!S.live){ lsSet(LS_KEY, S.myDoc); return; }
+  clearTimeout(saveT);
+  saveT = setTimeout(writeMe, now ? 0 : 700);
+}
+let writing = false, again = false;
+async function writeMe(){
+  if (S.readOnly) return;
+  if (writing){ again = true; return; }
+  writing = true;
+  try { await S.db.doc("people/" + S.meId).set(clone(S.myDoc)); }
+  catch (e){ if (e?.code === "invalid_argument"){ S.readOnly = true; render(); } else toast("Couldn't save. Check your connection and try again."); }
+  writing = false;
+  if (again){ again = false; writeMe(); }
+}
+const noteTimers = {};
+function saveNote(empId, patch){
+  S.notes[empId] = {...(S.notes[empId] || {}), ...patch, updatedAt: new Date().toISOString()};
+  if (!S.live || S.demo) return;
+  clearTimeout(noteTimers[empId]);
+  noteTimers[empId] = setTimeout(() => S.db.collection("data/users/" + S.meId).doc("note-" + empId).set({empId, ...S.notes[empId]}).catch(() => toast("Couldn't save your note.")), 800);
+}
+
+// ---------- Events ----------
+function curDoc(){ return S.demo ? (S.demoTeam.find(p => p.id === S.persona)?.doc || S.myDoc) : S.myDoc; }
+function findGoal(id){ return curDoc().plan.goals.find(g => g.id === id); }
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-action]"); if (!el) return;
+  if (el.matches("input, select")) return; // handled on change
+  const act = el.dataset.action; const A = S.assess;
+  if (el.tagName === "A") e.preventDefault();
+  switch (act){
+    case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
+    case "start": case "retake": {
+      const prev = S.myDoc.assessment?.why ? S.myDoc.assessment : null;
+      const order = DRIVERS.map(d => d.key).sort(() => Math.random() - .5);
+      S.assess = {step: 0, order, track: prev?.track ?? S.myDoc.assessment?.track, tenure: prev?.tenure ?? S.myDoc.assessment?.tenure, title: S.myDoc.title || "",
+        why: {...(prev?.why || {})}, needs: {...(prev?.needs || {})}, needSrc: {...(prev?.needSrc || {})}, style: {conds: [], ...clone(prev?.style || {})}, beliefs: {...(prev?.beliefs || {})}, goalO: prev?.goalO,
+        ratings: {...(S.myDoc.assessment?.ratings || {})}, top: [...(S.myDoc.assessment?.top || [])], deep: {...(S.myDoc.assessment?.deep || {})},
+        direction: prev?.direction, dirDetail: prev?.dirDetail || "", blockers: [...(prev?.blockers || [])], hours: prev?.hours};
+      S.view = "me"; break; }
+    case "cancel": S.assess = null; break;
+    case "back": A.step--; scrollTo(0, 0); break;
+    case "next":
+      if (A.step === ST.rewards && A.top.length !== 3) A.top = [...DRIVERS].sort((a, b) => (A.ratings[b.key] || 0) - (A.ratings[a.key] || 0)).slice(0, 3).map(d => d.key);
+      if (A.step === ST.top) Object.keys(A.deep).forEach(k => { if (!A.top.includes(k)) delete A.deep[k]; });
+      if (A.step < STEPS.length - 1){ A.step++; scrollTo(0, 0); break; }
+      { const {step, order, title, ...ans} = A;
+        if (S.myDoc.assessment?.completedAt && S.myDoc.plan) S.myDoc.history = [...(S.myDoc.history || []), {completedAt: S.myDoc.assessment.completedAt, top: S.myDoc.assessment.top, progress: planProgress(S.myDoc.plan)}].slice(-6);
+        S.myDoc.title = title.trim();
+        S.myDoc.assessment = {...ans, dirDetail: (ans.dirDetail || "").trim(), completedAt: todayISO()};
+        S.myDoc.plan = makePlan(S.myDoc.assessment);
+        S.assess = null; S.demo = false; S.demoTouched = true; saveMe(true); scrollTo(0, 0); toast("Your plan is ready"); }
+      break;
+    case "add-act": {
+      const inp = $("#na-" + el.dataset.g); const text = inp.value.trim(); if (!text) return;
+      findGoal(el.dataset.g).actions.push({id: uid(), type: $("#nt-" + el.dataset.g).value, text, done: false});
+      inp.value = ""; inp.blur(); saveMe(); break; }
+    case "del-act": { const g = findGoal(el.dataset.g); g.actions = g.actions.filter(a => a.id !== el.dataset.a); saveMe(); break; }
+    case "add-goal": {
+      const inp = $("#new-goal"); const t = inp.value.trim(); if (!t) return;
+      curDoc().plan.goals.push({id: uid(), driver: "own", title: t, measure: "", due: addDays(90), status: "Not started", actions: []});
+      inp.value = ""; inp.blur(); saveMe(); break; }
+    case "del-goal": curDoc().plan.goals = curDoc().plan.goals.filter(g => g.id !== el.dataset.g); saveMe(); break;
+    case "checkin": {
+      if (!S.energy){ toast("Pick an energy level first"); return; }
+      const v = id => $(id).value.trim();
+      const d = curDoc(); d.checkins = [{date: todayISO(), energy: S.energy, prod: S.prod, wins: v("#ci-wins"), applied: v("#ci-applied"), attrib: S.attrib, needs: v("#ci-needs")}, ...(d.checkins || [])].slice(0, 24);
+      S.energy = null; S.prod = null; S.attrib = ""; document.activeElement?.blur(); saveMe(true); toast("Check-in saved"); break; }
+    case "filter": S.filter = el.dataset.f; break;
+    case "demo": S.demo = !S.demo; S.demoTouched = true; S.sel = S.demo && S.view === "team" ? "ex2" : null; S.assess = null; break;
+    case "persona": S.persona = el.dataset.id; S.reqOpen = null; break;
+    case "sk-add": { const c = [...CATALOG.tech, ...CATALOG.non].find(x => x.id === el.dataset.c); const d = curDoc();
+      d.skills = [...(d.skills || []), {id: uid(), cat: c.id, name: c.name, kind: c.kind, area: c.area, stage: 0, reps: 0, target: "", evidence: "", requests: []}]; saveMe(); toast(`Added ${c.name}`); break; }
+    case "sk-own": { const name = $("#sk-name").value.trim(); if (!name) return; const d = curDoc();
+      d.skills = [...(d.skills || []), {id: uid(), cat: null, name, kind: $("#sk-kind").value, area: "", stage: 0, reps: 0, target: "", evidence: "", requests: []}]; saveMe(); break; }
+    case "sk-del": { const d = curDoc(); d.skills = d.skills.filter(x => x.id !== el.dataset.s); saveMe(); break; }
+    case "sk-stage": { const x = curDoc().skills.find(y => y.id === el.dataset.s); const to = x.stage + +el.dataset.d;
+      if (to === 3 && x.kind === "skill" && (x.reps || 0) < MASTERY_REPS){ toast(`Log ${MASTERY_REPS} independent practices first, or ask for sign-off.`); return; }
+      x.stage = Math.max(0, Math.min(3, to)); saveMe(); if (x.stage === 3) toast(x.kind === "cert" ? "Certified. Add your evidence." : "Mastered. Add your evidence."); break; }
+    case "sk-rep": { const x = curDoc().skills.find(y => y.id === el.dataset.s); x.reps = (x.reps || 0) + 1; if (x.stage < 2) x.stage = 2; saveMe(); break; }
+    case "sk-ask": S.reqOpen = S.reqOpen === el.dataset.s ? null : el.dataset.s; break;
+    case "sk-send": { const x = curDoc().skills.find(y => y.id === el.dataset.s);
+      x.requests = [...(x.requests || []), {id: uid(), type: $("#rq-type-" + x.id).value, note: $("#rq-note-" + x.id).value.trim(), date: todayISO()}];
+      S.reqOpen = null; saveMe(true); toast("Sent to your manager"); break; }
+    case "respond": { const emp = el.dataset.p, rid = el.dataset.r; const reply = ($("#reply-" + rid)?.value || "").trim();
+      const r = {status: el.dataset.st, reply, date: new Date().toISOString()};
+      if (S.demo){ S.demoResp[emp] = {...(S.demoResp[emp] || {}), [rid]: r}; }
+      else { S.myDoc.responses = {...(S.myDoc.responses || {}), [emp]: {...(S.myDoc.responses?.[emp] || {}), [rid]: r}}; saveMe(true); }
+      toast("Reply sent"); break; }
+    case "toggle-add": S.showAdd = !S.showAdd; break;
+    case "add-member": S.myDoc.team = [...new Set([...(S.myDoc.team || []), el.dataset.id])]; saveMe(true); toast("Added to your team"); break;
+    case "remove-member": S.myDoc.team = (S.myDoc.team || []).filter(i => i !== el.dataset.id); S.sel = null; saveMe(true); break;
+    case "select": S.sel = S.sel === el.dataset.id ? null : el.dataset.id; render(true); if (S.sel) $("#sel-panel")?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
+    default: return;
+  }
+  render(true);
+});
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches("tr[data-action=select]")){ e.preventDefault(); e.target.click(); }
+});
+document.addEventListener("change", e => {
+  const el = e.target; const A = S.assess; const act = el.dataset.action;
+  if (!act) return;
+  if (act === "set"){ A[el.dataset.f] = el.value; if (el.dataset.f === "direction") A.dirDetail = ""; if (el.dataset.f === "track") A.deep = {}; }
+  else if (act === "rate") A[el.dataset.g][el.dataset.k] = +el.value;
+  else if (act === "top"){
+    if (el.checked && A.top.length >= 3){ el.checked = false; toast("Pick exactly 3. Untick one first."); return; }
+    A.top = el.checked ? [...A.top, el.value] : A.top.filter(k => k !== el.value);
+  }
+  else if (act === "deep") A.deep[el.dataset.k] = +el.value;
+  else if (act === "needsrc") A.needSrc[el.dataset.k] = el.value;
+  else if (act === "style") A.style[el.dataset.k] = el.dataset.k === "peak" ? +el.value : el.value;
+  else if (act === "cond"){
+    if (el.checked && A.style.conds.length >= 4){ el.checked = false; toast("Pick up to 4."); return; }
+    A.style.conds = el.checked ? [...A.style.conds, el.value] : A.style.conds.filter(k => k !== el.value);
+  }
+  else if (act === "blocker") A.blockers = el.checked ? [...A.blockers, el.value] : A.blockers.filter(k => k !== el.value);
+  else if (act === "hours") A.hours = +el.value;
+  else if (act === "energy"){ S.energy = +el.value; return; }
+  else if (act === "prod"){ S.prod = +el.value; return; }
+  else if (act === "sk-target"){ curDoc().skills.find(y => y.id === el.dataset.s).target = el.value; saveMe(); }
+  else if (act === "move"){ const cur = S.notes[el.dataset.p]?.moves || {}; saveNote(el.dataset.p, {moves: {...cur, [el.dataset.m]: el.checked}}); }
+  else if (act === "attrib"){ S.attrib = el.value; const tip = el.parentElement.querySelector(".tip"); const need = S.attrib === "ability" || S.attrib === "luck";
+    if (need && !tip) el.insertAdjacentHTML("afterend", `<p class="tip">Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.</p>`);
+    if (!need && tip) tip.remove(); return; }
+  else if (act === "toggle"){ const g = findGoal(el.dataset.g); const a = g.actions.find(x => x.id === el.dataset.a); a.done = el.checked;
+    if (g.actions.every(x => x.done)) g.status = "Done"; else if (g.actions.some(x => x.done) && g.status === "Not started") g.status = "In progress"; saveMe(); }
+  else if (act === "status"){ findGoal(el.dataset.g).status = el.value; saveMe(); }
+  render(true);
+});
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (el.dataset.input && S.assess) S.assess[el.dataset.input] = el.value;
+  if (el.dataset.sinput && S.assess) S.assess.style[el.dataset.sinput] = el.value;
+  if (el.dataset.note) saveNote(el.dataset.note, {text: el.value});
+  if (el.dataset.ev){ curDoc().skills.find(y => y.id === el.dataset.ev).evidence = el.value; saveMe(); }
+});
+
+// ---------- Boot ----------
+const local = lsGet(LS_KEY); if (local) S.myDoc = local;
+S.demo = !S.myDoc.assessment?.why;
+render();
+
+(async () => {
+  if (!window.claude?.use) return;
+  const [db, user] = await Promise.all([claude.use("db"), claude.use("user")]);
+  if (!db || !user) return;
+  const id = await user.id(); if (!id) return;
+  S.db = db; S.user = user; S.meId = id; S.live = true;
+  const w = await user.can("data.write"); if (w === false) S.readOnly = true;
+  let loadedMine = false, knownIds = "";
+  db.collection("people").onSnapshot(async snap => {
+    const people = {};
+    snap.docs.forEach(d => { people[d.id] = d.data(); });
+    S.people = people;
+    if (!loadedMine){
+      loadedMine = true;
+      if (people[id]) S.myDoc = clone(people[id]);
+      else if (local?.assessment?.completedAt){ S.myDoc = local; saveMe(true); } // carry a preview plan over on first sign-in
+      else S.myDoc = {};
+      if (!S.demoTouched && !S.assess) S.demo = !S.myDoc.assessment?.why;
+    }
+    const ids = Object.keys(people).sort().join(",");
+    if (ids !== knownIds){
+      knownIds = ids;
+      const ps = await user.profiles(Object.keys(people));
+      Object.values(ps).forEach(p => { S.names[p.id] = p.name || ""; S.avatars[p.id] = p.avatarUrl; });
+    }
+    render();
+  }, () => toast("Live updates stopped. Reload the page to reconnect."));
+  db.collection("data/users/" + id).onSnapshot(snap => {
+    snap.docs.forEach(d => { const v = d.data(); if (v?.empId && document.activeElement?.dataset?.note !== v.empId) S.notes[v.empId] = v; });
+    render();
+  }, () => {});
+})();
+</script>
+</body>
+</html>
