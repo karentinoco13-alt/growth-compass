@@ -64,7 +64,7 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
 ### How to use, Blueprint and Foundations
 
 - **How to use**: a quick-start guide, including how to respond to each status flag.
-- **Blueprint**: the full standard operating procedure inside the app, in English and Spanish, with a clickable table of contents. Also available as [SOP.md](SOP.md) and [SOP.es.md](SOP.es.md).
+- **SOP** (the Blueprint): the full standard operating procedure inside the app, in English and Spanish, with a clickable table of contents. Also available as [SOP.md](SOP.md) and [SOP.es.md](SOP.es.md).
 - **Foundations**: which research framework drives each part of the app.
 
 ## Research foundations
