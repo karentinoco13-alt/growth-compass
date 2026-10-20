@@ -25,6 +25,8 @@ Front-line managers are often too busy to coach development, and generic develop
 
 ## What it does
 
+Available in **English and Spanish** (switch with **EN / ES** in the top bar).
+
 ### For employees: "My growth"
 
 - **A branching assessment (10 steps, about 15 minutes).** It branches on **technical vs non-technical** roles and **years in the current role**, then covers:
@@ -40,6 +42,7 @@ Front-line managers are often too busy to coach development, and generic develop
 - **"This is yours."** An ownership card shows what the person has invested (actions done, practice logged, skills kept, lessons for any job), with a message tailored to their motivation.
 - **Own-time investment (optional).** People choose how much personal time they'll invest, and the plan is sized to work time plus that.
 - **A skills passport the employee owns.** Suggestions are tailored to technical or non-technical roles and ranked by the person's answers: CompTIA, AWS and Azure fundamentals, CMRT, PLC programming, NFPA 70E, Lean Six Sigma, supervisor certificates, CAPM, Excel, forklift, Mental Health First Aid and more, plus practical skills. Skills move Planned → Learning → Practising → **Mastered** (three independent practices). Certifications move Planned → Studying → Exam booked → **Certified**. Both need evidence. A **"Copy my passport"** button exports mastered skills, certifications and evidence as plain text for a CV or profile.
+- **You decide who sees it.** Each employee's full record is private. They name their direct manager, who sees everything so they can support them, and can share chosen sections (profile, plan, skills passport, check-ins) with anyone else, such as a mentor, another manager or HR. Everyone else sees nothing.
 - **Support requests.** The employee asks their manager for exactly what they need: time, a real task to practise on, feedback, funding, a mentor, or sign-off.
 - **Monthly check-ins.** Energy, productivity, wins, a lesson they could use in any job, where they applied something new, what made the difference (with a nudge toward controllable causes) and what they need.
 
@@ -47,6 +50,7 @@ Front-line managers are often too busy to coach development, and generic develop
 
 ### For managers: "My team"
 
+- **Who appears:** direct reports, plus anyone who chose to share with the manager. Shared people are marked **Shared with you** and show only what they shared.
 - **A team overview.** Role type, time in role, motivation quality, needs (A·C·R), how each person works best, top drivers, plan progress, skills, last check-in and a status flag: *Disengagement risk*, *Retention risk*, *Fairness concern*, *Plan stalled*, *Support ask waiting* and more.
 - **Team patterns.** The most common drivers, which needs are low and what's behind them, how people prefer to work, top blockers, and **team-level moves** such as a buddy pairing suggested from tenure and talent.
 - **For each direct report:**
@@ -84,13 +88,16 @@ The assessment logic, plan generation and coaching guidance draw on the framewor
 | Employee view with sample data | Branching assessment |
 | ![How to use](docs/screenshots/how-to-use.png) | ![Phone, dark mode](docs/screenshots/phone-dark.png) |
 | In-app SOP summary | Phone, dark mode |
+| ![Who can see my development](docs/screenshots/sharing.png) | ![Spanish](docs/screenshots/spanish-employee-view.png) |
+| The employee decides who sees what | Full Spanish version |
 
 ## Technical notes
 
 - **One self-contained file** (`index.html`): vanilla JavaScript and CSS. No build step and no dependencies apart from Google Fonts.
 - **Storage:**
   - *Standalone or GitHub Pages:* your own answers are saved in your browser (`localStorage`). Sample data is generated in memory and never saved.
-  - *Claude Artifact version:* the same app runs as a shared Claude artifact. Each person's profile and plan is stored under their own record, and managers' notes are private to them.
+  - *Claude Artifact version:* the same app runs as a shared Claude artifact. Each person's full record is stored privately for them. Only the sections they choose to share are published, and the app shows them only to the people they chose. Managers' notes are private to the manager. For a company-wide rollout, back the sharing with your HR system's access controls.
+- **English and Spanish:** a translation layer covers every screen, generated plan, coaching tip and the sample data.
 - **Responsive** down to phone width, with **light and dark themes**, keyboard focus states and reduced-motion support.
 
 ## Publishing on GitHub Pages

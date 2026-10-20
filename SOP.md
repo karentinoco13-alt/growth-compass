@@ -81,6 +81,7 @@ This SOP explains how employees and front-line managers use Growth Compass to ke
 | 1 | Open **My growth** → **Take the assessment yourself**. Complete all 10 steps (about 15 minutes). | Day 0 |
 | 2 | Read your profile: why you work, needs met and what's behind any gaps, how you work best, rewards, beliefs. | Day 0 |
 | 3 | Review your generated plan. Each goal has a **Success looks like** measure, actions tagged 70 / 20 / 10, and what to **ask of your manager**. | Day 0 |
+| 3a | In **Who can see my development**, name your direct manager and, if you want, share chosen parts (profile, plan, skills passport, check-ins) with anyone else, such as a mentor, another manager or HR. Everyone else sees nothing. | Day 0, change any time |
 | 4 | Meet your manager to agree the plan. Edit, add or remove actions so it fits. | By week 2 |
 | 5 | Work the plan and tick actions off as you complete them. Leave **parked** goals alone until an active goal is done. | Ongoing |
 | 5a | In your **Skills passport**, choose what to work towards next, move each item through its stages, log practice, and add evidence when it's mastered or certified. | Ongoing |
@@ -116,7 +117,7 @@ Growth Compass deliberately keeps talents and goals apart, and it does not sugar
 
 | Step | Action | When |
 |---|---|---|
-| 1 | Open **My team** → **Add people**, and add each direct report once they have finished the assessment. | Once |
+| 1 | Share the app with your team. Direct reports appear in **My team** automatically once they name you as their direct manager. Other people appear only if they choose to share with you, marked **Shared with you**, and you see only the parts they shared. | Once |
 | 2 | Review the **team table** and **Team patterns**. Check the status column and A·C·R dots first. | Weekly (10 minutes) |
 | 3 | Respond to any status flags using the table in 5.5. | Within the stated time |
 | 4 | Before each 1:1, select the person and read their **Development moves** and **Coaching playbook**. | Before every 1:1 |
@@ -163,14 +164,16 @@ On top of these, development moves cover stretch assignments, delegation, learni
 
 ## 6. Records
 
-- Employee profiles, plans and check-ins are stored in the app and are visible to everyone the app is shared with.
+- Each employee's full record (profile, plan, skills passport, check-ins) is stored privately for that employee.
+- **The employee decides who sees it.** Their named direct manager sees the full record. Anyone else sees only the sections the employee shares with them. Everyone else sees nothing. The employee can change this at any time.
+- In this version, the parts an employee shares are kept in a shared record that the app shows only to the people they chose. For a company-wide rollout, back this with your HR system's access controls.
 - Managers' **private coaching notes** and development-move ticks are visible only to that manager.
 - Each employee's last six assessment results are kept in their history when they retake.
 
 ## 7. Privacy and appropriate use
 
 1. **Development only.** Results must never be used for hiring, pay, ratings, promotion or discipline decisions.
-2. **Transparency.** Tell employees who can see their profile and plan before they start.
+2. **Employee control and transparency.** Employees choose who sees their development. Before they start, explain that their direct manager will see the full record once named, and that anything else is shared only by their choice. Never ask an employee to share with anyone beyond their direct manager.
 3. **Not a clinical or validated test.** The questions were written for this app, following established research frameworks. They are not reproductions of published scales and have not been psychometrically validated. Treat scores as conversation starters.
 4. **Snapshot, not a label.** People change; retake every 90 days.
 5. **Escalation.** Concerns about well-being, discrimination or pay equity go to HR, following existing company policy.
@@ -180,8 +183,10 @@ On top of these, development moves cover stretch assignments, delegation, learni
 | Problem | Fix |
 |---|---|
 | "View only" banner, can't save | Ask the programme owner for Contributor access. |
-| A direct report doesn't appear in **Add people** | They must finish all 10 steps first. |
-| Team table is empty | Use **Add people**, or turn on **Sample data** to see how the view works. |
+| A direct report doesn't appear in **My team** | They must finish the assessment and name you as their direct manager in **Who can see my development**. |
+| Team table is empty | No one has named you as their manager or shared with you yet. Turn on **Sample data** to see how the view works. |
+| A person shows **Limited view** | They shared only some sections with you. That's their choice. |
+| Switch language | Use **EN / ES** in the top bar. The app remembers your choice on that device. |
 | Results look wrong | Retake the assessment. Answers should describe how things are now. |
 | "The assessment has been updated" notice | Retake to get a profile based on the current version. |
 | A goal says **Parked for later** | There isn't time for it alongside the active goals. Finish one first, or agree more development time and set it to *In progress*. |

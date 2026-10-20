@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Growth Compass: a research-grounded personal development app where employees drive their own growth and managers support it.">
+<meta name="description" content="Growth Compass: a research-grounded personal development app, in English and Spanish, where employees drive their own growth and managers support it.">
 <meta name="theme-color" content="#0F2347">
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Growth Compass</title>
@@ -262,6 +262,16 @@ h1,h2{color:var(--ink)}
 .own .kirk>div{background:var(--navy-2);border-color:rgb(255 255 255 / .12)}
 .own .kirk .v{color:var(--gold)}
 .own b{color:var(--gold)}
+.lang{display:flex;gap:2px;background:var(--navy-2);border-radius:8px;padding:3px}
+.lang button{border:0;background:transparent;color:var(--on-navy-muted);font-weight:700;font-size:.8rem;padding:4px 8px;border-radius:6px;cursor:pointer;letter-spacing:.04em}
+.lang button[aria-pressed="true"]{background:var(--on-navy);color:var(--navy)}
+.share-row{display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
+.tick{display:inline-flex;align-items:center;gap:6px;font-size:.86rem;border:1px solid var(--line);border-radius:999px;padding:3px 10px;cursor:pointer}
+.tick input{accent-color:var(--in)}
+.picker{display:grid;gap:6px}
+.pick-res{display:flex;flex-wrap:wrap;gap:6px;font-size:.88rem;color:var(--muted)}
+.pick-hit{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;cursor:pointer;color:var(--ink)}
+.pick-hit:hover{border-color:var(--gold)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
@@ -278,12 +288,516 @@ h1,h2{color:var(--ink)}
       <button class="tab" role="tab" id="tab-guide" data-action="view" data-v="guide">How to use</button>
       <button class="tab" role="tab" id="tab-science" data-action="view" data-v="science">Foundations</button>
     </nav>
+    <div class="lang" role="group" aria-label="Language"><button data-action="lang" data-l="en" lang="en">EN</button><button data-action="lang" data-l="es" lang="es">ES</button></div>
     <button class="demo-tog" id="demo-tog" data-action="demo" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Sample data</button>
   </div>
 </header>
 <main class="wrap" id="app"></main>
 <div class="toast" id="toast" hidden></div>
 
+<script>
+// ---------- Language: English (source) and Spanish ----------
+// The app renders in English; when Spanish is on, every rendered text node and label is translated here.
+// Keys are normalised: numbers become "#" and dates "<DATE>", then put back in the same order.
+const ES = {
+  // App chrome
+  "Growth Compass":"Growth Compass","My growth":"Mi desarrollo","My team":"Mi equipo","How to use":"Cómo usarla","Foundations":"Fundamentos",
+  "Sample data":"Datos de ejemplo","Workspace":"Espacio de trabajo","Language":"Idioma",
+  "Sample data.":"Datos de ejemplo.","Sample team.":"Equipo de ejemplo.","Saved on this device only.":"Guardado solo en este dispositivo.",
+  "Your answers stay in this browser. When the app is shared through claude.ai, plans are shared with your manager and team.":"Tus respuestas se quedan en este navegador. Cuando la app se comparte a través de claude.ai, los planes se comparten con tu líder y tu equipo.",
+  "View only.":"Solo lectura.","You can read plans here but not save. Ask the page owner for Contributor access.":"Puedes leer los planes pero no guardar. Pide al dueño de la página acceso de Colaborador.",
+  "You're seeing the employee view as a sample person, with a finished assessment, a plan in progress and check-ins. Tick actions or add a check-in to try it. Nothing is saved.":"Estás viendo la vista del colaborador como una persona de ejemplo, con la evaluación terminada, un plan en curso y seguimientos. Marca acciones o agrega un seguimiento para probarla. No se guarda nada.",
+  "These people and numbers are made up to show what a manager sees once a team is using the app. Try selecting different people. Nothing here is saved.":"Estas personas y cifras son ficticias y muestran lo que ve un líder cuando su equipo ya usa la app. Prueba seleccionar distintas personas. No se guarda nada.",
+  "View as":"Ver como","Take the assessment yourself":"Haz tú la evaluación","Show sample team":"Mostrar equipo de ejemplo","See it with sample data":"Verla con datos de ejemplo",
+  "Example: Amara O.":"Ejemplo: Amara O.","Example: Luis R.":"Ejemplo: Luis R.","Example: Mei T.":"Ejemplo: Mei T.","Example: Dev P.":"Ejemplo: Dev P.","Example: Tom B.":"Ejemplo: Tom B.","Example: Sofia K.":"Ejemplo: Sofia K.",
+  "Field service technician":"Técnica de servicio en campo","Customer service associate":"Asociado de servicio al cliente","Shift supervisor":"Supervisora de turno","IT support analyst":"Analista de soporte de TI","Maintenance electrician":"Electricista de mantenimiento","Warehouse picker":"Preparadora de pedidos",
+  "Team member":"Miembro del equipo","Someone":"Alguien",
+  // Intro
+  "Personal development is personal":"El desarrollo personal es personal",
+  "Your growth, driven by you, built around what actually motivates you":"Tu crecimiento, impulsado por ti y construido en torno a lo que realmente te motiva",
+  "The assessment looks at":"La evaluación analiza","why":"por qué",
+  "you put in effort, which needs your job meets and what's behind any gaps, how you work best in your own words, which rewards matter to you, and what you believe about your own growth. It branches on your role type and time in role, then builds a #-day plan with measurable goals. You drive it; your manager supports it. The skills you build are yours to keep, wherever you work next.":"te esfuerzas, qué necesidades cubre tu trabajo y qué hay detrás de cada brecha, cómo trabajas mejor (en tus palabras), qué recompensas te importan y qué crees sobre tu propio crecimiento. Se ramifica según tu tipo de puesto y tu antigüedad, y crea un plan de # días con metas medibles. Tú lo impulsas; tu líder lo apoya. Las habilidades que desarrollas son tuyas, trabajes donde trabajes.",
+  "Start my assessment":"Empezar mi evaluación","# short steps · about # minutes · retake any time":"# pasos cortos · unos # minutos · repítela cuando quieras",
+  "A development tool, not a test. Answers are for growth conversations, never for pay, discipline or hiring decisions. See":"Es una herramienta de desarrollo, no un examen. Las respuestas sirven para conversaciones de crecimiento, nunca para decisiones de salario, disciplina o contratación. Consulta","for the research behind it.":"para conocer la investigación que la respalda.",
+  "How the assessment branches":"Cómo se ramifica la evaluación","About you":"Sobre ti","· technical or not, years in role":"· técnico o no, años en el puesto","Why you work":"Por qué trabajas","· the motivation continuum":"· el continuo de la motivación",
+  "Your needs":"Tus necesidades","· autonomy, competence, relatedness":"· autonomía, competencia, relación","How you work best":"Cómo trabajas mejor","· alone or in a group, team identity, your talents":"· solo o en grupo, identidad de equipo, tus talentos",
+  "Rewards":"Recompensas","· # intrinsic, # extrinsic":"· # intrínsecas, # extrínsecas","Top # + deep dives":"Top # + preguntas a fondo","· each driver branches":"· cada motivador se ramifica","Beliefs":"Creencias","· mindset, goals, confidence, fairness":"· mentalidad, metas, confianza, equidad",
+  "Direction + practical":"Dirección + aspectos prácticos","· career path, blockers, time":"· trayectoria, obstáculos, tiempo",
+  "The assessment has been updated.":"La evaluación se actualizó.","Retake it to get a profile and plan built on the new research foundations.":"Vuelve a hacerla para obtener un perfil y un plan basados en los nuevos fundamentos.",
+  // Assessment steps
+  "Top #":"Top #","Deep dive":"A fondo","Direction":"Dirección","Practical":"Práctico","Progress":"Progreso","Back":"Atrás","Next":"Siguiente","Cancel":"Cancelar","See my results and plan":"Ver mis resultados y mi plan",
+  "This first branch tailors the questions and plan to your kind of work and your stage in the role.":"Esta primera rama adapta las preguntas y el plan a tu tipo de trabajo y a tu etapa en el puesto.",
+  "What kind of role do you have?":"¿Qué tipo de puesto tienes?","Technical":"Técnico","Non-technical":"No técnico",
+  "Engineering, IT, maintenance, technicians, data, specialist tools or equipment":"Ingeniería, TI, mantenimiento, técnicos, datos, herramientas o equipos especializados",
+  "Operations, customer service, sales, admin, people and business roles":"Operaciones, servicio al cliente, ventas, administración, personas y negocio",
+  "How long have you been in your current role?":"¿Cuánto tiempo llevas en tu puesto actual?","Less than # year":"Menos de # año","# to # years":"# a # años","#+ years":"#+ años",
+  "Foundation stage":"Etapa Base","Build stage":"Etapa Construir","Stretch stage":"Etapa Expandir","Renew stage":"Etapa Renovar","Foundation":"Base","Build":"Construir","Stretch":"Expandir","Renew":"Renovar",
+  "Foundation stage.":"Etapa Base.","Build stage.":"Etapa Construir.","Stretch stage.":"Etapa Expandir.","Renew stage.":"Etapa Renovar.",
+  "Job title":"Puesto","(optional)":"(opcional)","e.g. Maintenance technician":"p. ej. Técnico de mantenimiento",
+  "Why do you put effort into your job?":"¿Por qué te esfuerzas en tu trabajo?",
+  "Rate how true each reason is for you. Most people have several reasons at once. Answer honestly; nobody is graded on this.":"Indica qué tan cierta es cada razón para ti. La mayoría tiene varias razones a la vez. Responde con honestidad; nadie te califica por esto.",
+  "To get rewards like pay, a bonus or a promotion":"Para obtener recompensas como salario, un bono o un ascenso","Because this work is personally important to me":"Porque este trabajo es importante para mí",
+  "Because I'd feel guilty or ashamed if I didn't":"Porque me sentiría culpable o avergonzado si no lo hiciera","Because I enjoy the work itself":"Porque disfruto el trabajo en sí",
+  "Honestly, I don't see much reason to put effort into this job":"Sinceramente, no veo muchas razones para esforzarme en este trabajo","To avoid criticism or consequences from my manager or others":"Para evitar críticas o consecuencias de mi líder o de otras personas",
+  "Because the effort helps me reach goals I value":"Porque el esfuerzo me ayuda a lograr metas que valoro","Because I need to prove to myself and others that I'm capable":"Porque necesito demostrarme a mí y a los demás que soy capaz",
+  "Because the work is interesting and I like the challenge":"Porque el trabajo es interesante y me gusta el reto","Not at all true":"Nada cierto","Completely true":"Totalmente cierto",
+  "How does your job feel day to day?":"¿Cómo se siente tu trabajo en el día a día?",
+  "These cover three needs everyone has at work: having a say, feeling capable, and feeling connected. If one comes out low, we'll ask what it's related to so it can be fixed at the source.":"Cubren tres necesidades que todos tenemos en el trabajo: tener voz, sentirnos capaces y sentirnos conectados. Si alguna sale baja, te preguntaremos con qué se relaciona para atenderla de raíz.",
+  "I feel I have real choice in how I do my work":"Siento que puedo decidir de verdad cómo hago mi trabajo","I feel pressured to do my work in ways I don't agree with":"Me siento presionado a trabajar de formas con las que no estoy de acuerdo",
+  "I feel capable and effective at my job":"Me siento capaz y eficaz en mi trabajo","I often doubt whether I can do my job well":"A menudo dudo de poder hacer bien mi trabajo",
+  "I feel connected to and cared about by people at work":"Me siento conectado y valorado por las personas del trabajo","I feel left out or like I don't belong at work":"Me siento excluido o que no pertenezco en el trabajo",
+  "Strongly disagree":"Totalmente en desacuerdo","Strongly agree":"Totalmente de acuerdo","What is this mostly related to?":"¿Con qué se relaciona principalmente?",
+  "Autonomy looks low":"La autonomía sale baja","Competence looks low":"La competencia sale baja","Relatedness looks low":"La relación sale baja",
+  "Being closely monitored or micromanaged":"Que me vigilen de cerca o haya microgestión","Rigid scripts, rules or processes":"Guiones, reglas o procesos rígidos","No say over my schedule or tasks":"No tener voz sobre mi horario o mis tareas","My ideas aren't asked for or used":"No me piden ni usan mis ideas",
+  "Not enough training for what's asked of me":"No tengo suficiente capacitación para lo que me piden","Unclear expectations or standards":"Expectativas o estándares poco claros","Little or no feedback on how I'm doing":"Poca o ninguna retroalimentación sobre cómo voy","My skills aren't being used":"No se aprovechan mis habilidades","Too much work to do it well":"Demasiado trabajo para hacerlo bien",
+  "I work apart from the team most of the time":"Trabajo separado del equipo la mayor parte del tiempo","Tension or conflict in the team":"Tensión o conflicto en el equipo","I'm new and still building relationships":"Soy nuevo y todavía estoy creando relaciones","I don't feel my manager knows me as a person":"Siento que mi líder no me conoce como persona","I feel different or left out of the group":"Me siento diferente o excluido del grupo",
+  "How do you work best?":"¿Cómo trabajas mejor?","Only you know this. Your answers go straight into your plan and into how your manager sets up your work.":"Solo tú lo sabes. Tus respuestas van directo a tu plan y a cómo tu líder organiza tu trabajo.",
+  "Where do you do your best work?":"¿Dónde haces tu mejor trabajo?","On my own":"Por mi cuenta","Independent tasks I can focus on":"Tareas independientes en las que me puedo concentrar","With one partner":"Con un compañero","A buddy or a pair":"Un compañero o en pareja","In a group or team":"En grupo o en equipo","Shared tasks and lots of interaction":"Tareas compartidas y mucha interacción","It depends on the task":"Depende de la tarea","Solo for some things, group for others":"Solo para unas cosas, en grupo para otras",
+  "Being part of my team is an important part of who I am at work":"Ser parte de mi equipo es una parte importante de quién soy en el trabajo","When someone praises my team, it feels like praise for me too":"Cuando alguien elogia a mi equipo, lo siento como un elogio para mí",
+  "What helps you be most productive?":"¿Qué te ayuda a ser más productivo?","Pick up to #.":"Elige hasta #.",
+  "A clear plan and priorities":"Un plan y prioridades claros","Freedom to choose the order of my work":"Libertad para elegir el orden de mi trabajo","Quiet, uninterrupted time":"Tiempo tranquilo y sin interrupciones","The energy of people around me":"La energía de las personas a mi alrededor","Frequent, quick feedback":"Retroalimentación frecuente y rápida","Deadlines and some pressure":"Fechas límite y algo de presión","Variety and switching between tasks":"Variedad y cambiar de tarea","Long stretches on one task":"Largos periodos en una sola tarea","Hands-on work, not screens or paperwork":"Trabajo práctico, no pantallas ni papeleo","The right tools and equipment ready":"Las herramientas y el equipo correctos listos",
+  "When are you at your sharpest?":"¿Cuándo estás más enfocado?","Early in my shift or day":"Al inicio de mi turno o día","Middle of my shift or day":"A mitad de mi turno o día","Later in my shift or day":"Al final de mi turno o día","It varies":"Varía",
+  "Think of a time you were at your most productive. What were you doing, and what made it work?":"Piensa en un momento en que fuiste más productivo. ¿Qué hacías y qué hizo que funcionara?","In your own words":"En tus propias palabras",
+  "Talent or goal? Be honest here.":"¿Talento o meta? Sé honesto aquí.","A":"Un","talent":"talento","goal":"meta",
+  "is something you already do well, again and again, that others notice and rely on. A":"es algo que ya haces bien, una y otra vez, que otros notan y en lo que confían. Una",
+  "is something you can't do yet, or not well enough, and will have to work for. Listing a goal as a talent sets you up for disappointment. Goals come later in the assessment.":"es algo que aún no puedes hacer, o no lo bastante bien, y por lo que tendrás que trabajar. Poner una meta como talento te prepara para una decepción. Las metas vienen más adelante en la evaluación.",
+  "What do colleagues come to you for? (a talent)":"¿Para qué te buscan tus compañeros? (un talento)","e.g. calming upset customers, fixing the label printer":"p. ej. calmar a clientes molestos, arreglar la impresora de etiquetas",
+  "How do you know it's a talent? Who has told you, or what results show it?":"¿Cómo sabes que es un talento? ¿Quién te lo ha dicho o qué resultados lo demuestran?","e.g. my lead sends the hard calls to me; zero repeat faults on my jobs":"p. ej. mi líder me pasa las llamadas difíciles; cero fallas repetidas en mis trabajos",
+  "If you can't answer this, it may be a goal rather than a talent. That's fine, but it will be labelled as self-reported until someone confirms it.":"Si no puedes responder esto, quizá sea una meta y no un talento. Está bien, pero se marcará como autodeclarado hasta que alguien lo confirme.",
+  "Which part of your work makes you lose track of time?":"¿Qué parte de tu trabajo te hace perder la noción del tiempo?","Enjoying something is a strong signal of where to grow. It is not proof that you're already good at it.":"Disfrutar algo es una señal clara de hacia dónde crecer. No es prueba de que ya seas bueno en ello.",
+  "Which rewards matter to you right now?":"¿Qué recompensas te importan ahora?","Rate how much each would motivate you over the next year.":"Indica cuánto te motivaría cada una durante el próximo año.","Not important":"Nada importante","Essential":"Esencial",
+  "Getting noticeably better at what I do":"Mejorar notablemente en lo que hago","Having freedom to decide how I do my work":"Tener libertad para decidir cómo hago mi trabajo","Seeing how my work helps customers, colleagues or the community":"Ver cómo mi trabajo ayuda a clientes, compañeros o a la comunidad","Learning new things and being challenged":"Aprender cosas nuevas y tener retos","Feeling connected to and trusted by my team":"Sentirme conectado con mi equipo y que confíen en mí",
+  "Earning more through pay, bonus or incentives":"Ganar más con salario, bonos o incentivos","Moving up to a bigger title or role":"Subir a un puesto o cargo mayor","Having my contributions noticed and appreciated":"Que noten y valoren mis aportes","Security and predictability in my job":"Seguridad y estabilidad en mi trabajo","Flexibility in schedule, location or workload":"Flexibilidad de horario, lugar o carga de trabajo",
+  "Pick your top #":"Elige tus # principales","We pre-selected your highest ratings. Change them if something else matters more today. Each one becomes a goal.":"Preseleccionamos tus calificaciones más altas. Cámbialas si hoy te importa más otra cosa. Cada una se convierte en una meta.",
+  "intrinsic":"intrínseca","extrinsic":"extrínseca","Pick exactly #. Untick one first.":"Elige exactamente #. Desmarca una primero.",
+  "Mastery":"Maestría","Autonomy":"Autonomía","Purpose":"Propósito","Learning":"Aprendizaje","Belonging":"Pertenencia","Pay and bonus":"Salario y bonos","Promotion":"Ascenso","Recognition":"Reconocimiento","Stability":"Estabilidad","Flexibility":"Flexibilidad",
+  "Go deeper on your top #":"Profundiza en tus # principales","Each driver opens its own branch. Options are tailored for technical roles.":"Cada motivador abre su propia rama. Las opciones están adaptadas a puestos técnicos.","Each driver opens its own branch. Options are tailored for non-technical roles.":"Cada motivador abre su propia rama. Las opciones están adaptadas a puestos no técnicos.",
+  "Which skill do you most want to sharpen in the next # days?":"¿Qué habilidad quieres perfeccionar más en los próximos # días?",
+  "A core technical skill (systems, tools, code or equipment)":"Una habilidad técnica clave (sistemas, herramientas, código o equipos)","Troubleshooting and root-cause analysis":"La resolución de fallas y el análisis de causa raíz","Technical documentation and standards":"La documentación técnica y los estándares","Designing solutions, not just fixing them":"Diseñar soluciones, no solo reparar",
+  "Customer conversations":"Las conversaciones con clientes","Communication and influence":"La comunicación y la influencia","Planning and organisation":"La planificación y la organización","Coaching and supporting others":"Acompañar y apoyar a otros",
+  "Where would more ownership matter most?":"¿Dónde importaría más tener más responsabilidad propia?","How I plan and prioritise my day":"Cómo planifico y priorizo mi día","How my team solves problems":"Cómo mi equipo resuelve problemas","Owning a project end to end":"Liderar un proyecto de principio a fin","Improving a process I use every day":"Mejorar un proceso que uso todos los días",
+  "Whose impact do you most want to see?":"¿En quién quieres ver más el impacto?","Our customers":"Nuestros clientes","My teammates":"Mis compañeros de equipo","The wider business":"La empresa en general","The community":"La comunidad",
+  "What would you most like to learn?":"¿Qué te gustaría aprender más?","A new tool, platform or language":"Una nueva herramienta, plataforma o lenguaje","An industry certification":"Una certificación de la industria","Data, automation or AI tools":"Datos, automatización o herramientas de IA","Another part of our technical systems":"Otra parte de nuestros sistemas técnicos",
+  "Another part of the business":"Otra área del negocio","A professional certification":"Una certificación profesional","Data and digital tools":"Datos y herramientas digitales","Leadership and people skills":"Liderazgo y habilidades con personas",
+  "What would strengthen your connection at work?":"¿Qué fortalecería tu conexión en el trabajo?","Getting to know my teammates better":"Conocer mejor a mis compañeros","Being included in decisions":"Que me incluyan en las decisiones","Mentoring someone newer":"Ser mentor de alguien más nuevo","Building relationships with other teams":"Crear relaciones con otros equipos",
+  "What would help you most on earnings?":"¿Qué te ayudaría más con tus ingresos?","Understanding how pay is decided here":"Entender cómo se decide el salario aquí","Qualifying for a bonus or incentive":"Calificar para un bono o incentivo","Building the skills for a higher pay band":"Desarrollar las habilidades para una banda salarial más alta","Getting more hours, shifts or overtime":"Conseguir más horas, turnos u horas extra",
+  "Which role are you aiming for?":"¿A qué puesto aspiras?","A senior or lead technician / engineer":"Técnico o ingeniero sénior o líder","A technical team lead":"Líder de equipo técnico","A specialist or architect role":"Un puesto de especialista o arquitecto","Not sure yet":"Aún no lo sé","A shift or team lead":"Líder de turno o de equipo","A supervisor or manager":"Supervisor o gerente","A senior specialist role":"Un puesto de especialista sénior",
+  "What kind of recognition means the most to you?":"¿Qué tipo de reconocimiento significa más para ti?","Private feedback from my manager":"Retroalimentación privada de mi líder","Public shout-outs in the team":"Reconocimientos públicos en el equipo","Recognition from senior leaders":"Reconocimiento de la alta dirección","Formal awards":"Premios formales",
+  "What would make you feel more secure?":"¿Qué te haría sentir más seguro?","Clearer expectations":"Expectativas más claras","Skills and certifications that keep me in demand":"Habilidades y certificaciones que me mantengan solicitado","Knowing where the business is heading":"Saber hacia dónde va el negocio","A predictable schedule or on-call rota":"Un horario o guardias predecibles","Skills that keep me in demand":"Habilidades que me mantengan solicitado","A predictable schedule":"Un horario predecible",
+  "Which kind of flexibility matters most?":"¿Qué tipo de flexibilidad te importa más?","Choice of shifts or schedule":"Elegir turnos u horario","Remote or hybrid days":"Días remotos o híbridos","Time for study or family":"Tiempo para estudiar o para la familia","Help with workload peaks":"Ayuda en los picos de trabajo",
+  "What do you believe about growing at work?":"¿Qué crees sobre crecer en el trabajo?","Beliefs shape how people respond to challenge and feedback. Your answers change how your plan and your manager's coaching are framed.":"Las creencias influyen en cómo respondemos a los retos y a la retroalimentación. Tus respuestas cambian cómo se plantean tu plan y el acompañamiento de tu líder.",
+  "Your talent for this kind of work is something you can't change much":"Tu talento para este tipo de trabajo es algo que no puedes cambiar mucho","Anyone can get significantly better at their job with the right practice":"Cualquiera puede mejorar mucho en su trabajo con la práctica adecuada","I'm confident I can learn the skills I'll need for my next step":"Confío en que puedo aprender las habilidades que necesitaré para mi siguiente paso",
+  "If I put in the effort, I can perform well on what I'm measured on":"Si me esfuerzo, puedo rendir bien en lo que me evalúan","Performing well here leads to outcomes I care about":"Rendir bien aquí me lleva a resultados que me importan","Rewards and recognition here are fair for what I put in":"Las recompensas y el reconocimiento aquí son justos para lo que aporto",
+  "At work, what are you mostly trying to do?":"En el trabajo, ¿qué intentas hacer principalmente?","Develop my skills as much as I can":"Desarrollar mis habilidades lo más posible","Show I'm one of the strongest performers":"Demostrar que soy de los que mejor rinden","Avoid looking less capable than others":"Evitar parecer menos capaz que otros","Avoid falling behind or losing skills I have":"Evitar quedarme atrás o perder habilidades que tengo",
+  "Where do you want your career to go?":"¿Hacia dónde quieres llevar tu carrera?","You are in the":"Estás en la etapa",
+  "Move into leadership":"Pasar al liderazgo","Lead people or a team":"Dirigir personas o un equipo","Become the go-to expert":"Ser el experto de referencia","Grow deeper in my specialty":"Profundizar en mi especialidad","Explore a different area":"Explorar otra área","Another team, function or site":"Otro equipo, función o sede","Grow in my current role":"Crecer en mi puesto actual","Get more out of the job I have":"Sacarle más provecho a mi trabajo actual",
+  "Build a career that can go anywhere":"Construir una carrera que pueda ir a cualquier parte","Here or at another company, wherever my next step is":"Aquí o en otra empresa, donde esté mi siguiente paso","I'm not sure yet":"Aún no estoy seguro","Help me figure it out":"Ayúdame a descubrirlo",
+  "When would you like to be ready?":"¿Cuándo te gustaría estar listo?","Within # months":"En # meses","Within a year":"En un año","In #+ years":"En #+ años","You are new in role, so we'll add steps to build a strong track record first.":"Eres nuevo en el puesto, así que agregaremos pasos para construir primero un historial sólido.",
+  "What do you want to be known for?":"¿Por qué quieres que te conozcan?","Which area interests you?":"¿Qué área te interesa?","What would make your role more rewarding?":"¿Qué haría tu puesto más gratificante?","What kind of role do you want next, wherever it is?":"¿Qué tipo de puesto quieres después, sea donde sea?",
+  "Your manager can see your direction. Growth Compass treats a move to another company as a normal career step. The skills you build go with you.":"Tu líder puede ver tu dirección. Growth Compass considera el cambio a otra empresa un paso normal de carrera. Las habilidades que desarrollas se van contigo.",
+  "Besides pay, what do you want this job to teach you?":"Además del salario, ¿qué quieres que te enseñe este trabajo?","e.g. how to lead a shift, how to read a P&L, PLC programming":"p. ej. cómo dirigir un turno, cómo leer un estado de resultados, programación de PLC","Every job is also a place to learn. Skills stay with you wherever you go next.":"Todo trabajo es también un lugar para aprender. Las habilidades se quedan contigo vayas donde vayas.",
+  "Make it practical":"Hazlo práctico","What usually gets in the way of your development?":"¿Qué suele frenar tu desarrollo?","Pick any.":"Elige las que quieras.",
+  "Time during work":"Tiempo durante el trabajo","Clear expectations":"Expectativas claras","Regular feedback":"Retroalimentación regular","Training budget or tools":"Presupuesto o herramientas de capacitación","Confidence":"Confianza","Shift or schedule conflicts":"Conflictos de turno u horario",
+  "How much work time can you realistically give to development?":"¿Cuánto tiempo de trabajo puedes dedicar de forma realista a tu desarrollo?","# to # hours a month":"# a # horas al mes","About # hours a month":"Unas # horas al mes","#+ hours a month":"#+ horas al mes",
+  "How much of your own time will you invest each month?":"¿Cuánto de tu propio tiempo invertirás cada mes?","None for now":"Nada por ahora",
+  "Your development is yours. Employers can offer work time, but people who move fastest usually invest some of their own too. There is no wrong answer; your plan is sized to what you choose.":"Tu desarrollo es tuyo. Las empresas pueden ofrecer tiempo de trabajo, pero quienes avanzan más rápido suelen invertir también algo de su propio tiempo. No hay respuesta incorrecta; tu plan se ajusta a lo que elijas.",
+  "Your plan is ready":"Tu plan está listo",
+  // Ownership
+  "This is yours":"Esto es tuyo","You drive your development. Your manager guides, supports and opens doors, but doesn't decide where you go next. The skills you build belong to you, wherever you work.":"Tú impulsas tu desarrollo. Tu líder guía, apoya y abre puertas, pero no decide a dónde vas después. Las habilidades que desarrollas te pertenecen, trabajes donde trabajes.",
+  "Actions done":"Acciones hechas","by you":"por ti","Practice logged":"Práctica registrada","independent reps":"repeticiones independientes","Yours to keep":"Tuyas para siempre","skills mastered or certified":"habilidades dominadas o certificadas","Lessons for any job":"Lecciones para cualquier trabajo","from check-ins":"de los seguimientos",
+  "If this job isn't the right one for you, use it anyway: every skill you build here leaves with you.":"Si este trabajo no es el ideal para ti, aprovéchalo igual: cada habilidad que desarrollas aquí se va contigo.",
+  "Pay and security matter, and that's fine. Skills are what raise your pay over time, here or elsewhere. Every skill you master and certification you earn strengthens your next pay conversation or job application.":"El salario y la seguridad importan, y está bien. Las habilidades son lo que sube tu salario con el tiempo, aquí o en otro lugar. Cada habilidad que dominas y cada certificación que obtienes fortalece tu próxima conversación salarial o postulación.",
+  "You already value the work itself. Be deliberate about it: treat this job as a place to collect skills you'll keep for the rest of your career.":"Ya valoras el trabajo en sí. Hazlo con intención: trata este trabajo como un lugar para reunir habilidades que conservarás toda tu carrera.",
+  "Treat this job as two things: a way to earn, and a place to learn. The earning stops when you leave. The learning doesn't.":"Ve este trabajo como dos cosas: una forma de ganar dinero y un lugar para aprender. El ingreso termina cuando te vas. El aprendizaje no.",
+  "You said you want this job to teach you:":"Dijiste que quieres que este trabajo te enseñe:",
+  // Plan
+  "#-day development plan":"Plan de desarrollo de # días","My plan":"Mi plan","Their plan":"Su plan","Started <DATE> · actions follow #-#-#:":"Inicio: <DATE> · las acciones siguen el modelo #-#-#:","practice on the job,":"práctica en el trabajo,","learning from people,":"aprendizaje con otras personas,","formal learning.":"aprendizaje formal.",
+  "Is it working?":"¿Está funcionando?","Reaction":"Reacción","energy at last check-in":"energía en el último seguimiento","energy · productivity #/# at last check-in":"energía · productividad #/# en el último seguimiento","of actions done":"de las acciones hechas","Behaviour":"Comportamiento","times applied on the job":"veces aplicado en el trabajo","Results":"Resultados","active goals met":"metas activas cumplidas","active goals met · # parked":"metas activas cumplidas · # en pausa",
+  "Reality check":"Prueba de realidad","Plan is bigger than the time available":"El plan es más grande que el tiempo disponible","Fits the time available":"Cabe en el tiempo disponible","This plan has":"Este plan tiene",
+  "in # days (at roughly # hours per action). You will not finish everything in # days. Work through the actions in order and expect the rest to run over, or agree more development time.":"en # días (unas # horas por acción). No terminarás todo en # días. Avanza por las acciones en orden y asume que el resto tomará más tiempo, o acuerda más tiempo de desarrollo.",
+  "in # days (at roughly # hours per action). They will not finish everything in # days. Work through the actions in order and expect the rest to run over, or agree more development time.":"en # días (unas # horas por acción). No terminará todo en # días. Que avance por las acciones en orden y asuma que el resto tomará más tiempo, o acuerden más tiempo de desarrollo.",
+  "open actions against realistic time for about":"acciones abiertas frente a tiempo realista para unas","(roughly # hours per action).":"(unas # horas por acción).",
+  "goals are parked because you don't have time for them yet. Bring one back only when another is done.":"metas están en pausa porque aún no tienes tiempo para ellas. Retoma una solo cuando termines otra.","goals are parked because they don't have time for them yet. Bring one back only when another is done.":"metas están en pausa porque aún no tiene tiempo para ellas. Que retome una solo cuando termine otra.",
+  "goal is parked because you don't have time for it yet. Bring one back only when another is done.":"meta está en pausa porque aún no tienes tiempo para ella. Retómala solo cuando termines otra.","goal is parked because they don't have time for it yet. Bring one back only when another is done.":"meta está en pausa porque aún no tiene tiempo para ella. Que la retome solo cuando termine otra.",
+  "Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make you ready and make the case. It cannot guarantee the outcome, and your manager should not promise it.":"Algunos resultados dependen de otras personas: salario, ascenso, reconocimiento, arreglos flexibles. El plan puede prepararte y fundamentar tu caso. No puede garantizar el resultado, y tu líder no debería prometerlo.",
+  "Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make them ready and make the case. It cannot guarantee the outcome, and you should not promise it.":"Algunos resultados dependen de otras personas: salario, ascenso, reconocimiento, arreglos flexibles. El plan puede prepararle y fundamentar su caso. No puede garantizar el resultado, y tú no deberías prometerlo.",
+  "Goal status":"Estado de la meta","Not started":"Sin empezar","In progress":"En curso","Done":"Hecho","Later":"Más adelante","Due <DATE> · #/#":"Vence <DATE> · #/#","Success looks like:":"El éxito se ve así:",
+  "Realistic":"Realista","Unlikely in # days":"Poco probable en # días","Not fully in your control":"No depende solo de ti","Parked for later":"En pausa",
+  "Within your control and sized for # days, if you do the actions.":"Depende de ti y está dimensionado para # días, si haces las acciones.","Only part of this fits the time you have.":"Solo una parte cabe en el tiempo que tienes.",
+  "Realistic progress in # days. Real mastery takes months of repeated practice; one course won't do it.":"Progreso realista en # días. La maestría real lleva meses de práctica repetida; un curso no basta.",
+  "Realistic to start and apply in # days. Certifications usually take weeks to months of study; check the official exam guide.":"Es realista empezar y aplicarlo en # días. Las certificaciones suelen requerir de semanas a meses de estudio; revisa la guía oficial del examen.",
+  "Pay depends on the company's pay process and budget, not only on you. This goal builds your case. It does not guarantee a rise.":"El salario depende del proceso salarial y del presupuesto de la empresa, no solo de ti. Esta meta fortalece tu caso. No garantiza un aumento.",
+  "With less than a year in role, a promotion in # days is unlikely. Most organisations want a track record first. Realistic target: ready to act up within # months.":"Con menos de un año en el puesto, un ascenso en # días es poco probable. La mayoría de las organizaciones primero quiere un historial. Meta realista: estar listo para cubrir el puesto superior en # meses.",
+  "Promotion depends on an opening and on other people's decisions. This goal makes you ready. It cannot guarantee the role.":"El ascenso depende de que haya una vacante y de decisiones de otras personas. Esta meta te prepara. No puede garantizar el puesto.",
+  "You control making your work visible. You don't control how others respond.":"Tú controlas hacer visible tu trabajo. No controlas cómo responden los demás.",
+  "Depends on business needs and policy. A trial is realistic. A guaranteed arrangement is not.":"Depende de las necesidades del negocio y de las políticas. Una prueba es realista. Un arreglo garantizado no.",
+  "Going from new in role to leading others in # months is unlikely. A realistic timeline is # to # months.":"Pasar de ser nuevo en el puesto a dirigir a otros en # meses es poco probable. Un plazo realista es de # a # meses.",
+  "Possible only with consistent effort and an opening. Plan for # months and treat # as a bonus.":"Es posible solo con esfuerzo constante y una vacante. Planea para # meses y toma # como un extra.",
+  "A realistic timeline, if you build a track record of leading small things now.":"Un plazo realista, si desde ahora construyes un historial liderando cosas pequeñas.",
+  "Not in these # days. There isn't time for it alongside the goals above. Bring it back when one is done, or agree more development time first.":"No en estos # días. No hay tiempo para ella junto a las metas anteriores. Retómala cuando termines una, o acuerda primero más tiempo de desarrollo.",
+  "Mark done":"Marcar como hecho","Remove action":"Quitar acción","Action type":"Tipo de acción","Add an action":"Agregar una acción","New action":"Nueva acción","Add":"Agregar","Ask of your manager:":"Pide a tu líder:","How you can help:":"Cómo puedes ayudar:","Remove goal":"Quitar meta",
+  "Add your own goal":"Agrega tu propia meta","e.g. Get my forklift licence":"p. ej. Obtener mi licencia de montacargas","New goal":"Nueva meta","Add goal":"Agregar meta",
+  "On the job: deliberate practice":"En el trabajo: práctica deliberada","With people: modelling and feedback":"Con otras personas: modelado y retroalimentación","Formal learning":"Aprendizaje formal",
+  "Career direction":"Dirección de carrera","Foundation · needs and confidence":"Base · necesidades y confianza","Strengths · how you work best":"Fortalezas · cómo trabajas mejor","Own goal":"Meta propia",
+  // Goal & action content (fixed strings)
+  "Build the confidence and conditions to grow":"Construir la confianza y las condiciones para crecer","Your needs and confidence scores improve when you retake the assessment in # days.":"Tus puntajes de necesidades y confianza mejoran cuando repites la evaluación en # días.",
+  "Start with small wins and informational feedback. Ask about what's getting in the way before adding stretch.":"Empieza con pequeños logros y retroalimentación informativa. Pregunta qué está frenando antes de sumar retos.",
+  "List the parts of your work where you'd like more say, and bring the list to your next #:#.":"Haz una lista de las partes de tu trabajo donde quisieras más voz y llévala a tu próxima reunión #:#.",
+  "Start with one small, winnable task this week. Afterwards, write down what you did that made it work.":"Empieza esta semana con una tarea pequeña y alcanzable. Después, anota qué hiciste para que funcionara.",
+  "Set up a regular #-minute catch-up with one teammate.":"Programa una conversación regular de # minutos con un compañero.",
+  "Watch a peer at a similar level handle something you find hard, then try it yourself the same week.":"Observa a un compañero de nivel similar resolver algo que te cuesta y luego inténtalo tú esa misma semana.",
+  "Keep a weekly \"mistake → lesson\" note: one thing that went wrong and what you'll try next time.":"Lleva una nota semanal de \"error → lección\": algo que salió mal y qué intentarás la próxima vez.",
+  "Each month, compare your work with your own work last month, not with other people's.":"Cada mes, compara tu trabajo con tu propio trabajo del mes anterior, no con el de otras personas.",
+  "Use your strengths more, in the way you work best":"Usa más tus fortalezas, de la forma en que trabajas mejor","More of your week goes to work that uses your strengths, and your productivity rating rises at check-ins.":"Más de tu semana se dedica a trabajo que usa tus fortalezas, y tu calificación de productividad sube en los seguimientos.",
+  "Teach or support a teammate using your strength.":"Enseña o apoya a un compañero usando tu fortaleza.","Share one thing you're good at with a colleague in a short one-to-one walkthrough.":"Comparte algo en lo que eres bueno con un compañero en una breve explicación uno a uno.",
+  "Build their strengths into their assignments.":"Incorpora sus fortalezas en sus asignaciones.",
+  "A self-rating against the next role's competencies, reviewed with your manager, with gaps named.":"Una autoevaluación frente a las competencias del siguiente puesto, revisada con tu líder, con las brechas identificadas.",
+  "Act up in parts of the next role: cover for the lead, run a huddle or own a handover.":"Asume partes del siguiente puesto: cubre al líder, dirige una reunión breve o hazte cargo de una entrega de turno.",
+  "Interview someone in the role you want about what success looks like.":"Entrevista a alguien en el puesto que quieres sobre cómo se ve el éxito.","Review the competency profile for the role and rate yourself against it.":"Revisa el perfil de competencias del puesto y califícate frente a él.","Name readiness gaps honestly and create act-up opportunities.":"Nombra con honestidad las brechas de preparación y crea oportunidades para cubrir el puesto superior.",
+  "Find the next role that fits you":"Encontrar el siguiente puesto que encaje contigo","Make your contributions visible":"Hacer visibles tus aportes","Three monthly wins notes sent and one piece of work presented to a wider group.":"Tres notas mensuales de logros enviadas y un trabajo presentado a un grupo más amplio.",
+  "Send your manager a short monthly note of wins and what they made possible.":"Envía a tu líder una breve nota mensual con tus logros y lo que hicieron posible.","Present one piece of your work to a wider group this quarter.":"Presenta uno de tus trabajos a un grupo más amplio este trimestre.","Learn to describe impact clearly: situation, action, result.":"Aprende a describir el impacto con claridad: situación, acción, resultado.",
+  "A written list of # or # results that support your next pay conversation, agreed with your manager.":"Una lista escrita de # o # resultados que respalden tu próxima conversación salarial, acordada con tu líder.",
+  "Agree with your manager on # or # results that would support a pay conversation at the next review.":"Acuerda con tu líder # o # resultados que respalden una conversación salarial en la próxima evaluación.","Ask your manager or HR to walk you through the pay band and criteria for your role.":"Pide a tu líder o a RR. HH. que te explique la banda salarial y los criterios de tu puesto.","Keep a monthly wins log with numbers to bring to your review.":"Lleva un registro mensual de logros con cifras para tu evaluación.","Be transparent about how pay decisions work and which parts are within their control.":"Sé transparente sobre cómo se decide el salario y qué partes dependen de la persona.",
+  "Written expectations for your role, agreed with your manager, and one in-demand skill in progress.":"Expectativas escritas para tu puesto, acordadas con tu líder, y una habilidad demandada en desarrollo.","Ask your manager to share team and business plans in your #:#s.":"Pide a tu líder que comparta los planes del equipo y del negocio en tus reuniones #:#.","Pick one in-demand skill for your role and complete training in it.":"Elige una habilidad muy demandada para tu puesto y completa una capacitación en ella.","Give early, honest information about changes and confirm expectations in writing.":"Da información temprana y honesta sobre los cambios y confirma las expectativas por escrito.",
+  "A trial arrangement agreed and reviewed after # weeks.":"Un arreglo de prueba acordado y revisado después de # semanas.","Talk with teammates about swapping or sharing to cover peaks.":"Habla con tus compañeros sobre intercambiar o compartir para cubrir los picos.","Review the company's flexible-work policy and what options exist.":"Revisa la política de trabajo flexible de la empresa y qué opciones existen.","Trial a flexible arrangement and judge it on results.":"Prueba un arreglo flexible y evalúalo por resultados.",
+  "Hold a #-minute monthly review with your manager on results, not activity.":"Ten una revisión mensual de # minutos con tu líder sobre resultados, no sobre actividad.","Learn a simple planning method (weekly priorities or a kanban board) and use it for a month.":"Aprende un método simple de planificación (prioridades semanales o un tablero kanban) y úsalo durante un mes.","Define the decision boundary clearly, then step back. Review outcomes, not tasks.":"Define con claridad el límite de decisión y luego da un paso atrás. Revisa resultados, no tareas.",
+  "Share impact stories and data in #:#s, and explain the why when assigning work.":"Comparte historias y datos de impacto en las reuniones #:# y explica el porqué al asignar trabajo.","Protect learning time and help find a real project to apply it in.":"Protege el tiempo de aprendizaje y ayuda a encontrar un proyecto real donde aplicarlo.",
+  "Three new or deeper working relationships, and a higher connection score at your next check.":"Tres relaciones de trabajo nuevas o más profundas, y un puntaje de conexión más alto en tu próxima revisión.","Set up a regular coffee or walk-and-talk with a colleague.":"Programa un café o una caminata regular para conversar con un compañero.","Join an employee group, community of practice or volunteering day.":"Únete a un grupo de colaboradores, una comunidad de práctica o una jornada de voluntariado.","Include them in team decisions and create chances to collaborate.":"Inclúyele en las decisiones del equipo y crea oportunidades para colaborar.",
+  "Led at least # huddles, handovers or small projects, with written feedback from your manager.":"Haber dirigido al menos # reuniones breves, entregas de turno o proyectos pequeños, con retroalimentación escrita de tu líder.","Lead one team huddle, handover or small project each month.":"Dirige cada mes una reunión breve de equipo, una entrega de turno o un proyecto pequeño.","Ask a current leader to mentor you monthly.":"Pide a un líder actual que sea tu mentor cada mes.","Complete a first-time leader course.":"Completa un curso para nuevos líderes.","Give act-up opportunities and honest readiness feedback.":"Da oportunidades para cubrir el puesto superior y retroalimentación honesta sobre su preparación.",
+  "Teammates regularly bring you questions in this area, and you have run one teach-back.":"Tus compañeros te traen preguntas de esta área con regularidad, y ya diste una sesión para enseñar lo aprendido.","Handle the hardest specialist questions on the team for a quarter.":"Atiende durante un trimestre las preguntas especializadas más difíciles del equipo.","Run a #-minute teach-back for the team.":"Da una sesión de # minutos al equipo para enseñar lo que sabes.","Pursue an advanced certification in your specialty.":"Busca una certificación avanzada en tu especialidad.","Pursue advanced training or a professional qualification.":"Busca formación avanzada o una cualificación profesional.","Make their expertise visible and send the hard questions their way.":"Haz visible su experiencia y envíale las preguntas difíciles.",
+  "Three conversations held and a clear decision about the next step.":"Tres conversaciones realizadas y una decisión clara sobre el siguiente paso.","Join a cross-team project or cover in that area for a few shifts.":"Únete a un proyecto entre equipos o cubre algunos turnos en esa área.","Learn the basics of how that area works and what it looks for.":"Aprende lo básico de cómo funciona esa área y qué busca.","Broker introductions and allow time for a short rotation or shadowing.":"Facilita presentaciones y da tiempo para una rotación corta u observación.",
+  "Make your current role more rewarding":"Hacer más gratificante tu puesto actual","One redesigned part of your job in place and reviewed after # weeks.":"Una parte de tu trabajo rediseñada, implementada y revisada después de # semanas.","Redesign one part of your job with your manager to add variety, ownership of a whole piece of work, or more direct feedback.":"Rediseña con tu líder una parte de tu trabajo para sumar variedad, responsabilidad sobre un trabajo completo o retroalimentación más directa.","Ask peers for one idea to improve your day-to-day.":"Pide a tus compañeros una idea para mejorar tu día a día.","Learn one skill that would make the work easier.":"Aprende una habilidad que facilite el trabajo.","Look for job-crafting options: more skill variety, a whole task they can own, visible significance and direct feedback.":"Busca opciones de rediseño del puesto: más variedad de habilidades, una tarea completa que pueda asumir, un significado visible y retroalimentación directa.",
+  "Build portable skills for your next role":"Desarrollar habilidades transferibles para tu siguiente puesto","Two skills or certifications that role asks for, mastered with evidence and listed in your skills passport.":"Dos habilidades o certificaciones que pide ese puesto, dominadas con evidencia y registradas en tu pasaporte de habilidades.","Volunteer for work here that builds the skills that role asks for.":"Ofrécete para trabajos aquí que desarrollen las habilidades que pide ese puesto.","Earn one certification that employers in that field recognise.":"Obtén una certificación que reconozcan los empleadores de ese campo.",
+  "Support it. The skills they build here make your team stronger while they're with you. Be honest about which next steps you can and can't offer internally.":"Apóyalo. Las habilidades que desarrolla aquí fortalecen a tu equipo mientras esté contigo. Sé honesto sobre qué siguientes pasos puedes ofrecer internamente y cuáles no.",
+  "Explore what's next for you":"Explorar qué sigue para ti","A short list of # directions to test next quarter.":"Una lista corta de # direcciones para probar el próximo trimestre.","Note which tasks give you energy each week for a month.":"Durante un mes, anota cada semana qué tareas te dan energía.","Talk with # people in different roles about their path.":"Habla con # personas en distintos puestos sobre su trayectoria.","Browse internal roles and note what appeals and why.":"Revisa puestos internos y anota qué te atrae y por qué.","Help them reflect on energy and strengths, and share options you see for them.":"Ayúdale a reflexionar sobre su energía y fortalezas, y comparte opciones que ves para esa persona.",
+  "Agree with your manager on what \"fully proficient\" looks like in this role and check against it at #, # and # days.":"Acuerda con tu líder cómo se ve estar \"plenamente competente\" en este puesto y compárate con eso a los #, # y # días.","Pick one result this quarter you can show with numbers.":"Elige un resultado de este trimestre que puedas mostrar con cifras.","Agree with your manager on a scope increase or a next-role conversation within # days.":"Acuerda con tu líder ampliar tu alcance o tener una conversación sobre el siguiente puesto en # días.","Mentor or teach one colleague something you know well this quarter.":"Este trimestre, sé mentor o enseña a un compañero algo que domines.",
+  "Make expectations explicit, pair them with a buddy and check in more often than usual.":"Haz explícitas las expectativas, asígnale un compañero de apoyo y haz seguimiento más seguido de lo habitual.","Give stretch work with specific feedback, and start talking openly about next steps.":"Asigna trabajo retador con retroalimentación específica y empieza a hablar abiertamente de los siguientes pasos.","Watch for plateau. Discuss the next role openly and broaden their scope.":"Atento al estancamiento. Habla abiertamente del siguiente puesto y amplía su alcance.","Use their expertise to develop others and refresh their challenge. Check they still feel stretched.":"Usa su experiencia para desarrollar a otros y renueva sus retos. Verifica que siga sintiéndose desafiado.",
+  "Focus on mastering the basics and building relationships before stretching wide.":"Enfócate en dominar lo básico y crear relaciones antes de abarcar más.","You know the role. Now is the time to add depth and results you can point to.":"Conoces el puesto. Ahora es momento de sumar profundidad y resultados que puedas mostrar.","You are experienced here. Growth now comes from bigger scope, new challenges or a next role.":"Tienes experiencia aquí. Ahora el crecimiento viene de un alcance mayor, nuevos retos o un siguiente puesto.","Deep experience is an asset. Keep it fresh and multiply it through others.":"La experiencia profunda es un activo. Mantenla vigente y multiplícala a través de otros.",
+  // Profile
+  "My motivation profile":"Mi perfil de motivación","Motivation profile":"Perfil de motivación","Retake":"Repetir","Why you put in effort":"Por qué te esfuerzas","Controlled":"Controlada","Autonomous":"Autónoma","Mixed":"Mixta","Disengaged":"Desconectada",
+  "Amotivation":"Desmotivación","External":"Externa","Introjected":"Introyectada","Identified":"Identificada","Intrinsic":"Intrínseca","Extrinsic":"Extrínseca",
+  "No clear reason to put in effort":"Sin una razón clara para esforzarse","Effort for rewards or to avoid consequences":"Esfuerzo por recompensas o para evitar consecuencias","Effort from guilt, pressure or ego":"Esfuerzo por culpa, presión u orgullo","Effort because you value the outcome":"Esfuerzo porque valoras el resultado","Effort because the work itself is enjoyable":"Esfuerzo porque el trabajo en sí es disfrutable",
+  "Motivation continuum: Amotivation #, External #, Introjected #, Identified #, Intrinsic #":"Continuo de motivación: Desmotivación #, Externa #, Introyectada #, Identificada #, Intrínseca #",
+  "Most of your effort comes from valuing or enjoying the work. That kind of motivation tends to last and supports well-being and learning.":"La mayor parte de tu esfuerzo viene de valorar o disfrutar el trabajo. Ese tipo de motivación suele durar y favorece el bienestar y el aprendizaje.",
+  "Your effort comes from a mix of valuing the work and outside pressure or rewards. Connecting tasks to goals you care about can shift the balance.":"Tu esfuerzo viene de una mezcla entre valorar el trabajo y la presión o las recompensas externas. Conectar las tareas con metas que te importan puede cambiar el equilibrio.",
+  "Much of your effort comes from rewards, pressure or obligation. That can work short-term but is harder to sustain. Your plan focuses on finding personal value in the work.":"Gran parte de tu esfuerzo viene de recompensas, presión u obligación. Puede funcionar a corto plazo, pero es más difícil de sostener. Tu plan se enfoca en encontrar valor personal en el trabajo.",
+  "Right now you may not see much reason to put effort in. That's important to talk about openly with your manager. The plan starts small.":"Puede que ahora no veas muchas razones para esforzarte. Es importante hablarlo abiertamente con tu líder. El plan empieza con poco.",
+  "Needs met at work":"Necesidades cubiertas en el trabajo","Competence":"Competencia","Relatedness":"Relación","All three needs are at least partly met. Keep doing what supports them.":"Las tres necesidades están al menos parcialmente cubiertas. Sigue haciendo lo que las sostiene.",
+  "is related to:":"se relaciona con:","is low.":"está baja.","What would help:":"Qué ayudaría:","What to do:":"Qué hacer:",
+  "Offer choice in how work gets done, explain the reason behind the non-negotiables, and acknowledge their point of view.":"Ofrece opciones sobre cómo se hace el trabajo, explica la razón de lo no negociable y reconoce su punto de vista.",
+  "Set clear expectations, break work into achievable steps and give informational feedback (what worked, what to try next) rather than controlling feedback.":"Fija expectativas claras, divide el trabajo en pasos alcanzables y da retroalimentación informativa (qué funcionó, qué probar después) en lugar de retroalimentación controladora.",
+  "Make time to connect personally, include them in team decisions and pair them with a buddy.":"Dedica tiempo a conectar en lo personal, inclúyele en las decisiones del equipo y asígnale un compañero de apoyo.",
+  "Agree on outcomes and check-in points, then stop checking the how in between.":"Acuerden resultados y puntos de revisión, y luego deja de revisar el cómo entre medio.","Explain the reason behind each rule, and invite ideas on where flexibility is safe.":"Explica la razón de cada regla e invita a proponer dónde es seguro flexibilizar.","Offer choices within the constraints: shift preferences, task order, who they partner with.":"Ofrece opciones dentro de los límites: preferencias de turno, orden de tareas, con quién trabaja.","Ask for their input before decisions, and close the loop on what you did with it.":"Pide su opinión antes de decidir y cuéntale qué hiciste con ella.",
+  "Pin down the specific skill gap and arrange hands-on training or a buddy.":"Identifica la brecha de habilidad específica y organiza capacitación práctica o un compañero de apoyo.","Write down what good looks like, with real examples.":"Escribe cómo se ve un buen trabajo, con ejemplos reales.","Give short, specific feedback weekly: what worked and what to try next.":"Da retroalimentación breve y específica cada semana: qué funcionó y qué probar después.","Redesign part of the role around the strengths they named in \"How you work best\".":"Rediseña parte del puesto en torno a las fortalezas que nombró en \"Cómo trabajas mejor\".","Review workload together and remove or delay lower-value tasks.":"Revisen juntos la carga de trabajo y eliminen o pospongan tareas de menor valor.",
+  "Build in regular touchpoints: shared huddles, a buddy, or a joint task each week.":"Crea puntos de contacto regulares: reuniones breves compartidas, un compañero de apoyo o una tarea conjunta cada semana.","Address the conflict directly and fairly. Set team norms for how disagreements are handled.":"Atiende el conflicto de forma directa y justa. Define normas de equipo para manejar los desacuerdos.","Assign a buddy and make introductions across the team and neighbouring teams.":"Asigna un compañero de apoyo y haz presentaciones en el equipo y en equipos cercanos.","Spend part of each 1:1 on them, not the work: interests, goals, what's going on.":"Dedica parte de cada reunión 1:1 a la persona, no al trabajo: intereses, metas, qué está pasando.","Watch who is included in conversations and decisions. Make inclusion explicit and set the tone yourself.":"Observa quién queda incluido en conversaciones y decisiones. Haz explícita la inclusión y marca tú el tono.",
+  "(self-identified)":"(autoidentificado)","How I work best":"Cómo trabajo mejor","How they work best":"Cómo trabaja mejor","Works best":"Trabaja mejor","Team identity":"Identidad de equipo","strong":"fuerte","weak":"débil","moderate":"moderada","Productive with":"Productivo con","Sharpest":"Más enfocado","Go-to for":"Le buscan para","Loses track of time":"Pierde la noción del tiempo","At their most productive:":"En su momento más productivo:",
+  "Rewards that matter":"Recompensas que importan","Growth, meaning and ownership matter more to you than incentives right now.":"Ahora te importan más el crecimiento, el sentido y la responsabilidad propia que los incentivos.","Tangible rewards (pay, title, recognition, stability) matter most right now. Your plan makes the path to them explicit.":"Ahora te importan más las recompensas tangibles (salario, cargo, reconocimiento, estabilidad). Tu plan hace explícito el camino hacia ellas.","Both the work itself and its rewards matter to you.":"Te importan tanto el trabajo en sí como sus recompensas.",
+  "Intrinsic #%, extrinsic #%":"Intrínseca #%, extrínseca #%","Mindset":"Mentalidad","Growth":"De crecimiento","Fixed":"Fija","Goal focus":"Enfoque de metas","Mastery-approach":"Acercamiento al dominio","Performance-approach":"Acercamiento al desempeño","Performance-avoidance":"Evitación en el desempeño","Mastery-avoidance":"Evitación en el dominio",
+  "confident they can learn what's next":"confía en que puede aprender lo que sigue","Effort → results":"Esfuerzo → resultados","· results → rewards":"· resultados → recompensas","Fairness":"Equidad","Role type":"Tipo de puesto","Time in role":"Antigüedad en el puesto","Time available":"Tiempo disponible","Wants to learn":"Quiere aprender","Blockers":"Obstáculos","None named":"Ninguno indicado",
+  // Talents vs goals
+  "Talents vs goals":"Talentos vs. metas","A talent is what you already do well, with evidence. A goal is what you still have to build. Keep them separate so expectations stay realistic.":"Un talento es lo que ya haces bien, con evidencia. Una meta es lo que aún tienes que construir. Mantenlos separados para que las expectativas sean realistas.",
+  "A talent is what they already do well, with evidence. A goal is what they still have to build. Keep them separate so expectations stay realistic.":"Un talento es lo que ya hace bien, con evidencia. Una meta es lo que aún tiene que construir. Mantenlos separados para que las expectativas sean realistas.",
+  "Talents: already strong today":"Talentos: fuertes desde hoy","Goals: still to build":"Metas: aún por construir","Confirmed":"Confirmado","Self-reported":"Autodeclarado","Not yet confirmed. Ask a colleague or your manager whether they'd agree.":"Aún no confirmado. Pregunta a un compañero o a tu líder si estarían de acuerdo.","No evidence added yet.":"Aún no se agregó evidencia.","Energised by:":"Le da energía:",
+  "None recorded yet. Be specific and add evidence: what do people rely on you for?":"Aún no hay ninguno. Sé específico y agrega evidencia: ¿para qué confían en ti?","None recorded yet. Be specific and add evidence: what do people rely on them for?":"Aún no hay ninguno. Sé específico y agrega evidencia: ¿para qué confían en esa persona?",
+  "Your manager can open doors: time, tasks, feedback, funding. They can't do the work for you, and they can't guarantee pay or promotion. What you put in decides most of what you get out.":"Tu líder puede abrir puertas: tiempo, tareas, retroalimentación, financiamiento. No puede hacer el trabajo por ti ni garantizar salario o ascenso. Lo que pones decide la mayor parte de lo que obtienes.",
+  "Support, don't promise. Create the conditions (time, tasks, feedback, funding), be straight about what's realistic, and never promise pay or promotion you don't control.":"Apoya, no prometas. Crea las condiciones (tiempo, tareas, retroalimentación, financiamiento), sé claro sobre lo que es realista y nunca prometas salario o ascensos que no controlas.",
+  // Skills passport
+  "Skills passport":"Pasaporte de habilidades","You own this · your manager supports":"Esto es tuyo · tu líder te apoya","Owned by the employee":"Le pertenece al colaborador","mastered ·":"dominadas ·","in progress":"en curso","in progress ·":"en curso ·","waiting":"en espera",
+  "Read-only. They choose and update these; you respond to their support requests.":"Solo lectura. La persona elige y actualiza esto; tú respondes a sus solicitudes de apoyo.","Nothing added yet.":"Aún no hay nada.","Nothing added yet. Pick a suggestion below or add your own.":"Aún no hay nada. Elige una sugerencia o agrega la tuya.",
+  "Copy my passport for a CV or profile":"Copiar mi pasaporte para un CV o perfil","Mastered and certified items with evidence, as plain text.":"Habilidades dominadas y certificaciones con evidencia, en texto simple.","Passport copied":"Pasaporte copiado","Select all and copy":"Selecciona todo y copia",
+  "Certification":"Certificación","Skill":"Habilidad","target <DATE>":"meta <DATE>","Planned":"Planeado","Studying":"Estudiando","Exam booked":"Examen agendado","Certified":"Certificado","Learning ":"Aprendiendo","Practising":"Practicando","Mastered":"Dominado",
+  "Practised independently:":"Practicado de forma independiente:","+# practice":"+# práctica","Mastery: done # times without help, with good feedback.":"Dominio: hecho # veces sin ayuda, con buena retroalimentación.","Target":"Meta","Target date":"Fecha meta","Ask for support":"Pedir apoyo","Evidence:":"Evidencia:","e.g. passed # Oct, or handled # escalations alone":"p. ej. aprobé el # de oct., o atendí # escalamientos solo",
+  "Type of support":"Tipo de apoyo","Add detail (optional): what, when, how much":"Agrega detalle (opcional): qué, cuándo, cuánto","Send to my manager":"Enviar a mi líder","Sent to your manager":"Enviado a tu líder","Waiting for manager":"Esperando al líder",
+  "Time to study or practise":"Tiempo para estudiar o practicar","A real task to practise on":"Una tarea real para practicar","Feedback or coaching":"Retroalimentación o acompañamiento","Funding for a course or exam":"Financiamiento para un curso o examen","Shadowing or a mentor":"Observar a alguien o un mentor","Sign-off that I've mastered it":"Validación de que ya lo domino",
+  "I'll arrange it":"Lo organizo","Let's discuss in our #:#":"Hablémoslo en nuestra reunión #:#","Not possible right now":"No es posible por ahora","Reply sent":"Respuesta enviada",
+  "Suggested for you":"Sugerencias para ti","· cert":"· cert.","· skill":"· habilidad","Add your own skill or certification":"Agrega tu propia habilidad o certificación","Skill or certification name":"Nombre de la habilidad o certificación","Type":"Tipo",
+  "Your skills and certifications go with you, wherever you work. Choose what to work towards next, move it through each stage yourself, and ask your manager for the support you need. Suggestions are for technical roles and ranked by your answers. Check which certifications your company recognises or funds.":"Tus habilidades y certificaciones van contigo, trabajes donde trabajes. Elige en qué trabajar después, avanza tú mismo cada etapa y pide a tu líder el apoyo que necesites. Las sugerencias son para puestos técnicos y se ordenan según tus respuestas. Verifica qué certificaciones reconoce o financia tu empresa.",
+  "Your skills and certifications go with you, wherever you work. Choose what to work towards next, move it through each stage yourself, and ask your manager for the support you need. Suggestions are for non-technical roles and ranked by your answers. Check which certifications your company recognises or funds.":"Tus habilidades y certificaciones van contigo, trabajes donde trabajes. Elige en qué trabajar después, avanza tú mismo cada etapa y pide a tu líder el apoyo que necesites. Las sugerencias son para puestos no técnicos y se ordenan según tus respuestas. Verifica qué certificaciones reconoce o financia tu empresa.",
+  "Certified. Add your evidence.":"Certificado. Agrega tu evidencia.","Mastered. Add your evidence.":"Dominado. Agrega tu evidencia.","Log # independent practices first, or ask for sign-off.":"Registra primero # prácticas independientes, o pide la validación.",
+  // Catalog (certification brand names stay in English)
+  "Customer service professional certificate":"Certificado profesional en servicio al cliente","First-line supervisor / team leader certificate":"Certificado de supervisor de primera línea / líder de equipo","Forklift / powered equipment licence":"Licencia de montacargas / equipo motorizado","HR fundamentals certificate":"Certificado en fundamentos de RR. HH.","Mental Health First Aid":"Primeros Auxilios en Salud Mental","NFPA #E electrical safety training":"Capacitación en seguridad eléctrica NFPA #E","PLC programming certificate":"Certificado en programación de PLC","Microsoft Office Specialist: Excel":"Microsoft Office Specialist: Excel",
+  "Root-cause analysis":"Análisis de causa raíz","Preventive maintenance planning":"Planificación de mantenimiento preventivo","Scripting and automation":"Scripts y automatización","Clear technical documentation":"Documentación técnica clara","Analysing data to find problems":"Analizar datos para encontrar problemas","Training others on equipment or systems":"Capacitar a otros en equipos o sistemas","Leading a technical handover or huddle":"Dirigir una entrega técnica o reunión breve",
+  "De-escalating upset customers":"Calmar a clientes molestos","Giving and receiving feedback":"Dar y recibir retroalimentación","Running a team huddle":"Dirigir una reunión breve de equipo","Scheduling and prioritising work":"Programar y priorizar el trabajo","Coaching a new starter":"Acompañar a una persona nueva","Solving problems with data":"Resolver problemas con datos","Presenting to a group":"Presentar ante un grupo",
+  "IT support":"Soporte de TI","Networking":"Redes","Security":"Seguridad","Cloud":"Nube","IT service management":"Gestión de servicios de TI","Maintenance":"Mantenimiento","Safety":"Seguridad laboral","Controls and automation":"Control y automatización","Continuous improvement":"Mejora continua","Troubleshooting":"Resolución de fallas","Automation":"Automatización","Communication":"Comunicación","Data":"Datos","Leadership":"Liderazgo",
+  "Project management":"Gestión de proyectos","Digital skills":"Habilidades digitales","Customer service":"Servicio al cliente","Operations":"Operaciones","People":"Personas","Planning":"Planificación",
+  // Check-ins
+  "Monthly check-in":"Seguimiento mensual","A short monthly reflection helps you notice progress and adjust, which is how self-directed learners keep improving.":"Una breve reflexión mensual te ayuda a notar tu progreso y ajustar; así es como siguen mejorando quienes aprenden de forma autónoma.",
+  "How energised do you feel about your work?":"¿Qué tanta energía sientes por tu trabajo?","Energy":"Energía","Drained":"Agotado","Energised":"Con energía","How productive did you feel this month?":"¿Qué tan productivo te sentiste este mes?","Productivity":"Productividad","Not at all":"Nada","Very productive":"Muy productivo",
+  "Wins and progress":"Logros y avances","What did you learn this month that you could use in any job?":"¿Qué aprendiste este mes que podrías usar en cualquier trabajo?","A skill or lesson that goes with you, wherever you work":"Una habilidad o lección que va contigo, trabajes donde trabajes",
+  "Where did you use something new on the job?":"¿Dónde usaste algo nuevo en el trabajo?","Leave blank if you haven't yet":"Déjalo en blanco si aún no","What made the biggest difference to your progress?":"¿Qué marcó la mayor diferencia en tu progreso?","Choose one":"Elige una",
+  "My effort":"Mi esfuerzo","The approach I used":"El enfoque que usé","Help from others":"La ayuda de otros","Natural ability":"Habilidad natural","Luck or circumstances":"Suerte o circunstancias",
+  "Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.":"La habilidad y la suerte son difíciles de repetir a propósito. ¿Hubo algo que hiciste, un esfuerzo o un enfoque, que también ayudó? Esa parte depende de ti.",
+  "What I need from my manager":"Lo que necesito de mi líder","Save check-in":"Guardar seguimiento","Check-in saved":"Seguimiento guardado","Pick an energy level first":"Primero elige un nivel de energía","No check-ins yet.":"Aún no hay seguimientos.",
+  "Energy #/# · Productivity #/#":"Energía #/# · Productividad #/#","Energy #/#":"Energía #/#","Learned for any job:":"Aprendido para cualquier trabajo:","Applied:":"Aplicado:","Credited:":"Lo atribuyó a:","Needs:":"Necesita:",
+  // Team view
+  "Front-line manager view":"Vista del líder de primera línea","Add people":"Agregar personas","Done adding":"Listo","People":"Personas","Assessed":"Evaluadas","Avg plan progress":"Progreso promedio del plan","Need attention":"Requieren atención","Support asks waiting":"Solicitudes en espera",
+  "Team patterns":"Patrones del equipo","# people assessed":"# personas evaluadas","Most common top drivers":"Motivadores principales más comunes","Low needs and what's behind them":"Necesidades bajas y qué hay detrás","Mostly:":"Principalmente:","How people work best":"Cómo trabaja mejor la gente","Top blocker:":"Obstáculo principal:","(# people)":"(# personas)","Team-level moves":"Acciones a nivel de equipo",
+  "# people have low autonomy. Run a #-minute huddle on where the team can have more say, and act on one idea.":"# personas tienen baja autonomía. Haz una reunión de # minutos sobre dónde el equipo puede tener más voz y lleva a cabo una idea.",
+  "# people doubt their competence. Set up peer skill-swaps where people teach each other one thing a month.":"# personas dudan de su competencia. Organiza intercambios de habilidades donde cada quien enseñe algo al mes.",
+  "# people feel disconnected. Start a short weekly team ritual and rotate who leads it.":"# personas se sienten desconectadas. Inicia un breve ritual semanal de equipo y rota quién lo dirige.",
+  "# people rank pay or promotion in their top #. Hold a team session on how pay and progression decisions are made here.":"# personas ponen el salario o el ascenso entre sus # principales. Haz una sesión de equipo sobre cómo se decide aquí el salario y la progresión.",
+  "# people are driven by learning or mastery. Protect a shared team learning hour each month where people present what they're learning.":"# personas se motivan por el aprendizaje o la maestría. Protege cada mes una hora de aprendizaje en equipo donde cada quien presente lo que está aprendiendo.",
+  "# people say time is the blocker. Block a fixed development hour on the rota for each person.":"# personas dicen que el obstáculo es el tiempo. Reserva en la planificación una hora fija de desarrollo para cada persona.",
+  "Team overview":"Resumen del equipo","Filter by role type":"Filtrar por tipo de puesto","All":"Todos","Person":"Persona","Motivation":"Motivación","Needs A·C·R":"Necesidades A·C·R","Autonomy, competence, relatedness":"Autonomía, competencia, relación","Top drivers":"Motivadores principales","Plan":"Plan","Skills":"Habilidades","Last check-in":"Último seguimiento","Status":"Estado","None":"Ninguno",
+  "active":"activas","# support ask":"# solicitud de apoyo","# support asks":"# solicitudes de apoyo",
+  "Select a person to open their profile, plan and coaching playbook. Needs:":"Selecciona a una persona para abrir su perfil, plan y guía de acompañamiento. Necesidades:","met ·":"cubierta ·","partly ·":"parcial ·","low.":"baja.",
+  "Assessment not started":"Evaluación sin empezar","Disengagement risk":"Riesgo de desconexión","Retention risk":"Riesgo de retención","Low energy at last check-in":"Poca energía en el último seguimiento","Fairness concern":"Preocupación por equidad","Plan stalled":"Plan estancado","Support ask waiting":"Solicitud de apoyo en espera","Check-in overdue":"Seguimiento atrasado","On track":"Al día",
+  "No one on your team yet":"Aún no hay nadie en tu equipo","Share this page with your direct reports (Contributor access) and ask them to complete the assessment under":"Comparte esta página con tus reportes directos (acceso de Colaborador) y pídeles completar la evaluación en",". Then use":". Luego usa","to bring them into your view. You'll see each person's motivation profile, plan progress and a coaching playbook.":"para traerles a tu vista. Verás el perfil de motivación, el progreso del plan y una guía de acompañamiento de cada persona.",
+  "Add people who completed their assessment":"Agrega a personas que completaron su evaluación","Add to my team":"Agregar a mi equipo","Added to your team":"Agregado a tu equipo","Remove from my team":"Quitar de mi equipo",
+  "Nobody else has completed an assessment yet. Share this page with your team as Contributors and ask them to open":"Nadie más ha completado la evaluación. Comparte esta página con tu equipo como Colaboradores y pídeles abrir",". They'll appear here once they finish.":". Aparecerán aquí cuando terminen.",
+  "Selected":"Seleccionado","Hasn't completed the current assessment yet. Ask them to open":"Aún no completa la evaluación actual. Pídele abrir","on this page.":"en esta página.",
+  "They lead, you support":"La persona lidera, tú apoyas","Support requests":"Solicitudes de apoyo","All answered":"Todas respondidas","Reply (optional): when, how, or why not yet":"Respuesta (opcional): cuándo, cómo o por qué todavía no",
+  "What you can do as their manager":"Lo que puedes hacer como su líder","Development moves":"Acciones de desarrollo","Concrete actions built from their answers. Tick them off as you do them.":"Acciones concretas basadas en sus respuestas. Márcalas a medida que las hagas.",
+  "Fix a root cause":"Atender una causa raíz","Stretch assignment":"Asignación retadora","Delegation":"Delegación","Meaning and impact":"Sentido e impacto","Learning time":"Tiempo de aprendizaje","Connection":"Conexión","Rewards clarity":"Claridad sobre recompensas","Act-up opportunity":"Oportunidad de cubrir el puesto superior","Clarity":"Claridad","Flexibility trial":"Prueba de flexibilidad","Use their strengths":"Usar sus fortalezas","Set up their work":"Organizar su trabajo","Career conversation":"Conversación de carrera","Feedback":"Retroalimentación",
+  "This week, give one piece of specific feedback on a plan action: what worked, why, and what to try next.":"Esta semana, da una retroalimentación específica sobre una acción del plan: qué funcionó, por qué y qué probar después.",
+  "Coaching playbook":"Guía de acompañamiento","Questions for your next #:#":"Preguntas para tu próxima reunión #:#","Private coaching notes":"Notas privadas de acompañamiento","(only you can see these)":"(solo tú puedes verlas)","Agreements, follow-ups, observations":"Acuerdos, pendientes, observaciones","Couldn't save your note.":"No se pudo guardar tu nota.",
+  "Their development, their drive.":"Su desarrollo, su impulso.","Guide, support and remove barriers. Don't set their direction or their pace. Ask what they want next, then help them get it.":"Guía, apoya y quita obstáculos. No marques su dirección ni su ritmo. Pregunta qué quiere después y ayúdale a lograrlo.",
+  "Support it openly. People who grow here make the team stronger while they stay, and speak well of it when they go. Be honest about what you can offer internally.":"Apóyalo abiertamente. Quienes crecen aquí fortalecen al equipo mientras están y hablan bien de él cuando se van. Sé honesto sobre lo que puedes ofrecer internamente.",
+  "Wants this job to teach them:":"Quiere que este trabajo le enseñe:","Look for real work that teaches exactly that.":"Busca trabajo real que enseñe exactamente eso.",
+  "Motivation quality: Autonomous.":"Calidad de la motivación: Autónoma.","Motivation quality: Mixed.":"Calidad de la motivación: Mixta.","Motivation quality: Controlled.":"Calidad de la motivación: Controlada.","Motivation quality: Disengaged.":"Calidad de la motivación: Desconectada.",
+  "Protect what's working. Avoid micromanaging, and don't turn rewards into levers of control, which can crowd out motivation that comes from the work itself.":"Protege lo que funciona. Evita la microgestión y no conviertas las recompensas en palancas de control, porque pueden desplazar la motivación que viene del trabajo mismo.",
+  "Help them see how tasks connect to goals they value. Explain the why behind requests so the reasons become their own.":"Ayúdale a ver cómo las tareas se conectan con metas que valora. Explica el porqué de cada pedido para que haga suyas las razones.",
+  "Rewards and pressure drive most of their effort. Give a meaningful rationale for tasks, acknowledge their perspective and offer choices so they can come to value the work.":"Las recompensas y la presión impulsan la mayor parte de su esfuerzo. Da una razón con sentido para las tareas, reconoce su perspectiva y ofrece opciones para que llegue a valorar el trabajo.",
+  "Talk privately and listen first. Ask what would make the work worth doing, and check workload, fit and well-being before adding goals.":"Habla en privado y escucha primero. Pregunta qué haría que el trabajo valiera la pena y revisa carga, encaje y bienestar antes de sumar metas.",
+  "Leans to a fixed mindset.":"Tiende a una mentalidad fija.","Praise strategy, effort and progress rather than talent. Treat mistakes as information, not verdicts.":"Elogia la estrategia, el esfuerzo y el progreso, no el talento. Trata los errores como información, no como veredictos.",
+  "Avoidance goals.":"Metas de evitación.","Frame feedback around personal progress, not comparison with others, and avoid public rankings.":"Enfoca la retroalimentación en el progreso personal, no en compararse con otros, y evita rankings públicos.",
+  "Performance-approach goals.":"Metas de acercamiento al desempeño.","Visible benchmarks motivate them. Keep attention on skill growth too, so setbacks don't derail them.":"Los referentes visibles le motivan. Mantén también la atención en el crecimiento de habilidades, para que los tropiezos no le descarrilen.",
+  "Low confidence to learn.":"Poca confianza para aprender.","Build self-efficacy through small successes, modelling by a similar peer, and specific encouragement.":"Construye autoeficacia con pequeños éxitos, el ejemplo de un compañero similar y ánimo específico.",
+  "Doubts effort leads to performance.":"Duda que el esfuerzo lleve al desempeño.","Check for missing skills, tools or unclear standards.":"Revisa si faltan habilidades, herramientas o si hay estándares poco claros.",
+  "Doesn't see performance paying off.":"No ve que el desempeño rinda frutos.","Spell out what good performance leads to here, and only promise what you control.":"Explica a qué lleva aquí un buen desempeño y promete solo lo que controlas.",
+  "Sees rewards as unfair.":"Ve las recompensas como injustas.","Explain how decisions are made, listen to who they compare themselves with, and correct anything that is unfair.":"Explica cómo se toman las decisiones, escucha con quién se compara y corrige lo que sea injusto.",
+  "Reward-focused right now.":"Ahora se enfoca en las recompensas.","Be concrete about how pay, promotion and recognition are decided. Present rewards as information about their progress, not as control.":"Sé concreto sobre cómo se deciden el salario, los ascensos y el reconocimiento. Presenta las recompensas como información sobre su progreso, no como control.",
+  "Their talent is self-reported.":"Su talento es autodeclarado.","Give honest feedback on whether you see it too. If it's really a goal, say so kindly and help them plan for it.":"Da retroalimentación honesta sobre si tú también lo ves. Si en realidad es una meta, dilo con amabilidad y ayúdale a planificarla.",
+  "Tap into their talent.":"Aprovecha su talento.","Build more of that into their assignments, and let them teach it to others.":"Incorpora más de eso en sus asignaciones y deja que lo enseñe a otros.",
+  "Works best on my own.":"Trabaja mejor por su cuenta.","Works best with one partner.":"Trabaja mejor con un compañero.","Works best in a group or team.":"Trabaja mejor en grupo o en equipo.","Works best it depends on the task.":"Trabaja mejor según la tarea.",
+  "Protect focused solo time and give them independent pieces of work. Don't force group work where it adds nothing.":"Protege su tiempo de concentración y dale trabajos independientes. No fuerces el trabajo en grupo donde no aporta.","Pair them deliberately on the work that matters most to them, and choose partners with care.":"Asígnale un compañero a propósito en el trabajo que más le importa y elige a esa persona con cuidado.","Put them on shared team tasks, huddles and projects. Avoid long stretches of isolated work.":"Inclúyele en tareas, reuniones breves y proyectos de equipo. Evita largos periodos de trabajo aislado.","Ask which tasks they want to do solo and which with others, and plan assignments that way.":"Pregunta qué tareas quiere hacer solo y cuáles con otros, y planifica las asignaciones así.",
+  "Most productive with:":"Más productivo con:","Schedule their most important work in those conditions.":"Programa su trabajo más importante en esas condiciones.",
+  "Low team identity.":"Baja identidad de equipo.","Build a shared sense of \"us\": a common team goal, team rituals, and making their contribution to the team visible.":"Construye un sentido compartido de \"nosotros\": una meta común, rituales de equipo y hacer visible su aporte al equipo.",
+  "Strong team identity.":"Fuerte identidad de equipo.","They are invested in the team. Use it: give them a role in team goals, onboarding or team improvements.":"Está comprometido con el equipo. Aprovéchalo: dale un rol en las metas del equipo, la incorporación de personas nuevas o las mejoras del equipo.",
+  "Protect a set amount of development time each month.":"Protege una cantidad fija de tiempo de desarrollo cada mes.","Write down what good looks like in their role and next role.":"Escribe cómo se ve un buen trabajo en su puesto actual y en el siguiente.","Give short, specific feedback weekly, not just at review time.":"Da retroalimentación breve y específica cada semana, no solo en la evaluación.","Find low-cost options or request budget for one priority item.":"Busca opciones de bajo costo o pide presupuesto para un elemento prioritario.","Start with small stretch wins and name progress when you see it.":"Empieza con pequeños logros retadores y nombra el progreso cuando lo veas.","Schedule development activities around their shifts.":"Programa las actividades de desarrollo según sus turnos.",
+  "What did you get better at this month, and what felt hard?":"¿En qué mejoraste este mes y qué se sintió difícil?","Where do you want more say in how the work gets done?":"¿Dónde quieres tener más voz sobre cómo se hace el trabajo?","When did your work feel most meaningful recently?":"¿Cuándo sentiste que tu trabajo tuvo más sentido recientemente?","What have you learned recently, and where could you use it?":"¿Qué aprendiste recientemente y dónde podrías usarlo?",
+  "Who at work do you feel most connected to, and who would you like to know better?":"¿Con quién te sientes más conectado en el trabajo y a quién te gustaría conocer mejor?","Do you know what it would take to reach the next pay step? What is unclear?":"¿Sabes qué se necesita para llegar al siguiente nivel salarial? ¿Qué no está claro?","What would you need to see in yourself to feel ready for the next role?":"¿Qué necesitarías ver en ti para sentirte listo para el siguiente puesto?",
+  "What have you done lately that you feel did not get noticed?":"¿Qué has hecho últimamente que sientes que no se notó?","Is anything about the role or the business making you uneasy right now?":"¿Hay algo del puesto o del negocio que te inquiete ahora?","Is your current schedule and workload sustainable? What would help?":"¿Tu horario y carga de trabajo actuales son sostenibles? ¿Qué ayudaría?",
+  // Guide
+  "Standard operating procedure":"Procedimiento operativo estándar","How to use Growth Compass":"Cómo usar Growth Compass","A short version of the full SOP. Turn on":"Una versión breve del procedimiento completo. Activa","(top right) to follow along with a team already using the app.":"(arriba a la derecha) para seguirla con un equipo que ya usa la app.",
+  "For employees":"Para colaboradores","For managers":"Para líderes","Own it.":"Hazlo tuyo.","Your development is personal. You decide what to work on and how fast; your manager guides and supports. Skills you build are yours to keep, here or at your next employer.":"Tu desarrollo es personal. Tú decides en qué trabajar y a qué ritmo; tu líder guía y apoya. Las habilidades que desarrollas son tuyas, aquí o con tu próximo empleador.",
+  "Take the assessment.":"Haz la evaluación.","Open":"Abre","and select":"y selecciona",". It has # short steps and takes about # minutes. Answer for how things are now, not how they should be.":". Tiene # pasos cortos y toma unos # minutos. Responde según cómo son las cosas ahora, no cómo deberían ser.",
+  "Read your profile.":"Lee tu perfil.","Your profile shows why you put in effort, which needs your job meets (and what's behind any gaps), how you work best, which rewards matter and what you believe about growing.":"Tu perfil muestra por qué te esfuerzas, qué necesidades cubre tu trabajo (y qué hay detrás de cada brecha), cómo trabajas mejor, qué recompensas importan y qué crees sobre crecer.",
+  "Know your talents from your goals.":"Distingue tus talentos de tus metas.","A talent is something you already do well, with evidence others would agree with. A goal is something you still have to build. Each goal gets an honest verdict (Realistic, Stretch, Unlikely in # days, Not fully in your control), and the plan tells you if it's bigger than the time you have.":"Un talento es algo que ya haces bien, con evidencia con la que otros estarían de acuerdo. Una meta es algo que aún tienes que construir. Cada meta recibe un veredicto honesto (Realista, Expandir, Poco probable en # días, No depende solo de ti), y el plan te dice si es más grande que el tiempo que tienes.",
+  "Own your skills and certifications.":"Haz tuyas tus habilidades y certificaciones.","In":"En",", pick what to work towards next (suggestions are for your role type), move each item through its stages and log practice. Ask your manager for support (time, a real task, feedback, funding, a mentor or sign-off) whenever you need it.":", elige en qué trabajar después (las sugerencias son para tu tipo de puesto), avanza cada elemento por sus etapas y registra tu práctica. Pide apoyo a tu líder (tiempo, una tarea real, retroalimentación, financiamiento, un mentor o una validación) cuando lo necesites.",
+  "Skills and certifications":"Habilidades y certificaciones","Agree your plan.":"Acuerda tu plan.","Within # weeks, go through your plan with your manager. Edit actions, add your own and remove what doesn't fit. Each goal shows what success looks like and what to ask of your manager.":"En # semanas, revisa tu plan con tu líder. Edita acciones, agrega las tuyas y quita lo que no encaje. Cada meta muestra cómo se ve el éxito y qué pedirle a tu líder.",
+  "Work the plan.":"Trabaja el plan.","Tick actions off as you go. Most of your growth comes from the # actions: practice in your real work.":"Marca las acciones a medida que avanzas. La mayor parte de tu crecimiento viene de las acciones #: práctica en tu trabajo real.",
+  "Check in monthly.":"Haz un seguimiento mensual.","Once a month, add a check-in: energy, productivity, wins, where you used something new, what made the difference and what you need.":"Una vez al mes, agrega un seguimiento: energía, productividad, logros, dónde usaste algo nuevo, qué marcó la diferencia y qué necesitas.",
+  "Retake every # days.":"Repite la evaluación cada # días.","Select":"Selecciona","on your profile. You get a new plan, and your previous results are kept in your history.":"en tu perfil. Obtienes un plan nuevo y tus resultados anteriores se guardan en tu historial.",
+  "Build your team.":"Arma tu equipo.","Share the app with your direct reports as Contributors. Once they finish the assessment, open":"Comparte la app con tus reportes directos como Colaboradores. Cuando terminen la evaluación, abre","→":"→",
+  "Scan weekly.":"Revisa cada semana.","Check the team table once a week. Needs dots (A·C·R) and the status column show who needs attention first. Respond to flags using the table below.":"Revisa la tabla del equipo una vez por semana. Los puntos de necesidades (A·C·R) y la columna de estado muestran quién requiere atención primero. Responde a las alertas usando la tabla de abajo.",
+  "Prepare each #:#.":"Prepara cada reunión #:#.","Select a person to open their coaching playbook: what's behind any low needs, how to tap into their talent, how they work best and questions to ask. Tags show which research each tip comes from.":"Selecciona a una persona para abrir su guía de acompañamiento: qué hay detrás de las necesidades bajas, cómo aprovechar su talento, cómo trabaja mejor y qué preguntar. Las etiquetas muestran de qué investigación viene cada consejo.",
+  "Be straight about expectations.":"Sé claro con las expectativas.","Use the":"Usa la tarjeta","card and each goal's verdict. Confirm or challenge self-reported talents. Never promise pay or promotion you don't control. Help people cut plans that don't fit their time.":"y el veredicto de cada meta. Confirma o cuestiona los talentos autodeclarados. Nunca prometas salario o ascensos que no controlas. Ayuda a recortar los planes que no caben en el tiempo disponible.",
+  "Answer support requests.":"Responde las solicitudes de apoyo.","Your direct reports own their skills tracker; you can't change it. When they ask for support, reply from":"Tus reportes directos son dueños de su registro de habilidades; tú no puedes cambiarlo. Cuando pidan apoyo, responde desde","within a week: arrange it, discuss it in your #:#, or explain why not yet.":"en una semana: organízalo, háblalo en su reunión #:# o explica por qué todavía no.",
+  "Keep private notes.":"Lleva notas privadas.","to record agreements and follow-ups. Only you can see them.":"para registrar acuerdos y pendientes. Solo tú puedes verlas.","Review quarterly.":"Revisa cada trimestre.","At day #, review the \"Is it working?\" panel with each person, then ask them to retake the assessment.":"El día #, revisa el panel \"¿Está funcionando?\" con cada persona y luego pídele repetir la evaluación.",
+  "Rhythm":"Ritmo","Day #":"Día #","By week #":"Para la semana #","Every week":"Cada semana","Every month":"Cada mes","Employee takes the assessment":"El colaborador hace la evaluación","#:# to agree the plan":"Reunión #:# para acordar el plan","Manager scans the team table":"El líder revisa la tabla del equipo","Employee check-in + #:# on progress":"Seguimiento del colaborador + reunión #:# de avance","Foundation goal review (if any)":"Revisión de la meta Base (si la hay)","Review results, then retake":"Revisar resultados y repetir la evaluación",
+  "Responding to status flags":"Cómo responder a las alertas de estado","What to do":"Qué hacer",
+  "Private conversation within # week. Listen first; check workload, fit and well-being. Involve HR if needed.":"Conversación privada en # semana. Escucha primero; revisa carga, encaje y bienestar. Involucra a RR. HH. si hace falta.","Career conversation within # weeks: scope, next role, what would make them stay.":"Conversación de carrera en # semanas: alcance, siguiente puesto, qué haría que se quede.","Check in within # week. Ask what's draining them and what would help.":"Haz seguimiento en # semana. Pregunta qué le está agotando y qué ayudaría.",
+  "Explain how pay and recognition decisions are made. Take pay-equity questions to HR.":"Explica cómo se deciden el salario y el reconocimiento. Lleva las dudas de equidad salarial a RR. HH.","Use the next #:# to remove blockers. Shrink the plan to one action they can finish this week.":"Usa la próxima reunión #:# para quitar obstáculos. Reduce el plan a una acción que pueda terminar esta semana.","Reply within # week. Even \"not yet\" with a reason and a date keeps ownership with the employee.":"Responde en # semana. Incluso un \"todavía no\" con una razón y una fecha mantiene la responsabilidad en el colaborador.","Do the check-in together in your next #:#.":"Hagan el seguimiento juntos en su próxima reunión #:#.","Invite them personally and explain it's for their development only.":"Invítale personalmente y explica que es solo para su desarrollo.","Recognise progress specifically and keep the monthly rhythm.":"Reconoce el progreso de forma específica y mantén el ritmo mensual.",
+  "Ground rules":"Reglas básicas","Results are for development conversations only. Never use them for pay, hiring, ratings or discipline.":"Los resultados son solo para conversaciones de desarrollo. Nunca los uses para salario, contratación, calificaciones o disciplina.","Everyone the app is shared with can read profiles and plans. Only managers' coaching notes are private.":"Todas las personas con quienes se comparte la app pueden leer perfiles y planes. Solo las notas de acompañamiento de los líderes son privadas.","Scores are a snapshot, not a label. People change, which is why the assessment is retaken every # days.":"Los puntajes son una foto del momento, no una etiqueta. Las personas cambian; por eso la evaluación se repite cada # días.",
+  // Foundations
+  "The research behind the app":"La investigación detrás de la app","Every step of the assessment, every plan action and every coaching tip traces back to one of these five works. Look for the short tags (for example":"Cada paso de la evaluación, cada acción del plan y cada consejo de acompañamiento proviene de una de estas cinco obras. Busca las etiquetas cortas (por ejemplo",") next to guidance in the app.":") junto a las recomendaciones en la app.",
+  "What we use":"Qué usamos","Where you see it:":"Dónde lo ves:","Self-Determination Theory":"Self-Determination Theory (Teoría de la autodeterminación)","Handbook of Competence and Motivation (#nd ed.)":"Handbook of Competence and Motivation (#.ª ed.)","Human Learning (#th ed.)":"Human Learning (#.ª ed.)","Psychology Applied to Work (#th ed.)":"Psychology Applied to Work (#.ª ed.)","Applied Psychology in Talent Management (#th ed.)":"Applied Psychology in Talent Management (#.ª ed.)",
+  "Ryan & Deci, Self-Determination Theory":"Ryan y Deci, Self-Determination Theory","Elliot, Dweck & Yeager, Handbook of Competence and Motivation (#nd ed.)":"Elliot, Dweck y Yeager, Handbook of Competence and Motivation (#.ª ed.)","Ormrod, Human Learning (#th ed.)":"Ormrod, Human Learning (#.ª ed.)","Howes & Muchinsky, Psychology Applied to Work (#th ed.)":"Howes y Muchinsky, Psychology Applied to Work (#.ª ed.)","Cascio & Aguinis, Applied Psychology in Talent Management (#th ed.)":"Cascio y Aguinis, Applied Psychology in Talent Management (#.ª ed.)",
+  "Richard M. Ryan & Edward L. Deci":"Richard M. Ryan y Edward L. Deci","Andrew J. Elliot, Carol S. Dweck & David S. Yeager (eds.)":"Andrew J. Elliot, Carol S. Dweck y David S. Yeager (eds.)","Satoris S. Howes & Paul M. Muchinsky":"Satoris S. Howes y Paul M. Muchinsky","Wayne F. Cascio & Herman Aguinis":"Wayne F. Cascio y Herman Aguinis",
+  "The motivation continuum, from amotivation through external, introjected and identified regulation to intrinsic motivation, summarised as a relative autonomy score":"El continuo de la motivación, desde la desmotivación, pasando por la regulación externa, introyectada e identificada, hasta la motivación intrínseca, resumido en un índice de autonomía relativa",
+  "The three basic psychological needs: autonomy, competence and relatedness":"Las tres necesidades psicológicas básicas: autonomía, competencia y relación","How rewards and feedback can feel controlling or informational, and how controlling ones can undermine intrinsic motivation":"Cómo las recompensas y la retroalimentación pueden sentirse controladoras o informativas, y cómo las controladoras pueden debilitar la motivación intrínseca","Autonomy support, structure and involvement as the manager's levers":"Apoyo a la autonomía, estructura e involucramiento como palancas del líder",
+  "\"Why you work\" and \"Your needs\" steps, including what each low need is related to · motivation quality on the profile and team table · Foundation goal · coaching playbook":"Pasos \"Por qué trabajas\" y \"Tus necesidades\", incluido con qué se relaciona cada necesidad baja · calidad de la motivación en el perfil y en la tabla del equipo · meta Base · guía de acompañamiento",
+  "Competence as the core of achievement motivation":"La competencia como núcleo de la motivación de logro","Achievement goals: mastery vs performance, approach vs avoidance":"Metas de logro: dominio vs. desempeño, acercamiento vs. evitación","Implicit theories of ability (growth vs fixed mindset) and how they shape responses to setbacks":"Teorías implícitas de la habilidad (mentalidad de crecimiento vs. fija) y cómo moldean la respuesta a los tropiezos",
+  "\"Beliefs\" step · mindset and goal-focus on the profile · mistake-to-lesson and self-comparison actions · process-focused praise guidance":"Paso \"Creencias\" · mentalidad y enfoque de metas en el perfil · acciones de error a lección y de compararse con uno mismo · guía para elogiar el proceso",
+  "Social cognitive theory: self-efficacy and its sources (mastery experiences, modelling, encouragement)":"Teoría social cognitiva: la autoeficacia y sus fuentes (experiencias de dominio, modelado, ánimo)","Self-regulated learning: goal setting, self-monitoring and reflection":"Aprendizaje autorregulado: fijar metas, automonitoreo y reflexión","Attribution theory: crediting controllable causes like effort and strategy":"Teoría de la atribución: atribuir a causas controlables como el esfuerzo y la estrategia","Spaced practice, self-testing and transfer of learning to the job":"Práctica espaciada, autoevaluación y transferencia del aprendizaje al trabajo",
+  "Confidence score · small-wins and peer-modelling actions · monthly check-in with transfer and attribution prompts · study tips inside learning actions":"Puntaje de confianza · acciones de pequeños logros y ejemplo de pares · seguimiento mensual con preguntas de transferencia y atribución · consejos de estudio dentro de las acciones de aprendizaje",
+  "Goal-setting theory: specific, challenging goals with feedback":"Teoría de fijación de metas: metas específicas y retadoras con retroalimentación","Expectancy theory: effort → performance → valued outcome":"Teoría de las expectativas: esfuerzo → desempeño → resultado valorado","Equity and organisational justice":"Equidad y justicia organizacional","The job characteristics model for job crafting":"El modelo de características del puesto para el rediseño del trabajo","Evaluating training at reaction, learning, behaviour and results levels":"Evaluar la capacitación en los niveles de reacción, aprendizaje, comportamiento y resultados","Work teams and group processes, including identification with the team":"Equipos de trabajo y procesos grupales, incluida la identificación con el equipo",
+  "\"Success looks like\" on every goal · effort, reward and fairness beliefs · fairness flag · job-crafting actions · team identity and work-mode questions · \"Is it working?\" panel":"\"El éxito se ve así\" en cada meta · creencias sobre esfuerzo, recompensas y equidad · alerta de equidad · acciones de rediseño del puesto · preguntas de identidad de equipo y modo de trabajo · panel \"¿Está funcionando?\"",
+  "Person-level development needs assessment":"Evaluación de necesidades de desarrollo a nivel individual","Performance management as ongoing coaching and feedback rather than a once-a-year event":"La gestión del desempeño como acompañamiento y retroalimentación continuos, no como un evento anual","Career development across career stages":"Desarrollo de carrera a lo largo de sus etapas","Fair, job-related and appropriate use of assessment information":"Uso justo, relacionado con el puesto y apropiado de la información de evaluación",
+  "The assessment tree itself · career-stage branch · monthly check-ins and manager view · use limits below":"El propio árbol de evaluación · rama de etapa de carrera · seguimientos mensuales y vista del líder · límites de uso abajo",
+  "Use with care":"Úsala con cuidado","The questions were written for this app, following the structure of these frameworks. They are not reproductions of published scales and have not been validated as a psychometric test.":"Las preguntas se escribieron para esta app siguiendo la estructura de estos marcos. No reproducen escalas publicadas y no se han validado como prueba psicométrica.",
+  "Use results to start development conversations only. Do not use them for hiring, pay, promotion, ratings or discipline decisions.":"Usa los resultados solo para iniciar conversaciones de desarrollo. No los uses para decisiones de contratación, salario, ascenso, calificaciones o disciplina.",
+  "The #-#-# split is a practitioner rule of thumb, not a research finding. Here it simply organises actions into practice, learning from people, and formal learning.":"La división #-#-# es una regla práctica, no un hallazgo de investigación. Aquí simplemente organiza las acciones en práctica, aprendizaje con otras personas y aprendizaje formal.",
+  "People change. Encourage a retake every # days, and treat scores as a snapshot, not a label.":"Las personas cambian. Fomenta repetir la evaluación cada # días y trata los puntajes como una foto del momento, no como una etiqueta.",
+  // Sample data free text
+  "Two hours a week on the training rig":"Dos horas a la semana en el banco de entrenamiento","Exam fee and two study days":"Costo del examen y dos días de estudio","Can you listen in on a difficult call this week?":"¿Puedes escuchar una llamada difícil esta semana?","Evening course at the community college":"Curso nocturno en el instituto comunitario","Exam voucher":"Voucher del examen","I've automated three ticket types. Can you review them?":"Automaticé tres tipos de tickets. ¿Puedes revisarlos?","Half a day a week for the course":"Medio día a la semana para el curso",
+  "Approved from the training budget. Book the exam for January.":"Aprobado con el presupuesto de capacitación. Agenda el examen para enero.","Good idea. Let's look at dates on Thursday.":"Buena idea. Veamos fechas el jueves.","Covered. Expense it as usual.":"Cubierto. Repórtalo como gasto como siempre.","Not during the shutdown. Let's book December instead.":"No durante el paro de planta. Mejor agendemos en diciembre.",
+  "Led # root-cause reviews on my own; signed off by the maintenance lead":"Dirigí # revisiones de causa raíz por mi cuenta; validado por el líder de mantenimiento","Onboarded # new starters this year":"Incorporé a # personas nuevas este año","Passed on # Oct":"Aprobado el # de oct.","Renewed in March":"Renovado en marzo",
+  "Other sites call me when their lines go down; lowest repeat-fault rate on the team":"Otras plantas me llaman cuando se detienen sus líneas; la tasa más baja de fallas repetidas del equipo","HR asks me to onboard every new starter; # of # passed probation":"RR. HH. me pide incorporar a cada persona nueva; # de # pasaron el periodo de prueba","My scripts cut repeat tickets by a third last quarter":"Mis scripts redujeron en un tercio los tickets repetidos el último trimestre",
+  "diagnosing conveyor and sensor faults":"diagnosticar fallas de bandas transportadoras y sensores","tracing an intermittent fault to its root cause":"rastrear una falla intermitente hasta su causa raíz","staying calm with upset customers":"mantener la calma con clientes molestos","training new starters":"capacitar a personas nuevas","coaching someone through their first week":"acompañar a alguien en su primera semana","scripting fixes for recurring tickets":"crear scripts para resolver tickets recurrentes","automating something repetitive":"automatizar algo repetitivo","reading old wiring diagrams":"leer diagramas de cableado antiguos","commissioning new equipment":"poner en marcha equipos nuevos",
+  "leading a maintenance crew":"dirigir una cuadrilla de mantenimiento","how to handle complaints end to end and run a shift":"cómo atender quejas de principio a fin y dirigir un turno","designing cloud systems, not just supporting them":"diseñar sistemas en la nube, no solo darles soporte","a team lead role in customer operations":"un puesto de líder de equipo en operaciones de clientes","More say in how we schedule the floor":"Más voz en cómo organizamos los turnos del piso","cloud infrastructure":"infraestructura en la nube","PLC controls":"controles PLC",
+  "Led root-cause review on the conveyor fault":"Dirigí la revisión de causa raíz de la falla de la banda","Used the #-whys method from the course":"Usé el método de los # porqués del curso","Running a structured root-cause review":"Dirigir una revisión estructurada de causa raíz","Time to finish the automation course":"Tiempo para terminar el curso de automatización","Shadowed the shift lead for two handovers":"Acompañé al líder de turno en dos entregas","Ran the Tuesday handover myself":"Dirigí yo la entrega del martes","Clarity on what the lead role expects":"Claridad sobre lo que se espera del puesto de líder",
+  "Covered two extra shifts":"Cubrí dos turnos extra","Feeling a bit stuck":"Me siento un poco estancada","Passed the first cloud practitioner exam":"Aprobé el primer examen de Cloud Practitioner","Rebuilt the backup job using what I learned":"Rehice la tarea de respaldo con lo que aprendí","Infrastructure-as-code basics":"Fundamentos de infraestructura como código","Budget for the next exam":"Presupuesto para el siguiente examen","Finished modules # to #":"Terminé los módulos # a #","Fewer interruptions on Thursday afternoons":"Menos interrupciones los jueves por la tarde",
+  "Documented the panel B rewiring":"Documenté el recableado del tablero B","Used the new labelling standard":"Usé el nuevo estándar de etiquetado","Cover so I can attend the PLC course":"Que me cubran para asistir al curso de PLC",
+  "“Last spring's line rebuild: clear goal, the right parts on hand, and a partner to bounce ideas off.”":"“La reconstrucción de la línea la primavera pasada: meta clara, las piezas correctas a mano y un compañero para intercambiar ideas.”","“Busy Saturday with the whole team on the floor and a clear plan for the day.”":"“Un sábado con mucho trabajo, todo el equipo en el piso y un plan claro para el día.”","“When I was trusted to redesign the break rota and the team ran smoother for it.”":"“Cuando confiaron en mí para rediseñar los turnos de descanso y el equipo funcionó mejor.”","“A quiet afternoon with no tickets coming in, rebuilding the backup job end to end.”":"“Una tarde tranquila sin tickets entrando, rehaciendo la tarea de respaldo de principio a fin.”","“The week we installed the new compressor: my own job list, the right tools, no meetings.”":"“La semana que instalamos el compresor nuevo: mi propia lista de tareas, las herramientas correctas, sin reuniones.”",
+  "Couldn't save. Check your connection and try again.":"No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.","Live updates stopped. Reload the page to reconnect.":"Se detuvieron las actualizaciones en vivo. Recarga la página para reconectar.","Pick up to 4.":"Elige hasta 4.","SKILLS AND CERTIFICATIONS":"HABILIDADES Y CERTIFICACIONES",
+  "You decide":"Tú decides","Who can see my development":"Quién puede ver mi desarrollo","Your full record is private to you. Only the people below can see it, and only the parts you choose.":"Tu registro completo es privado. Solo las personas de abajo pueden verlo, y solo las partes que elijas.",
+  "My direct manager":"Mi líder directo","Not set":"Sin definir","Sees your full development record (profile, plan, skills passport and check-ins), so they can support you.":"Ve tu registro de desarrollo completo (perfil, plan, pasaporte de habilidades y seguimientos) para poder apoyarte.","Remove":"Quitar",
+  "Also shared with":"También compartido con","No one else. You can share with a mentor, another manager or HR.":"Nadie más. Puedes compartir con un mentor, otro líder o RR. HH.","Stop sharing":"Dejar de compartir","Everyone else sees nothing. You can change this at any time.":"Nadie más ve nada. Puedes cambiarlo cuando quieras.",
+  "Search by name":"Buscar por nombre","Search for your manager":"Busca a tu líder","Search for someone to share with":"Busca a alguien con quien compartir","Sharing updated":"Se actualizó con quién compartes","No one found. Check the spelling, or ask them to open this page first.":"No se encontró a nadie. Revisa cómo está escrito o pídele que abra esta página primero.",
+  "In the live app you search for colleagues by name here. Sample data uses made-up people.":"En la app real aquí buscas a tus compañeros por nombre. Los datos de ejemplo usan personas ficticias.",
+  "Motivation profile":"Perfil de motivación","Development plan":"Plan de desarrollo","Check-ins":"Seguimientos",
+  "Example: Jordan M. (manager)":"Ejemplo: Jordan M. (líder)","Example: Priya S. (mentor)":"Ejemplo: Priya S. (mentora)","Example: Sam L. (HR partner)":"Ejemplo: Sam L. (socio de RR. HH.)","Example: Ana G.":"Ejemplo: Ana G.","Quality inspector (another team)":"Inspectora de calidad (otro equipo)",
+  "spotting defects early":"detectar defectos a tiempo","Lowest escape rate on the line":"La tasa de defectos escapados más baja de la línea","maintenance planning":"planificación de mantenimiento","how preventive maintenance is planned":"cómo se planifica el mantenimiento preventivo",
+  "You see your direct reports, plus anyone who chose to share their development with you. Each person decides what to share.":"Ves a tus reportes directos y a quienes eligieron compartir su desarrollo contigo. Cada persona decide qué compartir.",
+  "Direct report":"Reporte directo","Shared with you":"Compartido contigo","Not shared":"No compartido","Limited view":"Vista limitada","Direct report: sees everything":"Reporte directo: ves todo","Shared with you:":"Compartido contigo:",
+  "Not shared with you.":"No compartido contigo.","decides what to share.":"decide qué compartir.",
+  "People appear here when they name you as their direct manager, or choose to share their development with you. Share this page with your team (Contributor access) and ask them to complete":"Las personas aparecen aquí cuando te nombran su líder directo o eligen compartir su desarrollo contigo. Comparte esta página con tu equipo (acceso de Colaborador) y pídeles completar","and set their sharing.":"y configurar con quién comparten.",
+  "Decide who sees it.":"Decide quién lo ve.","In":"En",", name your direct manager (they see your full record so they can support you) and, if you want, share chosen parts with a mentor, another manager or HR. Everyone else sees nothing.":"nombra a tu líder directo (ve tu registro completo para poder apoyarte) y, si quieres, comparte partes elegidas con un mentor, otro líder o RR. HH. Nadie más ve nada.",
+  "Share the app with your direct reports as Contributors. When they name you as their direct manager, they appear in":"Comparte la app con tus reportes directos como Colaboradores. Cuando te nombren su líder directo, aparecerán en","automatically. Anyone else appears only if they choose to share with you, and you see only what they share.":"automáticamente. Cualquier otra persona aparece solo si elige compartir contigo, y ves solo lo que comparte.",
+  "Each employee decides who sees their development. Their direct manager sees their full record; anyone else sees only the parts the employee shares. Managers' coaching notes are private to the manager.":"Cada colaborador decide quién ve su desarrollo. Su líder directo ve su registro completo; cualquier otra persona ve solo las partes que comparte. Las notas de acompañamiento son privadas del líder.","# waiting":"# en espera","#% of actions done":"#% de las acciones hechas","asked <DATE>":"solicitado el <DATE>","Use":"Usa","for":"para","stage":"(etapa)","STRENGTH":"FORTALEZA","RECENT LEARNING":"APRENDIZAJE RECIENTE","certified":"certificado","mastered":"dominado"
+};
+
+// Patterns for sentences built from a template plus a fragment (an option, a skill, a name). Applied to the normalised text.
+const ES_PAT = [
+  [/^"(.+)"$/, m => `"${F(m[1])}"`],
+  [/^(.+) ·$/, m => `${F(m[1])} ·`],
+  [/^· (.+)$/, m => `· ${F(m[1])}`],
+  [/^Blocker: (.+)\.$/, m => `Obstáculo: ${F(m[1])}.`],
+  [/^Sharpen (.+)$/, m => `Perfeccionar: ${F(m[1])}`],
+  [/^Own more of (.+)$/, m => `Tener más control sobre: ${F(m[1])}`],
+  [/^Connect daily work to its impact on (.+)$/, m => `Conectar el trabajo diario con su impacto en ${F(m[1])}`],
+  [/^Learn (.+)$/, m => `Aprender: ${F(m[1])}`],
+  [/^Strengthen connection through (.+)$/, m => `Fortalecer la conexión: ${F(m[1])}`],
+  [/^Make progress on earnings: (.+)$/, m => `Avanzar en tus ingresos: ${F(m[1])}`],
+  [/^Get ready to step up to (.+)$/, m => `Prepararte para pasar a: ${F(m[1])}`],
+  [/^Build security through (.+)$/, m => `Construir seguridad con: ${F(m[1])}`],
+  [/^Find a sustainable arrangement for (.+)$/, m => `Encontrar un arreglo sostenible para: ${F(m[1])}`],
+  [/^Prepare for a leadership role \((.+)\)$/, m => `Prepararte para un puesto de liderazgo (${F(m[1])})`],
+  [/^Become the go-to person for (.+)$/, m => `Ser la persona de referencia en ${F(m[1])}`],
+  [/^Explore (.+)$/, m => `Explorar: ${F(m[1])}`],
+  [/^Make your role more rewarding: (.+)$/, m => `Hacer tu puesto más gratificante: ${F(m[1])}`],
+  [/^Build portable skills for (.+)$/, m => `Desarrollar habilidades transferibles para: ${F(m[1])}`],
+  [/^Two pieces of work that show stronger (.+), confirmed in feedback from your manager or a peer\.$/, m => `Dos trabajos que muestren una mejora en ${F(m[1])}, confirmada por tu líder o un compañero.`],
+  [/^Take on one task a month that stretches (.+)\. Practise the hardest part deliberately and ask for feedback within a week\.$/, m => `Asume cada mes una tarea que te exija en ${F(m[1])}. Practica a propósito la parte más difícil y pide retroalimentación en una semana.`],
+  [/^Watch someone strong in (.+) work through a real task twice this quarter, then try their approach yourself\.$/, m => `Observa dos veces este trimestre a alguien fuerte en ${F(m[1])} resolver una tarea real y luego prueba su enfoque.`],
+  [/^Complete a hands-on lab, course or certification module on (.+)\. Space it over several weeks rather than one sitting\.$/, m => `Completa un laboratorio práctico, un curso o un módulo de certificación sobre ${F(m[1])}. Distribúyelo en varias semanas en vez de una sola sesión.`],
+  [/^Complete a short workshop or e-learning on (.+), then explain # takeaways to a teammate in your own words\.$/, m => `Completa un taller breve o un curso en línea sobre ${F(m[1])} y luego explica # aprendizajes a un compañero con tus palabras.`],
+  [/^Route stretch work involving (.+) their way and give specific feedback within a week\.$/, m => `Asígnale trabajo retador relacionado con ${F(m[1])} y da retroalimentación específica en una semana.`],
+  [/^You own one decision area in (.+) without needing sign-off, agreed in writing with your manager\.$/, m => `Decides por tu cuenta en un área de ${F(m[1])} sin necesitar aprobación, acordado por escrito con tu líder.`],
+  [/^Agree on one decision area within (.+) that you own outright for # days\.$/, m => `Acuerda un área de decisión dentro de ${F(m[1])} que manejes por completo durante # días.`],
+  [/^You can name one measurable outcome your work drove for (.+) this quarter\.$/, m => `Puedes nombrar un resultado medible que tu trabajo logró para ${F(m[1])} este trimestre.`],
+  [/^Track one outcome your work drives for (.+) and review it monthly\.$/, m => `Da seguimiento a un resultado que tu trabajo genera para ${F(m[1])} y revísalo cada mes.`],
+  [/^Talk with someone close to (.+) about what helps them most\.$/, m => `Habla con alguien cercano a ${F(m[1])} sobre lo que más le ayuda.`],
+  [/^Learn how the business measures success for (.+)\.$/, m => `Aprende cómo mide la empresa el éxito para ${F(m[1])}.`],
+  [/^You have used (.+) on a real piece of work and can show the result\.$/, m => `Ya usaste ${F(m[1])} en un trabajo real y puedes mostrar el resultado.`],
+  [/^Apply (.+) in a real piece of work within # days, so the learning transfers to the job\.$/, m => `Aplica ${F(m[1])} en un trabajo real en # días, para que el aprendizaje pase al puesto.`],
+  [/^Find a mentor who knows (.+) and meet monthly\.$/, m => `Busca un mentor que conozca ${F(m[1])} y reúnanse cada mes.`],
+  [/^Enrol in a structured course on (.+)\. Block learning time and test yourself after each module\.$/, m => `Inscríbete en un curso estructurado sobre ${F(m[1])}. Reserva tiempo de aprendizaje y ponte a prueba después de cada módulo.`],
+  [/^Take one concrete step each month toward (.+)\.$/, m => `Da cada mes un paso concreto hacia: ${F(m[1])}.`],
+  [/^Agree with your manager on what success looks like in your role, focused on (.+)\.$/, m => `Acuerda con tu líder cómo se ve el éxito en tu puesto, con foco en: ${F(m[1])}.`],
+  [/^Propose a trial arrangement for (.+) with clear measures of success\.$/, m => `Propón un arreglo de prueba para ${F(m[1])} con medidas claras de éxito.`],
+  [/^Recognise them through (.+), specifically and soon after the work\. Make it informational \("this worked because…"\) rather than a reward for compliance\.$/, m => `Reconócele mediante ${F(m[1])}, de forma específica y poco después del trabajo. Que sea informativo ("esto funcionó porque…") y no un premio por obedecer.`],
+  [/^Handle the hardest (.+) questions on the team for a quarter\.$/, m => `Atiende durante un trimestre las preguntas más difíciles del equipo sobre ${F(m[1])}.`],
+  [/^Have coffee chats with # people who work in (.+)\.$/, m => `Toma un café con # personas que trabajen en ${F(m[1])}.`],
+  [/^Talk with # people already working in "(.+)" roles, inside or outside this company, about what it takes\.$/, m => `Habla con # personas que ya trabajen como "${F(m[1])}", dentro o fuera de esta empresa, sobre lo que se necesita.`],
+  [/^Talk with # people already working in that kind of roles, inside or outside this company, about what it takes\.$/, () => `Habla con # personas que ya trabajen en ese tipo de puestos, dentro o fuera de esta empresa, sobre lo que se necesita.`],
+  [/^Agree with your manager on one way to use "(.+)" more in your regular work\.$/, m => `Acuerda con tu líder una forma de usar más "${F(m[1])}" en tu trabajo habitual.`],
+  [/^Find ways to do more of the work where you lose track of time \("(.+)"\), and note how it affects your output\.$/, m => `Busca formas de hacer más del trabajo en el que pierdes la noción del tiempo ("${F(m[1])}") y anota cómo afecta tu rendimiento.`],
+  [/^Set up at least one block each week with your best conditions: (.+)\.$/, m => `Reserva al menos un bloque cada semana con tus mejores condiciones: ${phrases(m[1])}.`],
+  [/^(.+)\. Schedule their most important work in those conditions\.$/, m => `${phrases(m[1])}. Programa su trabajo más importante en esas condiciones.`],
+  [/^Give them one assignment this month built around "(.+)", and ask them to show a teammate how they do it\.$/, m => `Dale este mes una asignación basada en "${F(m[1])}" y pídele que muestre a un compañero cómo lo hace.`],
+  [/^Colleagues come to them for "(.+?)"\. They lose track of time when "(.+?)"\. Build more of that into their assignments, and let them teach it to others\.$/, m => `Sus compañeros le buscan para "${F(m[1])}". Pierde la noción del tiempo cuando "${F(m[2])}". Incorpora más de eso en sus asignaciones y deja que lo enseñe a otros.`],
+  [/^Colleagues come to them for "(.+?)"\. Build more of that into their assignments, and let them teach it to others\.$/, m => `Sus compañeros le buscan para "${F(m[1])}". Incorpora más de eso en sus asignaciones y deja que lo enseñe a otros.`],
+  [/^They lose track of time when "(.+?)"\. Build more of that into their assignments, and let them teach it to others\.$/, m => `Pierde la noción del tiempo cuando "${F(m[1])}". Incorpora más de eso en sus asignaciones y deja que lo enseñe a otros.`],
+  [/^Pair (\S+) \((.+?) in role(?:, go-to for (.+?))?\) with (\S+) \((.+?) in role\) as a buddy\. Both benefit: one builds confidence, the other uses their expertise\.$/, m => `Forma una dupla con ${m[1]} (${F(m[2])} en el puesto${m[3] ? `, referente en ${F(m[3])}` : ""}) y ${m[4]} (${F(m[5])} en el puesto). Ambos ganan: uno gana confianza y el otro usa su experiencia.`],
+  [/^Building a career that can go anywhere(?: \((.+)\))?\.$/, m => `Construye una carrera que puede ir a cualquier parte${m[1] ? ` (${F(m[1])})` : ""}.`],
+  [/^"(.+)"\. Look for real work that teaches exactly that\.$/, m => `"${F(m[1])}". Busca trabajo real que enseñe exactamente eso.`],
+  [/^(Autonomy|Competence|Relatedness) is low, mostly related to: (.+)\.$/, m => `${F(m[1])} está baja, principalmente por: ${F(m[2])}.`],
+  [/^(Autonomy|Competence|Relatedness) is low\.$/, m => `${F(m[1])} está baja.`],
+  [/^(Autonomy|Competence|Relatedness): (.+)$/, m => `${F(m[1])}: ${F(m[2])}`],
+  [/^(Autonomy|Competence|Relatedness) #\/#$/, m => `${F(m[1])} #/#`],
+  [/^is related to: (.+)\.$/, m => `se relaciona con: ${F(m[1])}.`],
+  [/^What to do: (.+)$/, m => `Qué hacer: ${F(m[1])}`],
+  [/^What would help: (.+)$/, m => `Qué ayudaría: ${F(m[1])}`],
+  [/^Mostly: (.+)$/, m => `Principalmente: ${F(m[1])}`],
+  [/^What support would help with (.+)\?$/, m => `¿Qué apoyo te ayudaría con ${F(m[1])}?`],
+  [/^Remove (.+)$/, m => `Quitar ${F(m[1])}`],
+  [/^\+ (.+)$/, m => `+ ${F(m[1])}`],
+  [/^Added (.+)$/, m => `Agregado: ${F(m[1])}`],
+  [/^(.+) ★$/, m => `${F(m[1])} ★`],
+  [/^Stage: (.+)$/, m => `Etapa: ${F(m[1])}`],
+  [/^Move to (.+)$/, m => `Pasar a: ${F(m[1])}`],
+  [/^Browse all (technical|non-technical) options \(#\)$/, m => `Ver todas las opciones ${m[1] === "technical" ? "técnicas" : "no técnicas"} (#)`],
+  [/^Example: (.+)$/, m => `Ejemplo: ${m[1]}`],
+  [/^Not shared with you\. (.+) decides what to share\.$/, m => `No compartido contigo. ${F(m[1])} decide qué compartir.`],
+  [/^\+ Share with (.+)$/, m => `+ Compartir con ${F(m[1])}`],
+  [/^Shared with you: (.+)$/, m => `Compartido contigo: ${m[1].split(", ").map(F).join(", ")}`],
+  [/^(.+)\. A signal for where to grow, not proof of skill\.$/, m => `${F(m[1])}. Una señal de hacia dónde crecer, no prueba de habilidad.`],
+  [/^stage \((.+?) in role\)\. (.+)$/, m => `(${F(m[1])} en el puesto). ${F(m[2])}`],
+  [/^Building a career that can go anywhere \((.+)\)\.$/, m => `Construye una carrera que puede ir a cualquier parte (${F(m[1])}).`],
+  [/^(.+?) of work time(?: \+ (.+?) own time)?$/, m => `${F(m[1])} de tiempo de trabajo${m[2] ? ` + ${F(m[2])} de tiempo propio` : ""}`],
+  [/^open actions\. With (.+?) of work time(?: plus (.+?) of your own)?, (you|they) have realistic time for about$/, m => `acciones abiertas. Con ${F(m[1])} de tiempo de trabajo${m[2] ? ` más ${F(m[2])} de tiempo propio` : ""}, ${m[3] === "you" ? "tienes" : "tiene"} tiempo realista para unas`],
+  [/^Won't fit\. With (.+?) of work time(?: plus (.+?) of your own)? you have time for about # actions in # days, and earlier goals use them up\. Drop this goal for now or free up more time\.$/, m => `No cabe. Con ${F(m[1])} de tiempo de trabajo${m[2] ? ` más ${F(m[2])} de tiempo propio` : ""} tienes tiempo para unas # acciones en # días, y las metas anteriores ya lo ocupan. Deja esta meta por ahora o libera más tiempo.`]
+];
+
+let LANG = (() => { try { const v = localStorage.getItem("gc-lang"); if (v) return v; } catch {} return (navigator.language || "en").toLowerCase().startsWith("es") ? "es" : "en"; })();
+const ES_MISSING = new Set();
+const DATE_RX = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}, \d{4}\b|\b\d{1,2} (?:ene|feb|mar|abr|may|jun|jul|ago|sept?|oct|nov|dic)\.? \d{4}\b/g;
+function normalise(s){
+  const vals = [];
+  const n = s.replace(DATE_RX, d => { vals.push(["d", d]); return "<DATE>"; }).replace(/\d+(?:\.\d+)?/g, d => { vals.push(["n", d]); return "#"; });
+  return [n, vals];
+}
+function refill(t, vals){ let i = 0; return t.replace(/<DATE>|#/g, tok => { while (i < vals.length && (tok === "<DATE>") !== (vals[i][0] === "d")) i++; const v = vals[i++]; return v ? v[1] : tok; }); }
+const capFirst = s => s.charAt(0).toUpperCase() + s.slice(1), lowFirst = s => s.charAt(0).toLowerCase() + s.slice(1);
+// Translate a normalised fragment; unknown fragments (user text) stay as they are.
+function F(x){
+  if (x == null) return x;
+  if (ES[x] != null) return ES[x];
+  const c = ES[capFirst(x)]; if (c != null) return /^[a-z]/.test(x) ? lowFirst(c) : c;
+  const seg = segment(x); if (seg != null) return seg;
+  for (const [re, fn] of ES_PAT){ const m = x.match(re); if (m) return fn(m); }
+  return x;
+}
+// Comma-separated lists of known phrases (some phrases contain commas themselves)
+function phrases(list){
+  const known = [...Object.values(CONDS), ...PEAK].map(p => p.toLowerCase()).sort((a, b) => b.length - a.length);
+  let out = list;
+  known.forEach(p => { if (out.includes(p)) out = out.split(p).join("\u0000" + known.indexOf(p) + "\u0000"); });
+  return out.replace(/\u0000(\d+)\u0000/g, (_, i) => lowFirst(F(capFirst(known[+i]))));
+}
+// Split into sentences and translate each one, if every sentence is known
+function segment(s){
+  const cuts = [0]; const re = /[.!?:] +/g; let m;
+  while ((m = re.exec(s))) cuts.push(m.index + m[0].length);
+  if (cuts.length < 2) return null;
+  cuts.push(s.length);
+  const memo = {};
+  const go = i => {
+    if (i === s.length) return "";
+    if (i in memo) return memo[i];
+    memo[i] = null;
+    for (let j = cuts.length - 1; j > 0; j--){ const e = cuts[j]; if (e <= i) break;
+      const piece = s.slice(i, e).trim(); if (!piece) continue;
+      const t = ES[piece] ?? patOnly(piece); if (t == null) continue;
+      const rest = go(e); if (rest != null){ memo[i] = t + (rest ? " " + rest : ""); break; } }
+    return memo[i];
+  };
+  return go(0);
+}
+function patOnly(x){ for (const [re, fn] of ES_PAT){ const m = x.match(re); if (m) return fn(m); } return null; }
+function tr(s){
+  if (LANG !== "es" || s == null) return s;
+  const core = s.trim(); if (!core) return s;
+  const [n, vals] = normalise(core);
+  let t = ES[n];
+  if (t == null && n.includes(" · ")){ const parts = n.split(" · "); const tp = parts.map(p => p === "" ? "" : (ES[p] ?? patOnly(p) ?? F(p))); if (tp.some((x, i) => x !== parts[i])) t = tp.join(" · "); }
+  if (t == null) t = patOnly(n) ?? segment(n);
+  if (t == null && n.includes(", ")){ const parts = n.split(", "); if (parts.every(x => ES[x] != null)) t = parts.map(x => ES[x]).join(", "); }
+  if (t == null){ ES_MISSING.add(n); return s; }
+  return s.replace(core, refill(t, vals));
+}
+function translateDom(root){
+  if (LANG !== "es") return;
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+  nodes.forEach(n => { if (n.parentElement?.closest("script,style,textarea,[data-notr]")) return; const t = tr(n.nodeValue); if (t !== n.nodeValue) n.nodeValue = t; });
+  root.querySelectorAll?.("[placeholder],[title],[aria-label]").forEach(e => ["placeholder","title","aria-label"].forEach(a => { const v = e.getAttribute(a); if (v){ const t = tr(v); if (t !== v) e.setAttribute(a, t); } }));
+}
+
+</script>
 <script>
 // ---------- Sources (short tags shown next to guidance) ----------
 const SRC = {
@@ -544,13 +1058,13 @@ const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt
 const uid = () => Math.random().toString(36).slice(2, 10);
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const addDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
-const fmtDate = iso => iso ? new Date(iso + (iso.length === 10 ? "T12:00:00" : "")).toLocaleDateString(undefined, {month:"short", day:"numeric", year:"numeric"}) : "—";
+const fmtDate = iso => iso ? new Date(iso + (iso.length === 10 ? "T12:00:00" : "")).toLocaleDateString(LANG === "es" ? "es-ES" : undefined, {month:"short", day:"numeric", year:"numeric"}) : "—";
 const daysSince = iso => iso ? Math.floor((Date.now() - new Date(iso).getTime()) / 864e5) : Infinity;
 const optsFor = (d, track) => Array.isArray(d.opts) ? d.opts : d.opts[track || "non"];
 const clone = o => JSON.parse(JSON.stringify(o));
 const avg = xs => { const v = xs.filter(x => typeof x === "number"); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
 const lvl = v => v == null ? "none" : v <= 2.5 ? "crit" : v < 3.5 ? "warn" : "ok";
-function toast(msg){ const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2200); }
+function toast(msg){ const t = $("#toast"); t.textContent = tr(msg); t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2200); }
 function lsGet(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }
 function lsSet(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 
@@ -799,6 +1313,30 @@ function skillStats(doc, empId){
   return {total: sk.length, done, active, open};
 }
 
+// ---------- Sharing: the employee decides who sees what ----------
+// Direct manager (named by the employee) sees everything; anyone else sees only the sections shared with them.
+const SECTIONS = {profile:"Motivation profile", plan:"Development plan", skills:"Skills passport", checkins:"Check-ins"};
+const SEC_FIELDS = {profile:["assessment"], plan:["plan"], skills:["skills"], checkins:["checkins"]};
+function sectionsFor(doc, viewerId){
+  if (!doc || !viewerId) return [];
+  if (doc.managerId === viewerId) return Object.keys(SECTIONS);
+  return (doc.shares || []).find(x => x.id === viewerId)?.sections || [];
+}
+function visibleDoc(doc, sections){
+  const out = {title: doc.title, managerId: doc.managerId};
+  sections.forEach(k => SEC_FIELDS[k].forEach(f => { if (doc[f] !== undefined) out[f] = doc[f]; }));
+  return out;
+}
+// What goes into the shared record: only the sections someone is allowed to see
+function publishedDoc(d){
+  const secs = new Set(d.managerId ? Object.keys(SECTIONS) : (d.shares || []).flatMap(x => x.sections || []));
+  const out = {managerId: d.managerId || null, shares: (d.shares || []).map(x => ({id: x.id, sections: x.sections})), responses: d.responses || {}, updatedAt: d.updatedAt || null};
+  if (secs.size) out.title = d.title || "";
+  secs.forEach(k => SEC_FIELDS[k].forEach(f => { if (d[f] !== undefined) out[f] = d[f]; }));
+  return clone(out);
+}
+const nameOf = id => (S.demo ? DEMO_NAMES[id] : S.names[id]) || "Someone";
+
 // ---------- Manager development moves (concrete actions per direct report) ----------
 const MOVE_TYPE = {mastery:"Stretch assignment", autonomy:"Delegation", purpose:"Meaning and impact", growth:"Learning time", belonging:"Connection",
   pay:"Rewards clarity", promotion:"Act-up opportunity", recognition:"Recognition", stability:"Clarity", flex:"Flexibility trial"};
@@ -854,20 +1392,27 @@ function teamPatterns(list){
 }
 
 // ---------- Example team (shown only on request, never saved) ----------
+const DEMO_NAMES = {"mgr-demo":"Example: Jordan M. (manager)", "mentor-demo":"Example: Priya S. (mentor)", "hr-demo":"Example: Sam L. (HR partner)", ex1:"Example: Amara O.", ex2:"Example: Luis R.", ex3:"Example: Mei T.", ex4:"Example: Dev P.", ex5:"Example: Tom B.", ex6:"Example: Sofia K.", ex7:"Example: Ana G."};
 function exampleTeam(){
   const W = (e, i, d, n, amo) => ({ext1:e, ext2:e, int1:i, int2:i, ide1:d, ide2:d, intr1:n, intr2:n, amo});
   const N = (a, c, r) => ({autonomy_s:a, autonomy_f:6 - a, competence_s:c, competence_f:6 - c, relatedness_s:r, relatedness_f:6 - r});
   const mk = (id, name, title, a, done, checkins) => {
     const plan = makePlan(a); plan.createdAt = addDays(-50);
     plan.goals.forEach(g => { if (g.status !== "Later") g.actions.forEach((x, i) => { x.done = i < done; }); });
-    return {id, name, doc: {title, assessment: {...a, completedAt: addDays(-50)}, plan, checkins, skills: SAMPLE_SKILLS[id] || []}};
+    return {id, name, doc: {title, assessment: {...a, completedAt: addDays(-50)}, plan, checkins, skills: SAMPLE_SKILLS[id] || [], ...(SAMPLE_SHARING[id] || {managerId: "mgr-demo", shares: []})}};
   };
   const cat = (id, stage, extra = {}) => { const c = [...CATALOG.tech, ...CATALOG.non].find(x => x.id === id); return {id: "s-" + id, cat: id, name: c.name, kind: c.kind, area: c.area, stage, reps: 0, target: "", evidence: "", requests: [], ...extra}; };
+  const SAMPLE_SHARING = {
+    ex1: {managerId: "mgr-demo", shares: [{id: "mentor-demo", sections: ["skills", "plan"]}]},
+    ex4: {managerId: "mgr-demo", shares: [{id: "mentor-demo", sections: ["skills"]}]},
+    ex7: {managerId: "other-mgr", shares: [{id: "mgr-demo", sections: ["plan", "skills"]}]}
+  };
   const SAMPLE_SKILLS = {
     ex1: [cat("t-rca", 3, {reps:3, evidence:"Led 3 root-cause reviews on my own; signed off by the maintenance lead"}), cat("t-cmrt", 1, {target:addDays(80), requests:[{id:"r-a1", type:"funding", note:"Exam fee and two study days", date:addDays(-24)}]}), cat("t-plc", 0, {requests:[{id:"r-a2", type:"time", note:"Two hours a week on the training rig", date:addDays(-3)}]})],
     ex2: [cat("n-deesc", 2, {reps:2, requests:[{id:"r-l1", type:"feedback", note:"Can you listen in on a difficult call this week?", date:addDays(-2)}]}), cat("n-mos", 0, {target:addDays(120)})],
     ex3: [cat("n-coach", 3, {reps:3, evidence:"Onboarded 3 new starters this year"}), cat("n-sup", 1, {target:addDays(150), requests:[{id:"r-m1", type:"funding", note:"Evening course at the community college", date:addDays(-8)}]})],
     ex4: [cat("t-awscp", 3, {evidence:"Passed on 14 Oct"}), cat("t-az900", 2, {target:addDays(25), requests:[{id:"r-d1", type:"funding", note:"Exam voucher", date:addDays(-12)}]}), cat("t-script", 2, {reps:3, requests:[{id:"r-d2", type:"signoff", note:"I've automated three ticket types. Can you review them?", date:addDays(-1)}]})],
+    ex7: [cat("n-lssy", 1, {target: addDays(70)}), cat("n-data", 2, {reps: 2})],
     ex5: [cat("t-70e", 3, {evidence:"Renewed in March"}), cat("t-plc", 1, {requests:[{id:"r-t1", type:"time", note:"Half a day a week for the course", date:addDays(-33)}]})]
   };
   const r = (o) => Object.fromEntries(DRIVERS.map(d => [d.key, o[d.key] || 3]));
@@ -877,7 +1422,8 @@ function exampleTeam(){
     mk("ex3", "Example: Mei T.", "Shift supervisor", {track:"non", tenure:"y5", why:W(2,3,4,3,2), needs:N(2,4,4), beliefs:{fixed:2,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mapp", needSrc:{autonomy:"voice"}, style:{mode:"mix", id1:5, id2:5, conds:["choice","variety","people"], peak:0, talent:"training new starters", talentProof:"HR asks me to onboard every new starter; 3 of 3 passed probation", flow:"coaching someone through their first week", best:"When I was trusted to redesign the break rota and the team ran smoother for it."}, ratings:r({purpose:5,belonging:5,recognition:4,autonomy:4}), top:["purpose","belonging","autonomy"], deep:{purpose:0,belonging:2,autonomy:3}, direction:"stay", dirDetail:"More say in how we schedule the floor", blockers:["feedback"], hours:1}, 0, [{date:addDays(-40), energy:2, wins:"Covered two extra shifts", applied:"", attrib:"luck", needs:"Feeling a bit stuck", prod:3}]),
     mk("ex4", "Example: Dev P.", "IT support analyst", {track:"tech", tenure:"y1_3", why:W(4,3,4,5,1), needs:N(4,4,3), beliefs:{fixed:2,growth:5,efficacy:5,expectancy:4,instrumentality:4,equity:4}, goalO:"papp", needSrc:{}, style:{mode:"alone", id1:2, id2:3, conds:["quiet","deep","deadline"], peak:2, talent:"scripting fixes for recurring tickets", talentProof:"My scripts cut repeat tickets by a third last quarter", flow:"automating something repetitive", best:"A quiet afternoon with no tickets coming in, rebuilding the backup job end to end."}, ratings:r({growth:5,mastery:4,recognition:5,pay:4}), top:["growth","recognition","mastery"], deep:{growth:1,recognition:0,mastery:0}, direction:"deep", dirDetail:"cloud infrastructure", learnAgenda:"designing cloud systems, not just supporting them", ownHours:3, blockers:["resources"], hours:2}, 2, [{date:addDays(-6), energy:5, prod:5, wins:"Passed the first cloud practitioner exam", applied:"Rebuilt the backup job using what I learned", portable:"Infrastructure-as-code basics", attrib:"effort", needs:"Budget for the next exam"}, {date:addDays(-36), energy:4, prod:3, wins:"Finished modules 1 to 4", applied:"", attrib:"strategy", needs:"Fewer interruptions on Thursday afternoons"}]),
     mk("ex5", "Example: Tom B.", "Maintenance electrician", {track:"tech", tenure:"y5", why:W(3,2,4,4,1), needs:N(4,5,3), beliefs:{fixed:3,growth:4,efficacy:4,expectancy:4,instrumentality:3,equity:3}, goalO:"mav", needSrc:{}, style:{mode:"alone", id1:3, id2:3, conds:["hands","tools","deep"], peak:0, talent:"reading old wiring diagrams", flow:"commissioning new equipment", best:"The week we installed the new compressor: my own job list, the right tools, no meetings."}, ratings:r({mastery:4,stability:5,flex:4,growth:3}), top:["stability","mastery","flex"], deep:{stability:1,mastery:2,flex:0}, direction:"deep", dirDetail:"PLC controls", blockers:["time"], hours:1}, 1, [{date:addDays(-52), energy:3, prod:4, wins:"Documented the panel B rewiring", applied:"Used the new labelling standard", attrib:"effort", needs:"Cover so I can attend the PLC course"}]),
-    {id:"ex6", name:"Example: Sofia K.", doc:{title:"Warehouse picker"}}
+    {id:"ex6", name:"Example: Sofia K.", doc:{title:"Warehouse picker", managerId:"mgr-demo", shares:[]}},
+    mk("ex7", "Example: Ana G.", "Quality inspector (another team)", {track:"non", tenure:"y1_3", why:W(3,2,5,4,1), needs:N(4,4,4), beliefs:{fixed:2,growth:5,efficacy:4,expectancy:4,instrumentality:4,equity:4}, goalO:"mapp", needSrc:{}, style:{mode:"mix", id1:4, id2:4, conds:["plan","quickfb"], peak:0, talent:"spotting defects early", talentProof:"Lowest escape rate on the line"}, ratings:r({growth:5,mastery:5,promotion:4}), top:["growth","mastery","promotion"], deep:{growth:1,mastery:2,promotion:0}, direction:"across", dirDetail:"maintenance planning", learnAgenda:"how preventive maintenance is planned", ownHours:2, blockers:["time"], hours:1}, 1, [])
   ];
 }
 
@@ -901,10 +1447,15 @@ function render(force){
   const ae = document.activeElement;
   if (!force && ae && $("#app").contains(ae) && ae.matches("textarea, input[type=text]")) { pendingRender = true; return; }
   pendingRender = false;
+  if (!render.header) render.header = $(".bar").innerHTML;
+  if (render.lang !== LANG){ $(".bar").innerHTML = render.header; translateDom($(".bar")); render.lang = LANG; document.documentElement.lang = LANG; }
+  document.querySelectorAll("[data-action=lang]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === LANG)));
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.v === S.view)));
   $("#demo-tog").setAttribute("aria-pressed", String(S.demo));
   $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : renderFoundations();
+  translateDom($("#app"));
 }
+document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
 document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 0));
 
 function banner(){
@@ -917,7 +1468,7 @@ function banner(){
 function renderMe(){
   if (S.assess) return banner() + renderAssessment();
   if (S.demo){
-    const ps = S.demoTeam.filter(p => p.doc.assessment?.why);
+    const ps = S.demoTeam.filter(p => p.doc.assessment?.why && p.doc.managerId === "mgr-demo");
     const p = ps.find(x => x.id === S.persona) || ps[0];
     return `<div class="notice demo-note stack" style="gap:8px">
         <div><b>Sample data.</b> You're seeing the employee view as a sample person, with a finished assessment, a plan in progress and check-ins. Tick actions or add a check-in to try it. Nothing is saved.</div>
@@ -925,13 +1476,13 @@ function renderMe(){
         <button class="btn sm" data-action="start">Take the assessment yourself</button></div></div>
       <div class="grid2">
       <section class="stack" style="gap:16px;min-width:0">${renderOwnership(p.doc)}${renderPlan(p.doc, true, renderSkills(p.doc, true, p.id))}</section>
-      <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(p.doc, true)}${renderProfile(p.doc, true)}${renderCheckins(p.doc, true)}</aside></div>`;
+      <aside class="stack" style="gap:16px;min-width:0">${renderSharing(p.doc)}${renderTalentsGoals(p.doc, true)}${renderProfile(p.doc, true)}${renderCheckins(p.doc, true)}</aside></div>`;
   }
   const a = S.myDoc.assessment;
   if (!a?.completedAt || !a.why) return banner() + renderIntro(!!a?.completedAt);
   return banner() + `<div class="grid2">
     <section class="stack" style="gap:16px;min-width:0">${renderOwnership(S.myDoc)}${renderPlan(S.myDoc, true, renderSkills(S.myDoc, true, S.meId))}</section>
-    <aside class="stack" style="gap:16px;min-width:0">${renderTalentsGoals(S.myDoc, true)}${renderProfile(S.myDoc, true)}${renderCheckins(S.myDoc, true)}</aside>
+    <aside class="stack" style="gap:16px;min-width:0">${renderSharing(S.myDoc)}${renderTalentsGoals(S.myDoc, true)}${renderProfile(S.myDoc, true)}${renderCheckins(S.myDoc, true)}</aside>
   </div>`;
 }
 
@@ -1109,7 +1660,7 @@ function renderPlan(doc, editable, extra = ""){
   const active = p.goals.filter(g => g.status !== "Later");
   const goalsDone = active.filter(g => g.status === "Done").length;
   const applied = cs.filter(c => (c.applied || "").trim()).length;
-  const rc = realityCheck(doc); const who = editable ? "you" : "they";
+  const rc = doc.assessment ? realityCheck(doc) : null; const who = editable ? "you" : "they";
   return `<section class="card stack" style="gap:10px">
       <div class="row between"><div><span class="eyebrow">90-day development plan</span><h2>${editable ? "My plan" : "Their plan"}</h2></div><span class="mono" style="font-size:1.4rem">${prog}%</span></div>
       <div class="prog" role="img" aria-label="${prog}% of actions done"><b style="width:${prog}%"></b></div>
@@ -1121,15 +1672,15 @@ function renderPlan(doc, editable, extra = ""){
           <div><span class="small muted">Behaviour</span><div class="v">${applied}</div><span class="small muted">times applied on the job</span></div>
           <div><span class="small muted">Results</span><div class="v">${goalsDone}/${active.length}</div><span class="small muted">active goals met${active.length < p.goals.length ? ` · ${p.goals.length - active.length} parked` : ""}</span></div>
         </div></div>
-      <div class="sep stack" style="gap:6px"><b>Reality check</b>
+      ${rc ? `      <div class="sep stack" style="gap:6px"><b>Reality check</b>
         <p class="small">${rc.over
           ? `<span class="chip crit">Plan is bigger than the time available</span> This plan has <b>${rc.open}</b> open actions. With ${esc(timeText(doc.assessment || {}))}, ${who} have realistic time for about <b>${rc.feasible}</b> in 90 days (at roughly ${HOURS_PER_ACTION} hours per action). ${editable ? "You" : "They"} will not finish everything in 90 days. Work through the actions in order and expect the rest to run over, or agree more development time.`
           : `<span class="chip ok">Fits the time available</span> <b>${rc.open}</b> open actions against realistic time for about <b>${rc.feasible}</b> (roughly ${HOURS_PER_ACTION} hours per action).`}
           ${active.length < p.goals.length ? ` <b>${p.goals.length - active.length}</b> goal${p.goals.length - active.length > 1 ? "s are" : " is"} parked because ${who} don't have time for ${p.goals.length - active.length > 1 ? "them" : "it"} yet. Bring one back only when another is done.` : ""}</p>
-        <p class="small muted">Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make ${editable ? "you" : "them"} ready and make the case. It cannot guarantee the outcome, and ${editable ? "your manager" : "you"} should not promise it.</p></div>
+        <p class="small muted">Some outcomes depend on other people: pay, promotion, recognition, flexible arrangements. The plan can make ${editable ? "you" : "them"} ready and make the case. It cannot guarantee the outcome, and ${editable ? "your manager" : "you"} should not promise it.</p></div>` : ""}
     </section>
     ${extra}
-    ${p.goals.map(g => renderGoal(g, editable, rc.verdicts[g.id])).join("")}
+    ${p.goals.map(g => renderGoal(g, editable, rc?.verdicts[g.id])).join("")}
     ${editable ? `<section class="card stack" style="gap:10px"><h3>Add your own goal</h3><div class="add"><input type="text" id="new-goal" placeholder="e.g. Get my forklift licence" aria-label="New goal"><button class="btn sm" data-action="add-goal">Add goal</button></div></section>` : ""}`;
 }
 function renderOwnership(doc){
@@ -1155,6 +1706,30 @@ function renderOwnership(doc){
       <div><span class="small muted">Lessons for any job</span><div class="v">${lessons}</div><span class="small muted">from check-ins</span></div>
     </div>
     <p class="small muted">${esc(msg)}${a.learnAgenda ? ` You said you want this job to teach you: <b>${esc(a.learnAgenda)}</b>.` : ""}</p>
+  </section>`;
+}
+function renderSharing(doc){
+  const shares = doc.shares || [];
+  const person = id => `<b>${esc(nameOf(id))}</b>`;
+  const picker = kind => S.demo
+    ? `<p class="small muted">In the live app you search for colleagues by name here. Sample data uses made-up people.</p>`
+    : `<div class="picker"><input type="text" id="pick-${kind}" data-pick="${kind}" placeholder="Search by name" aria-label="${kind === "manager" ? "Search for your manager" : "Search for someone to share with"}" autocomplete="off"><div class="pick-res" id="pick-${kind}-res"></div></div>`;
+  return `<section class="card stack">
+    <div><span class="eyebrow">You decide</span><h2>Who can see my development</h2></div>
+    <p class="small muted">Your full record is private to you. Only the people below can see it, and only the parts you choose.</p>
+    <div class="share-row"><div style="min-width:0"><span class="small muted">My direct manager</span><br>${doc.managerId ? person(doc.managerId) : `<span class="muted">Not set</span>`}
+      <p class="small muted" style="margin-top:4px">Sees your full development record (profile, plan, skills passport and check-ins), so they can support you.</p></div>
+      ${doc.managerId ? `<button class="btn ghost sm" data-action="share-clear-mgr">Remove</button>` : ""}</div>
+    ${doc.managerId ? "" : picker("manager")}
+    <div class="sep stack" style="gap:8px"><span class="small muted">Also shared with</span>
+      ${shares.length ? shares.map(x => `<div class="share-row"><div style="min-width:0">${person(x.id)}
+          <div class="row" style="gap:6px;margin-top:6px">${Object.entries(SECTIONS).map(([k, l]) => `<label class="tick"><input type="checkbox" data-action="share-sec" data-id="${esc(x.id)}" data-sec="${k}" ${x.sections.includes(k) ? "checked" : ""}> ${esc(l)}</label>`).join("")}</div></div>
+          <button class="btn ghost sm" data-action="share-remove" data-id="${esc(x.id)}">Stop sharing</button></div>`).join("")
+        : `<p class="small muted">No one else. You can share with a mentor, another manager or HR.</p>`}
+      ${S.demo && !shares.some(x => x.id === "hr-demo") ? `<div><button class="btn ghost sm" data-action="share-add" data-id="hr-demo">+ Share with ${esc(DEMO_NAMES["hr-demo"])}</button></div>` : ""}
+      ${picker("share")}
+    </div>
+    <p class="small muted sep">Everyone else sees nothing. You can change this at any time.</p>
   </section>`;
 }
 function renderTalentsGoals(doc, mine){
@@ -1284,28 +1859,29 @@ function renderCheckins(doc, editable){
 
 // ---------- Team view ----------
 function teamList(){
-  if (S.demo) return S.demoTeam;
-  return (S.myDoc.team || []).filter(id => id !== S.meId).map(id => ({id, name: S.names[id] || "Team member", avatar: S.avatars[id], doc: S.people[id] || {}}));
+  const me = S.demo ? "mgr-demo" : S.meId;
+  const src = S.demo ? S.demoTeam.map(p => [p.id, p.doc, p.name]) : Object.entries(S.people).map(([id, d]) => [id, d, S.names[id] || "Team member"]);
+  return src.filter(([id]) => id !== me).map(([id, d, name]) => {
+    const secs = sectionsFor(d, me); if (!secs.length) return null;
+    return {id, name, avatar: S.demo ? null : S.avatars[id], rel: d.managerId === me ? "report" : "shared", sections: secs, doc: visibleDoc(d, secs)};
+  }).filter(Boolean).sort((x, y) => (x.rel === y.rel ? 0 : x.rel === "report" ? -1 : 1));
 }
 function renderTeam(){
   const list = teamList();
   const filtered = list.filter(p => S.filter === "all" || p.doc.assessment?.track === S.filter);
   const assessed = list.filter(p => p.doc.assessment?.completedAt && p.doc.assessment.why);
   const avgProg = assessed.length ? Math.round(assessed.reduce((s, p) => s + planProgress(p.doc.plan), 0) / assessed.length) : 0;
-  const attention = list.filter(p => ["warn","crit"].includes(statusFor(p.doc, p.id).cls)).length;
+  const attention = list.filter(p => p.sections.includes("profile") && ["warn","crit"].includes(statusFor(p.doc, p.id).cls)).length;
   const asks = list.reduce((n, p) => n + skillStats(p.doc, p.id).open, 0);
-  const others = Object.keys(S.people).filter(id => id !== S.meId && !(S.myDoc.team || []).includes(id) && S.people[id]?.assessment?.completedAt);
   const head = `${banner()}${S.demo ? `<div class="notice demo-note"><b>Sample team.</b> These people and numbers are made up to show what a manager sees once a team is using the app. Try selecting different people. Nothing here is saved.</div>` : ""}
     <div class="row between"><div><span class="eyebrow">Front-line manager view</span><h1>My team</h1></div>
-    <div class="row">${!S.demo && S.live ? `<button class="btn ghost sm" data-action="toggle-add">${S.showAdd ? "Done adding" : "Add people"}</button>` : ""}${!S.demo ? `<button class="btn ghost sm" data-action="demo">Show sample team</button>` : ""}</div></div>`;
-  const addPanel = S.showAdd && !S.demo ? `<section class="card stack" style="gap:10px"><h3>Add people who completed their assessment</h3>
-    ${others.length ? others.map(id => `<div class="row between" style="border-top:1px solid var(--line);padding-top:8px"><span class="person">${S.avatars[id] ? `<img src="${esc(S.avatars[id])}" alt="">` : ""}<span>${esc(S.names[id] || "Team member")}${S.people[id].title ? ` <span class="muted">· ${esc(S.people[id].title)}</span>` : ""}</span></span><button class="btn sm" data-action="add-member" data-id="${esc(id)}">Add to my team</button></div>`).join("")
-      : `<p class="muted">Nobody else has completed an assessment yet. Share this page with your team as Contributors and ask them to open <b>My growth</b>. They'll appear here once they finish.</p>`}</section>` : "";
-  if (!list.length) return head + addPanel + `<section class="card empty"><h2>No one on your team yet</h2>
-    <p class="muted">Share this page with your direct reports (Contributor access) and ask them to complete the assessment under <b>My growth</b>. Then use <b>Add people</b> to bring them into your view. You'll see each person's motivation profile, plan progress and a coaching playbook.</p>
-    <div class="row">${S.live ? `<button class="btn" data-action="toggle-add">Add people</button>` : ""}<button class="btn ghost" data-action="demo">Show sample team</button></div></section>`;
+    <div class="row">${!S.demo ? `<button class="btn ghost sm" data-action="demo">Show sample team</button>` : ""}</div></div>
+    <p class="small muted">You see your direct reports, plus anyone who chose to share their development with you. Each person decides what to share.</p>`;
+  if (!list.length) return head + `<section class="card empty"><h2>No one on your team yet</h2>
+    <p class="muted">People appear here when they name you as their direct manager, or choose to share their development with you. Share this page with your team (Contributor access) and ask them to complete <b>My growth</b> and set their sharing.</p>
+    <div class="row"><button class="btn ghost" data-action="demo">Show sample team</button></div></section>`;
   const sel = list.find(p => p.id === S.sel);
-  return head + addPanel + `
+  return head + `
     <div class="stats">
       <div class="stat"><div class="eyebrow">People</div><div class="v">${list.length}</div></div>
       <div class="stat"><div class="eyebrow">Assessed</div><div class="v">${assessed.length}<span class="muted" style="font-size:1rem">/${list.length}</span></div></div>
@@ -1318,36 +1894,48 @@ function renderTeam(){
       <div class="row between"><h2>Team overview</h2>
         <div class="filters" role="group" aria-label="Filter by role type">${[["all","All"],["tech","Technical"],["non","Non-technical"]].map(([k, l]) => `<button data-action="filter" data-f="${k}" aria-pressed="${S.filter === k}">${l}</button>`).join("")}</div></div>
       <div class="tablewrap"><table><thead><tr><th>Person</th><th>Role type</th><th>Time in role</th><th>Motivation</th><th title="Autonomy, competence, relatedness">Needs A·C·R</th><th>Works best</th><th>Top drivers</th><th>Plan</th><th>Skills</th><th>Last check-in</th><th>Status</th></tr></thead><tbody>
-      ${filtered.map(p => { const a = p.doc.assessment?.why ? p.doc.assessment : null; const P = a ? profileOf(a) : null; const st = statusFor(p.doc, p.id); const last = (p.doc.checkins || [])[0]?.date;
+      ${filtered.map(p => { const a = p.doc.assessment?.why ? p.doc.assessment : null; const P = a ? profileOf(a) : null; const st = p.sections.includes("profile") ? statusFor(p.doc, p.id) : {cls:"none", text:"Limited view"}; const last = (p.doc.checkins || [])[0]?.date;
         return `<tr class="click ${S.sel === p.id ? "sel" : ""}" data-action="select" data-id="${esc(p.id)}" tabindex="0">
-          <td><span class="person">${p.avatar ? `<img src="${esc(p.avatar)}" alt="">` : ""}<span><b>${esc(p.name)}</b><br><span class="muted small">${esc(p.doc.title || "")}</span></span></span></td>
-          <td>${a ? esc(TRACKS[a.track]?.label) : "—"}</td>
+          <td><span class="person">${p.avatar ? `<img src="${esc(p.avatar)}" alt="">` : ""}<span><b>${esc(p.name)}</b><br><span class="muted small">${esc(p.doc.title || "")}</span><br>${p.rel === "report" ? `<span class="chip neutral">Direct report</span>` : `<span class="chip in" title="${esc(p.sections.map(k => SECTIONS[k]).join(", "))}">Shared with you</span>`}</span></span></td>
+          <td>${a ? esc(TRACKS[a.track]?.label) : p.sections.includes("profile") ? "—" : `<span class="muted small">Not shared</span>`}</td>
           <td>${a ? `${esc(TENURE[a.tenure]?.label)}<br><span class="muted small">${esc(TENURE[a.tenure]?.stage)}</span>` : "—"}</td>
           <td>${P ? `<span class="chip ${P.quality.cls}">${esc(P.quality.label)}</span>` : "—"}</td>
-          <td>${P ? `<span class="row" style="gap:4px">${NEEDS.map(n => `<span class="nd ${lvl(P.needs[n.k])}" title="${n.label} ${P.needs[n.k]?.toFixed(1)}/5">${n.label[0]}</span>`).join("")}</span>` : "—"}</td>
+          <td>${P ? `<span class="row" style="gap:4px">${NEEDS.map(n => `<span class="nd ${lvl(P.needs[n.k])}" data-notr title="${n.label} ${P.needs[n.k]?.toFixed(1)}/5">${n.label[0]}</span>`).join("")}</span>` : "—"}</td>
           <td>${a?.style?.mode ? esc(MODES[a.style.mode].label) : "—"}</td>
           <td>${a ? `<div class="row" style="gap:4px">${a.top.map(k => `<span class="chip ${DMAP[k].type}">${esc(DMAP[k].label)}</span>`).join("")}</div>` : "—"}</td>
-          <td class="mono">${a ? planProgress(p.doc.plan) + "%" : "—"}</td>
+          <td class="mono">${p.doc.plan ? planProgress(p.doc.plan) + "%" : p.sections.includes("plan") ? "—" : `<span class="muted small">Not shared</span>`}</td>
           <td>${(() => { const k = skillStats(p.doc, p.id); return k.total ? `<span class="small"><b class="mono">${k.done}</b> mastered · <b class="mono">${k.active}</b> active</span>${k.open ? `<br><span class="chip warn">${k.open} support ask${k.open > 1 ? "s" : ""}</span>` : ""}` : `<span class="muted">—</span>`; })()}</td>
-          <td>${last ? fmtDate(last) : `<span class="muted">None</span>`}</td>
+          <td>${last ? fmtDate(last) : p.sections.includes("checkins") ? `<span class="muted">None</span>` : `<span class="muted small">Not shared</span>`}</td>
           <td><span class="flag ${st.cls}">${esc(st.text)}</span></td></tr>`; }).join("") || `<tr><td colspan="11" class="muted">No one matches this filter.</td></tr>`}
       </tbody></table></div>
       <p class="muted small">Select a person to open their profile, plan and coaching playbook. Needs: <span class="nd ok">✓</span> met · <span class="nd warn">~</span> partly · <span class="nd crit">!</span> low.</p>
     </section>
     ${sel ? renderMember(sel) : ""}`;
 }
+function notShared(what, p){ return `<section class="card stack" style="gap:6px"><h3>${esc(what)}</h3><p class="small muted">Not shared with you. ${esc(p.name)} decides what to share.</p></section>`; }
 function renderMember(p){
   const a = p.doc.assessment;
-  const remove = S.demo ? "" : `<button class="btn ghost sm" data-action="remove-member" data-id="${esc(p.id)}">Remove from my team</button>`;
+  const remove = `<span class="chip ${p.rel === "report" ? "neutral" : "in"}">${p.rel === "report" ? "Direct report: sees everything" : "Shared with you: " + p.sections.map(k => SECTIONS[k]).join(", ")}</span>`;
+  const has = k => p.sections.includes(k);
+  if (p.rel === "shared" && !has("profile")) return `<div class="grid2" id="sel-panel" style="scroll-margin-top:90px">
+    <section class="stack" style="gap:16px;min-width:0">
+      <div class="row between"><div><span class="eyebrow">Selected</span><h2>${esc(p.name)}</h2></div>${remove}</div>
+      ${has("skills") ? renderRequests(p) : ""}
+      ${has("plan") ? renderPlan(p.doc, false, has("skills") ? renderSkills(p.doc, false, p.id) : "") : (has("skills") ? renderSkills(p.doc, false, p.id) : notShared(SECTIONS.plan, p))}
+    </section>
+    <aside class="stack" style="gap:16px;min-width:0">
+      ${notShared(SECTIONS.profile, p)}
+      ${has("checkins") ? renderCheckins(p.doc, false) : notShared(SECTIONS.checkins, p)}
+    </aside></div>`;
   if (!a?.completedAt || !a.why) return `<section class="card stack" style="gap:10px"><h2>${esc(p.name)}</h2><p class="muted">Hasn't completed the current assessment yet. Ask them to open <b>My growth</b> on this page.</p><div>${remove}</div></section>`;
   const qs = a.top.map(k => DMAP[k].ask);
   const note = S.demo ? "" : (S.notes[p.id]?.text || "");
   return `<div class="grid2" id="sel-panel" style="scroll-margin-top:90px">
     <section class="stack" style="gap:16px;min-width:0">
       <div class="row between"><div><span class="eyebrow">Selected</span><h2>${esc(p.name)}</h2></div>${remove}</div>
-      ${renderRequests(p)}
+      ${has("skills") ? renderRequests(p) : ""}
       ${renderMoves(p)}
-      ${renderPlan(p.doc, false, renderSkills(p.doc, false, p.id))}
+      ${has("plan") ? renderPlan(p.doc, false, has("skills") ? renderSkills(p.doc, false, p.id) : "") : notShared(SECTIONS.plan, p)}
     </section>
     <aside class="stack" style="gap:16px;min-width:0">
       <section class="card stack">
@@ -1358,13 +1946,14 @@ function renderMember(p){
       </section>
       ${renderTalentsGoals(p.doc, false)}
       ${renderProfile(p.doc, false)}
-      ${renderCheckins(p.doc, false)}
+      ${has("checkins") ? renderCheckins(p.doc, false) : notShared(SECTIONS.checkins, p)}
     </aside></div>`;
 }
 
 // ---------- How to use (in-app summary of SOP.md) ----------
 const GUIDE = {
   employee: [
+    ["Decide who sees it", "In <b>Who can see my development</b>, name your direct manager (they see your full record so they can support you) and, if you want, share chosen parts with a mentor, another manager or HR. Everyone else sees nothing."],
     ["Own it", "Your development is personal. You decide what to work on and how fast; your manager guides and supports. Skills you build are yours to keep, here or at your next employer."],
     ["Take the assessment", "Open <b>My growth</b> and select <b>Take the assessment yourself</b>. It has 10 short steps and takes about 15 minutes. Answer for how things are now, not how they should be."],
     ["Read your profile", "Your profile shows why you put in effort, which needs your job meets (and what's behind any gaps), how you work best, which rewards matter and what you believe about growing."],
@@ -1376,7 +1965,7 @@ const GUIDE = {
     ["Retake every 90 days", "Select <b>Retake</b> on your profile. You get a new plan, and your previous results are kept in your history."]
   ],
   manager: [
-    ["Build your team", "Share the app with your direct reports as Contributors. Once they finish the assessment, open <b>My team</b> → <b>Add people</b>."],
+    ["Build your team", "Share the app with your direct reports as Contributors. When they name you as their direct manager, they appear in <b>My team</b> automatically. Anyone else appears only if they choose to share with you, and you see only what they share."],
     ["Scan weekly", "Check the team table once a week. Needs dots (A·C·R) and the status column show who needs attention first. Respond to flags using the table below."],
     ["Prepare each 1:1", "Select a person to open their coaching playbook: what's behind any low needs, how to tap into their talent, how they work best and questions to ask. Tags show which research each tip comes from."],
     ["Be straight about expectations", "Use the <b>Talents vs goals</b> card and each goal's verdict. Confirm or challenge self-reported talents. Never promise pay or promotion you don't control. Help people cut plans that don't fit their time."],
@@ -1412,7 +2001,7 @@ function renderGuide(){
       ${GUIDE.flags.map(([f, c, d]) => `<tr><td style="white-space:nowrap"><span class="flag ${c}">${esc(f)}</span></td><td>${esc(d)}</td></tr>`).join("")}</tbody></table></div></section>
     <section class="card stack" style="gap:8px"><h2>Ground rules</h2><ul class="guide">
       <li>Results are for development conversations only. Never use them for pay, hiring, ratings or discipline.</li>
-      <li>Everyone the app is shared with can read profiles and plans. Only managers' coaching notes are private.</li>
+      <li>Each employee decides who sees their development. Their direct manager sees their full record; anyone else sees only the parts the employee shares. Managers' coaching notes are private to the manager.</li>
       <li>Scores are a snapshot, not a label. People change, which is why the assessment is retaken every 90 days.</li></ul></section>`;
 }
 
@@ -1475,7 +2064,10 @@ async function writeMe(){
   if (S.readOnly) return;
   if (writing){ again = true; return; }
   writing = true;
-  try { await S.db.doc("people/" + S.meId).set(clone(S.myDoc)); }
+  try {
+    await S.db.doc("data/users/" + S.meId + "/profile").set(clone(S.myDoc));   // full record: private to the employee
+    await S.db.doc("people/" + S.meId).set(publishedDoc(S.myDoc));             // only what they chose to share
+  }
   catch (e){ if (e?.code === "invalid_argument"){ S.readOnly = true; render(); } else toast("Couldn't save. Check your connection and try again."); }
   writing = false;
   if (again){ again = false; writeMe(); }
@@ -1497,6 +2089,7 @@ document.addEventListener("click", e => {
   const act = el.dataset.action; const A = S.assess;
   if (el.tagName === "A") e.preventDefault();
   switch (act){
+    case "lang": LANG = el.dataset.l; try { localStorage.setItem("gc-lang", LANG); } catch {} break;
     case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
     case "start": case "retake": {
       const prev = S.myDoc.assessment?.why ? S.myDoc.assessment : null;
@@ -1549,9 +2142,9 @@ document.addEventListener("click", e => {
     case "passport": {
       const d = curDoc(); const done = (d.skills || []).filter(x => x.stage === 3);
       const lessons = (d.checkins || []).map(c => c.portable).filter(Boolean);
-      const txt = ["SKILLS AND CERTIFICATIONS", ...done.map(x => `- ${x.name} (${x.kind === "cert" ? "certified" : "mastered"})${x.evidence ? `: ${x.evidence}` : ""}`),
-        ...(d.assessment?.style?.talent && d.assessment.style.talentProof ? ["", "STRENGTH", `- ${d.assessment.style.talent}: ${d.assessment.style.talentProof}`] : []),
-        ...(lessons.length ? ["", "RECENT LEARNING", ...lessons.slice(0, 5).map(l => `- ${l}`)] : [])].join("\n");
+      const txt = [tr("SKILLS AND CERTIFICATIONS"), ...done.map(x => `- ${x.name} (${tr(x.kind === "cert" ? "certified" : "mastered")})${x.evidence ? `: ${x.evidence}` : ""}`),
+        ...(d.assessment?.style?.talent && d.assessment.style.talentProof ? ["", tr("STRENGTH"), `- ${d.assessment.style.talent}: ${d.assessment.style.talentProof}`] : []),
+        ...(lessons.length ? ["", tr("RECENT LEARNING"), ...lessons.slice(0, 5).map(l => `- ${l}`)] : [])].join("\n");
       const fallback = () => { const ta = $("#passport-text"); ta.hidden = false; ta.value = txt; ta.style.minHeight = "140px"; ta.focus(); ta.select(); toast("Select all and copy"); };
       try { navigator.clipboard.writeText(txt).then(() => toast("Passport copied"), fallback); } catch { fallback(); }
       return; }
@@ -1564,9 +2157,13 @@ document.addEventListener("click", e => {
       if (S.demo){ S.demoResp[emp] = {...(S.demoResp[emp] || {}), [rid]: r}; }
       else { S.myDoc.responses = {...(S.myDoc.responses || {}), [emp]: {...(S.myDoc.responses?.[emp] || {}), [rid]: r}}; saveMe(true); }
       toast("Reply sent"); break; }
-    case "toggle-add": S.showAdd = !S.showAdd; break;
-    case "add-member": S.myDoc.team = [...new Set([...(S.myDoc.team || []), el.dataset.id])]; saveMe(true); toast("Added to your team"); break;
-    case "remove-member": S.myDoc.team = (S.myDoc.team || []).filter(i => i !== el.dataset.id); S.sel = null; saveMe(true); break;
+    case "share-clear-mgr": curDoc().managerId = null; saveMe(true); break;
+    case "share-remove": { const d = curDoc(); d.shares = (d.shares || []).filter(x => x.id !== el.dataset.id); saveMe(true); break; }
+    case "share-add": { const d = curDoc(); d.shares = [...(d.shares || []), {id: el.dataset.id, sections: ["plan", "skills"]}]; saveMe(true); break; }
+    case "pick": { const d = curDoc(); const id = el.dataset.id; S.names[id] = el.dataset.name || S.names[id];
+      if (el.dataset.kind === "manager"){ d.managerId = id; d.shares = (d.shares || []).filter(x => x.id !== id); }
+      else if (id !== d.managerId && !(d.shares || []).some(x => x.id === id)) d.shares = [...(d.shares || []), {id, sections: ["plan", "skills"]}];
+      saveMe(true); toast("Sharing updated"); break; }
     case "select": S.sel = S.sel === el.dataset.id ? null : el.dataset.id; render(true); if (S.sel) $("#sel-panel")?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
     default: return;
   }
@@ -1596,10 +2193,12 @@ document.addEventListener("change", e => {
   else if (act === "own") A.ownHours = +el.value;
   else if (act === "energy"){ S.energy = +el.value; return; }
   else if (act === "prod"){ S.prod = +el.value; return; }
+  else if (act === "share-sec"){ const x = (curDoc().shares || []).find(y => y.id === el.dataset.id); x.sections = el.checked ? [...new Set([...x.sections, el.dataset.sec])] : x.sections.filter(k => k !== el.dataset.sec);
+    if (!x.sections.length) curDoc().shares = curDoc().shares.filter(y => y !== x); saveMe(true); }
   else if (act === "sk-target"){ curDoc().skills.find(y => y.id === el.dataset.s).target = el.value; saveMe(); }
   else if (act === "move"){ const cur = S.notes[el.dataset.p]?.moves || {}; saveNote(el.dataset.p, {moves: {...cur, [el.dataset.m]: el.checked}}); }
   else if (act === "attrib"){ S.attrib = el.value; const tip = el.parentElement.querySelector(".tip"); const need = S.attrib === "ability" || S.attrib === "luck";
-    if (need && !tip) el.insertAdjacentHTML("afterend", `<p class="tip">Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.</p>`);
+    if (need && !tip){ el.insertAdjacentHTML("afterend", `<p class="tip">Ability and luck are hard to repeat on purpose. Was there something you did, an effort or approach, that also helped? That part is in your control.</p>`); translateDom(el.parentElement); }
     if (!need && tip) tip.remove(); return; }
   else if (act === "toggle"){ const g = findGoal(el.dataset.g); const a = g.actions.find(x => x.id === el.dataset.a); a.done = el.checked;
     if (g.actions.every(x => x.done)) g.status = "Done"; else if (g.actions.some(x => x.done) && g.status === "Not started") g.status = "In progress"; saveMe(); }
@@ -1611,6 +2210,13 @@ document.addEventListener("input", e => {
   if (el.dataset.input && S.assess) S.assess[el.dataset.input] = el.value;
   if (el.dataset.sinput && S.assess) S.assess.style[el.dataset.sinput] = el.value;
   if (el.dataset.note) saveNote(el.dataset.note, {text: el.value});
+  if (el.dataset.pick && S.user){
+    const kind = el.dataset.pick, box = $("#pick-" + kind + "-res");
+    S.user.search(el.value).then(hits => {
+      box.replaceChildren(...hits.filter(h => h.id !== S.meId).map(h => { const b = document.createElement("button"); b.className = "pick-hit"; b.dataset.action = "pick"; b.dataset.kind = kind; b.dataset.id = h.id; b.dataset.name = h.name; b.textContent = h.name; return b; }));
+      if (!hits.length && el.value.trim()) box.textContent = tr("No one found. Check the spelling, or ask them to open this page first.");
+    });
+  }
   if (el.dataset.ev){ curDoc().skills.find(y => y.id === el.dataset.ev).evidence = el.value; saveMe(); }
 });
 
@@ -1626,18 +2232,23 @@ render();
   const id = await user.id(); if (!id) return;
   S.db = db; S.user = user; S.meId = id; S.live = true;
   const w = await user.can("data.write"); if (w === false) S.readOnly = true;
-  let loadedMine = false, knownIds = "";
+  let knownIds = "";
+  const priv = await db.doc("data/users/" + id + "/profile").get().catch(() => null);
+  if (priv?.exists) S.myDoc = clone(priv.data());
+  else {
+    const legacy = await db.doc("people/" + id).get().catch(() => null);
+    if (legacy?.exists && legacy.data().assessment){ S.myDoc = clone(legacy.data()); saveMe(true); }       // move an older shared record into the private one
+    else if (local?.assessment?.completedAt){ S.myDoc = local; saveMe(true); }                              // carry a preview plan over on first sign-in
+    else S.myDoc = {};
+  }
+  if (!S.demoTouched && !S.assess) S.demo = !S.myDoc.assessment?.why;
+  const mine = [S.myDoc.managerId, ...(S.myDoc.shares || []).map(x => x.id)].filter(Boolean);
+  if (mine.length) Object.values(await user.profiles(mine)).forEach(p => { S.names[p.id] = p.name || ""; });
+  render();
   db.collection("people").onSnapshot(async snap => {
     const people = {};
     snap.docs.forEach(d => { people[d.id] = d.data(); });
     S.people = people;
-    if (!loadedMine){
-      loadedMine = true;
-      if (people[id]) S.myDoc = clone(people[id]);
-      else if (local?.assessment?.completedAt){ S.myDoc = local; saveMe(true); } // carry a preview plan over on first sign-in
-      else S.myDoc = {};
-      if (!S.demoTouched && !S.assess) S.demo = !S.myDoc.assessment?.why;
-    }
     const ids = Object.keys(people).sort().join(",");
     if (ids !== knownIds){
       knownIds = ids;
