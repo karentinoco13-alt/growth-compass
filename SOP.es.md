@@ -212,4 +212,4 @@ La lógica de la app se basa en los marcos de estos cinco libros (la pestaña **
 
 ---
 
-Growth Compass por Karen Tinoco · © 2026 Karen Tinoco. Licencia Creative Commons Atribución-NoComercial 4.0 (CC BY-NC 4.0): puedes compartir y adaptar este procedimiento con fines no comerciales, dando crédito a Karen Tinoco.
+Growth Compass por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso.
