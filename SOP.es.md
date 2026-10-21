@@ -209,3 +209,7 @@ La lógica de la app se basa en los marcos de estos cinco libros (la pestaña **
 |---|---|---|
 | 1.0 | 20 oct 2026 | Primera versión: evaluación, planes, seguimientos, vista del líder, registro de habilidades y certificaciones del colaborador, solicitudes de apoyo, prueba de realidad de talentos vs. metas |
 | 1.1 | 20 oct 2026 | Compartir controlado por el colaborador, inglés y español, este procedimiento disponible dentro de la app como la pestaña **Plan maestro** |
+
+---
+
+Growth Compass por Karen Tinoco · © 2026 Karen Tinoco. Licencia Creative Commons Atribución-NoComercial 4.0 (CC BY-NC 4.0): puedes compartir y adaptar este procedimiento con fines no comerciales, dando crédito a Karen Tinoco.

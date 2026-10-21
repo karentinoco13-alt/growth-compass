@@ -209,3 +209,7 @@ The app's logic draws on the frameworks in these five books (see the **Foundatio
 |---|---|---|
 | 1.0 | 20 Oct 2026 | First release: assessment, plans, check-ins, manager view, employee-owned skills and certifications tracker, support requests, talents vs goals reality check |
 | 1.1 | 20 Oct 2026 | Employee-controlled sharing, English and Spanish, this procedure available inside the app as the **Blueprint** tab |
+
+---
+
+Growth Compass by Karen Tinoco · © 2026 Karen Tinoco. Licensed under Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0): you may share and adapt this procedure for non-commercial purposes, with credit to Karen Tinoco.

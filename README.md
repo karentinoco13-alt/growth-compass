@@ -117,3 +117,9 @@ SOP.md                 Standard operating procedure (English), also shown in the
 SOP.es.md              Procedimiento operativo estándar (Spanish edition)
 docs/screenshots/      Images used in this README
 ```
+
+## Copyright and licence
+
+**Growth Compass by Karen Tinoco · © 2026 Karen Tinoco.**
+
+Licensed under [Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/). You may share and adapt it for non-commercial purposes with credit to Karen Tinoco. Commercial use requires permission. See [LICENSE](LICENSE).
