@@ -120,6 +120,6 @@ docs/screenshots/      Images used in this README
 
 ## Copyright and licence
 
-**Growth Compass by Karen Tinoco · © 2026 Karen Tinoco.**
+**Growth Compass by Karen Tinoco · © 2026 Karen Tinoco.** Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.
 
 Licensed under [Creative Commons Attribution-NonCommercial 4.0 (CC BY-NC 4.0)](https://creativecommons.org/licenses/by-nc/4.0/). You may share and adapt it for non-commercial purposes with credit to Karen Tinoco. Commercial use requires permission. See [LICENSE](LICENSE).

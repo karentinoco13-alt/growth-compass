@@ -291,7 +291,7 @@ h1,h2{color:var(--ink)}
 .bp p,.bp li{max-width:72ch} .bp ol,.bp ul{margin:0;padding-left:1.3em;display:grid;gap:6px}
 .bp table{min-width:620px;font-size:.9rem} .bp td{vertical-align:top} .bp td b{color:var(--ink)}
 .foot{background:var(--navy);color:var(--on-navy-muted);border-top:3px solid var(--gold);font-size:.86rem}
-.foot .wrap{padding-block:18px}
+.foot .wrap{padding-block:22px;display:grid;gap:6px;line-height:1.55}
 .foot b{color:var(--on-navy)} .foot a{color:var(--gold)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
@@ -1482,8 +1482,10 @@ function render(force){
   $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : S.view === "blueprint" ? renderBlueprint() : renderFoundations();
   translateDom($("#app"));
   $("#foot").innerHTML = LANG === "es"
-    ? `<div class="wrap"><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener">Licencia CC BY-NC 4.0</a>: puedes compartirla y adaptarla con fines no comerciales, dando crédito a Karen Tinoco.</div>`
-    : `<div class="wrap"><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">Licensed under CC BY-NC 4.0</a>: free to share and adapt for non-commercial use, with credit to Karen Tinoco.</div>`;
+    ? `<div class="wrap"><p>Growth Compass por Karen Tinoco. Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p>
+       <p>© 2026 Karen Tinoco. Licencia CC BY-NC 4.0: puedes compartirla y adaptarla con fines no comerciales, dando crédito; el uso comercial requiere permiso por escrito. <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.es" target="_blank" rel="noopener">Licencia</a></p></div>`
+    : `<div class="wrap"><p>Growth Compass by Karen Tinoco. Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.</p>
+       <p>© 2026 Karen Tinoco. Licensed under CC BY-NC 4.0: free to share and adapt for non-commercial use, with credit; commercial use requires written permission. <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">License</a></p></div>`;
 }
 document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
 document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 0));
