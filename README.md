@@ -69,7 +69,7 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
 
 ## Privacy and security
 
-A **Privacy and security** page in the app (linked in every page footer) explains, in English and Spanish, exactly where information is saved, who can see it, and how to delete it. In short:
+A **Privacy** tab in the app menu (also linked in every page footer) explains, in English and Spanish, exactly where information is saved, who can see it, and how to delete it. In short:
 - Entries save automatically to each person's private section (in the team app on claude.ai), or only in their browser (public demo). No one else can open a private section, including the app owner.
 - Only the sections a person chooses to share leave their private section.
 - No AI processing and no tracking: answers are never sent to Claude or any other AI service.

@@ -18,7 +18,7 @@
   --bg:#F3F5F9; --surface:#FFFFFF; --sunk:#E7ECF4; --ink:#0F1E3D; --muted:#56627A; --line:#D3DBE8;
   --in:#1F4E9C; --in-soft:#DEE7F7; --ex:#8C6A0E; --ex-soft:#F7EDD0;
   --navy:#0F2347; --navy-2:#1A3463; --on-navy:#F4F6FB; --on-navy-muted:#B9C5DD; --gold:#D4A72C; --gold-soft:#F7EDD0;
-  --btn-bg:#0F2347; --btn-fg:#FFFFFF; --crit-soft:#FBEAE8; --in-tint:#EEF3FB; --gold-tint:#FBF5E6;
+  --btn-bg:#0F2347; --btn-fg:#FFFFFF; --crit-soft:#FBEAE8; --ok-soft:#E3F2E7; --in-tint:#EEF3FB; --gold-tint:#FBF5E6;
   --ok:#1E7A3C; --warn:#A35F00; --crit:#B3261E; --focus:#2B59C3;
   --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
@@ -28,13 +28,13 @@
   --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
   --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
   --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
-  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --in-tint:#14244A; --gold-tint:#2A2414;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --ok-soft:#173222; --in-tint:#14244A; --gold-tint:#2A2414;
   --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
   --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
   --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
-  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --in-tint:#14244A; --gold-tint:#2A2414;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --ok-soft:#173222; --in-tint:#14244A; --gold-tint:#2A2414;
   --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
@@ -327,6 +327,12 @@ h1,h2{color:var(--ink)}
 .bp th{background:var(--navy);color:var(--on-navy);border-bottom:0} .bp th:first-child{border-top-left-radius:8px} .bp th:last-child{border-top-right-radius:8px}
 .bp tbody tr:nth-child(even) td{background:var(--sunk)}
 .bp h2{display:flex;align-items:center;gap:10px} .bp h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:var(--gold);flex:none}
+.priv h1{font-size:clamp(1.8rem,4vw,2.4rem)}
+.pv-promise{display:flex;gap:10px;align-items:flex-start;background:var(--ok-soft);border:1px solid var(--ok);border-radius:10px;padding:14px 16px;font-size:1.05rem;max-width:80ch}
+.pv-promise .lock{flex:none;color:var(--ok);margin-top:4px}
+.pv-now{background:var(--in-soft);border-radius:10px;padding:12px 16px;max-width:80ch}
+.psec p{max-width:72ch} .psec ol{margin:0;padding-left:1.3em;display:grid;gap:8px} .psec ol li::marker{color:var(--ex);font-weight:700}
+.psec p.callout{background:var(--surface);border:1px solid var(--gold);border-left:5px solid var(--gold);border-radius:8px;padding:10px 12px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
@@ -343,6 +349,7 @@ h1,h2{color:var(--ink)}
       <button class="tab" role="tab" id="tab-guide" data-action="view" data-v="guide">How to use</button>
       <button class="tab" role="tab" id="tab-blueprint" data-action="view" data-v="blueprint">SOP</button>
       <button class="tab" role="tab" id="tab-science" data-action="view" data-v="science">Foundations</button>
+      <button class="tab" role="tab" id="tab-privacy" data-action="view" data-v="privacy">Privacy</button>
     </nav>
     <div class="lang" role="group" aria-label="Language"><button data-action="lang" data-l="en" lang="en">EN</button><button data-action="lang" data-l="es" lang="es">ES</button></div>
     <button class="demo-tog" id="demo-tog" data-action="demo" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Sample data</button>
@@ -694,7 +701,7 @@ const ES = {
   "Covered two extra shifts":"Cubrí dos turnos extra","Feeling a bit stuck":"Me siento un poco estancada","Passed the first cloud practitioner exam":"Aprobé el primer examen de Cloud Practitioner","Rebuilt the backup job using what I learned":"Rehice la tarea de respaldo con lo que aprendí","Infrastructure-as-code basics":"Fundamentos de infraestructura como código","Budget for the next exam":"Presupuesto para el siguiente examen","Finished modules # to #":"Terminé los módulos # a #","Fewer interruptions on Thursday afternoons":"Menos interrupciones los jueves por la tarde",
   "Documented the panel B rewiring":"Documenté el recableado del tablero B","Used the new labelling standard":"Usé el nuevo estándar de etiquetado","Cover so I can attend the PLC course":"Que me cubran para asistir al curso de PLC",
   "“Last spring's line rebuild: clear goal, the right parts on hand, and a partner to bounce ideas off.”":"“La reconstrucción de la línea la primavera pasada: meta clara, las piezas correctas a mano y un compañero para intercambiar ideas.”","“Busy Saturday with the whole team on the floor and a clear plan for the day.”":"“Un sábado con mucho trabajo, todo el equipo en el piso y un plan claro para el día.”","“When I was trusted to redesign the break rota and the team ran smoother for it.”":"“Cuando confiaron en mí para rediseñar los turnos de descanso y el equipo funcionó mejor.”","“A quiet afternoon with no tickets coming in, rebuilding the backup job end to end.”":"“Una tarde tranquila sin tickets entrando, rehaciendo la tarea de respaldo de principio a fin.”","“The week we installed the new compressor: my own job list, the right tools, no meetings.”":"“La semana que instalamos el compresor nuevo: mi propia lista de tareas, las herramientas correctas, sin reuniones.”",
-  "Couldn't save. Check your connection and try again.":"No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.","Live updates stopped. Reload the page to reconnect.":"Se detuvieron las actualizaciones en vivo. Recarga la página para reconectar.","Pick up to 4.":"Elige hasta 4.","SKILLS AND CERTIFICATIONS":"HABILIDADES Y CERTIFICACIONES","Blueprint":"Plan maestro","SOP":"Procedimiento","A short version of the Blueprint. Turn on":"Una versión breve del Plan maestro. Activa",
+  "Couldn't save. Check your connection and try again.":"No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.","Live updates stopped. Reload the page to reconnect.":"Se detuvieron las actualizaciones en vivo. Recarga la página para reconectar.","Pick up to 4.":"Elige hasta 4.","SKILLS AND CERTIFICATIONS":"HABILIDADES Y CERTIFICACIONES","Blueprint":"Plan maestro","SOP":"Procedimiento","Privacy":"Privacidad","A short version of the Blueprint. Turn on":"Una versión breve del Plan maestro. Activa",
   "You decide":"Tú decides","Who can see my development":"Quién puede ver mi desarrollo","Your full record is private to you. Only the people below can see it, and only the parts you choose.":"Tu registro completo es privado. Solo las personas de abajo pueden verlo, y solo las partes que elijas.",
   "My direct manager":"Mi líder directo","Not set":"Sin definir","Sees your full development record (profile, plan, skills passport and check-ins), so they can support you.":"Ve tu registro de desarrollo completo (perfil, plan, pasaporte de habilidades y seguimientos) para poder apoyarte.","Remove":"Quitar",
   "Also shared with":"También compartido con","No one else. You can share with a mentor, another manager or HR.":"Nadie más. Puedes compartir con un mentor, otro líder o RR. HH.","Stop sharing":"Dejar de compartir","Everyone else sees nothing. You can change this at any time.":"Nadie más ve nada. Puedes cambiarlo cuando quieras.","How your information is stored":"Cómo se guarda tu información","Your answers stay in your own browser. They are never sent anywhere or tracked.":"Tus respuestas se quedan en tu propio navegador. Nunca se envían a ningún lado ni se rastrean.","Your answers are saved privately to your own account. Only you, and the people you choose, can see them.":"Tus respuestas se guardan de forma privada en tu propia cuenta. Solo tú, y las personas que elijas, pueden verlas.",
@@ -2089,64 +2096,36 @@ function renderMoves(p){
 
 // ---------- Privacy and security (written for both languages; not passed through the translator) ----------
 const PRIVACY = {
-  en: {eyebrow:"Your data", title:"Privacy and security", lead:"Your development is personal, so Growth Compass keeps it private by default. Here is exactly where your information goes.",
+  en: {title:"Privacy and security",
+    promise:"Your development record is private to you. Other people who use this app can't see what you enter, and neither can the app's owner, unless you choose to share it.",
+    now:{demo:"you're viewing sample data. It's made up, and nothing you change is saved.", local:"your answers are saving only in this web browser, on this device. Nothing is sent anywhere.", live:"your answers are saving to your private space in your claude.ai account.", ro:"you have view-only access, so nothing you enter is saved."},
     sections:[
-      ["What you type is saved automatically", [
-        "<b>In the team app on claude.ai</b> (signed in): everything you enter saves about a second after each change, to your own private section of the app's database. It's tied to your claude.ai account, so you get it back on any device.",
-        "<b>Your private section is private.</b> No one else can open it: not your manager, not other employees, not the app's owner, and not Claude when it works for the owner.",
-        "<b>In the public demo, or if you're signed out:</b> your answers are saved only in this web browser, on this device. Nothing is sent anywhere. Clearing your browser data deletes them, and they don't move to other devices.",
-        "<b>Sample data</b> is made up and never saved. Anything you change in it disappears when you reload."]],
-      ["You decide who sees it", [
-        "If you name your direct manager, they see your full record so they can support you. Anyone else sees only the sections you tick. Everyone else sees nothing. You can change or stop sharing at any time in <b>Who can see my development</b>.",
-        "Anything you haven't shared stays in your private section.",
-        "<b>An honest limit:</b> the parts you share are copied to a shared record that the app shows only to the people you chose. That record is protected by the app, not locked person by person in the database, so someone with access to the team app and technical skills could read it outside the app. Share only what you're comfortable with. For company-wide use, back the app with your HR system's access controls."]],
-      ["What your manager keeps", [
-        "Private coaching notes and ticked development moves are saved in the manager's own private section. Only that manager can see them.",
-        "Replies to your support requests are visible to you, and are kept with your manager's shared record."]],
-      ["No AI processing, no tracking", [
-        "Growth Compass does not send your answers to Claude or any other AI service. Your plan, goal verdicts and coaching tips are produced by fixed rules inside the app, on your device.",
-        "There are no ads, analytics or tracking. The only outside service the page loads is Google Fonts, for the typefaces.",
-        "Your language choice (EN / ES) is remembered in your browser."]],
-      ["Exports", [
-        "<b>Copy my passport</b> copies your skills and certifications as text to your clipboard. It isn't stored anywhere else."]],
-      ["Sharing the link", [
-        "Sharing the link gives people the app, not your data. Each person starts with the sample team and their own private record."]],
-      ["How your answers may be used", [
-        "Only for development conversations. Never for hiring, pay, ratings, promotion or discipline decisions.",
-        "If you have any concern, talk to the person who runs the programme (usually HR). You can also delete your data below at any time."]]],
-    shortDemo:["<b>Your answers stay on your device.</b> In this demo, everything you enter is saved only in your own web browser.","<b>Nothing is sent anywhere.</b> No server stores your answers, and they are never sent to Claude or any other AI service.","<b>No tracking.</b> No ads, no analytics, no profiling.","<b>No account needed,</b> and nobody else, including the app's creator, can see what you enter.","<b>You stay in control.</b> Delete your data at any time with <b>Delete my data</b> below, or by clearing your browser data."],
-    shortTeam:["<b>Your record is private.</b> It's saved to your own private section, tied to your claude.ai account.","<b>Only you, and the people you choose, can see it.</b> Not other employees, and not the app's owner.","<b>Never sent to AI and never tracked.</b> No ads, no analytics.","<b>Used only for your development,</b> never for pay, hiring, ratings or discipline.","<b>You stay in control.</b> Change who sees it, or delete everything, at any time."],
-    delTitle:"Delete my data", delLead:"Removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote. This can't be undone.",
+      ["save","Where your answers are saved",["Everything you enter (your assessment, plan, skills passport and check-ins) saves automatically, about a second after each change."],
+        ["<b>In the team app on claude.ai:</b> to your private space in the app's database. It's tied to your claude.ai account, so you get your record back on any device. It's private even from the person who made the app.","<b>In the public demo, or if you're signed out:</b> only in this web browser, on this computer. Nothing is sent anywhere, and clearing your browser data deletes it."]],
+      ["share","Who can see it",["You decide. If you name your direct manager, they see your full record so they can support you. Anyone else sees only the sections you choose to share with them. Everyone else sees nothing. You can change or stop sharing at any time in <b>Who can see my development</b>."],
+        [],"<b>Good to know:</b> the parts you share are copied to a shared record that the app shows only to the people you chose. Share only what you're comfortable with."],
+      ["shield","No AI, no tracking",["Your answers are never sent to Claude or any other AI service. Your plan, goal verdicts and coaching tips are produced by fixed rules inside the app. There are no ads, analytics or tracking."],[]],
+      ["export","Copy my passport",["Copies your skills and certifications to your clipboard as text, for a CV or profile. It isn't stored anywhere else."],[]],
+      ["link","Sharing the link",["Sharing the link gives people the app, not your record. Each person starts with the sample team and their own private record."],[]],
+      ["control","Deleting your data",["<b>Delete my data</b> below removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote, from your account and from this browser."],[]],
+      ["check","Good practice",["Describe colleagues and customers by role, not by name, and leave out health, financial or other sensitive personal details. Your plan works just as well without them. Your answers are for development only, never for pay, hiring, ratings or discipline."],[]]],
+    delTitle:"Delete my data", delLead:"Permanently removes everything you entered. This can't be undone.",
     delBtn:"Delete my data", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
     delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again."},
-  es: {eyebrow:"Tus datos", title:"Privacidad y seguridad", lead:"Tu desarrollo es personal, por eso Growth Compass lo mantiene privado por defecto. Aquí ves exactamente adónde va tu información.",
+  es: {title:"Privacidad y seguridad",
+    promise:"Tu registro de desarrollo es privado. Otras personas que usan esta app no pueden ver lo que ingresas, y tampoco la persona dueña de la app, a menos que tú decidas compartirlo.",
+    now:{demo:"estás viendo datos de ejemplo. Son ficticios y nada de lo que cambies se guarda.", local:"tus respuestas se están guardando solo en este navegador, en este dispositivo. No se envía nada a ningún lado.", live:"tus respuestas se están guardando en tu espacio privado de tu cuenta de claude.ai.", ro:"tienes acceso de solo lectura, así que nada de lo que ingreses se guarda."},
     sections:[
-      ["Lo que escribes se guarda automáticamente", [
-        "<b>En la app del equipo en claude.ai</b> (con sesión iniciada): todo lo que ingresas se guarda alrededor de un segundo después de cada cambio, en tu propia sección privada de la base de datos de la app. Está vinculada a tu cuenta de claude.ai, así que la recuperas en cualquier dispositivo.",
-        "<b>Tu sección privada es privada.</b> Nadie más puede abrirla: ni tu líder, ni otros colaboradores, ni la persona dueña de la app, ni Claude cuando trabaja para esa persona.",
-        "<b>En la demo pública, o si no iniciaste sesión:</b> tus respuestas se guardan solo en este navegador, en este dispositivo. No se envía nada a ningún lado. Si borras los datos del navegador, se eliminan, y no pasan a otros dispositivos.",
-        "<b>Los datos de ejemplo</b> son ficticios y nunca se guardan. Lo que cambies en ellos desaparece al recargar."]],
-      ["Tú decides quién lo ve", [
-        "Si nombras a tu líder directo, ve tu registro completo para poder apoyarte. Cualquier otra persona ve solo las secciones que marques. Nadie más ve nada. Puedes cambiar o dejar de compartir cuando quieras en <b>Quién puede ver mi desarrollo</b>.",
-        "Lo que no compartas se queda en tu sección privada.",
-        "<b>Un límite, con honestidad:</b> las partes que compartes se copian a un registro compartido que la app muestra solo a las personas que elegiste. Ese registro está protegido por la app, no bloqueado persona por persona en la base de datos, así que alguien con acceso a la app del equipo y conocimientos técnicos podría leerlo fuera de la app. Comparte solo lo que te haga sentir cómodo. Para usarla en toda la empresa, respáldala con los controles de acceso de tu sistema de RR. HH."]],
-      ["Lo que guarda tu líder", [
-        "Las notas privadas de acompañamiento y las acciones de desarrollo marcadas se guardan en la sección privada del líder. Solo ese líder puede verlas.",
-        "Las respuestas a tus solicitudes de apoyo las ves tú, y se guardan con el registro compartido de tu líder."]],
-      ["Sin procesamiento de IA, sin rastreo", [
-        "Growth Compass no envía tus respuestas a Claude ni a ningún otro servicio de IA. Tu plan, los veredictos de tus metas y los consejos de acompañamiento se generan con reglas fijas dentro de la app, en tu dispositivo.",
-        "No hay anuncios, analítica ni rastreo. El único servicio externo que carga la página es Google Fonts, para las tipografías.",
-        "Tu elección de idioma (EN / ES) se recuerda en tu navegador."]],
-      ["Exportar", [
-        "<b>Copiar mi pasaporte</b> copia tus habilidades y certificaciones como texto a tu portapapeles. No se guarda en ningún otro lugar."]],
-      ["Compartir el enlace", [
-        "Compartir el enlace da acceso a la app, no a tus datos. Cada persona empieza con el equipo de ejemplo y su propio registro privado."]],
-      ["Cómo pueden usarse tus respuestas", [
-        "Solo para conversaciones de desarrollo. Nunca para decisiones de contratación, salario, calificaciones, ascensos ni medidas disciplinarias.",
-        "Si tienes cualquier inquietud, habla con quien dirige el programa (normalmente RR. HH.). También puedes borrar tus datos aquí abajo cuando quieras."]]],
-    shortDemo:["<b>Tus respuestas se quedan en tu dispositivo.</b> En esta demo, todo lo que ingresas se guarda solo en tu propio navegador.","<b>No se envía nada a ningún lado.</b> Ningún servidor guarda tus respuestas, y nunca se envían a Claude ni a ningún otro servicio de IA.","<b>Sin rastreo.</b> Sin anuncios, sin analítica, sin perfiles.","<b>No necesitas una cuenta,</b> y nadie más, ni siquiera la persona que creó la app, puede ver lo que ingresas.","<b>Tú tienes el control.</b> Borra tus datos cuando quieras con <b>Borrar mis datos</b> aquí abajo, o borrando los datos de tu navegador."],
-    shortTeam:["<b>Tu registro es privado.</b> Se guarda en tu propia sección privada, vinculada a tu cuenta de claude.ai.","<b>Solo tú, y las personas que elijas, pueden verlo.</b> Ni otros colaboradores ni la persona dueña de la app.","<b>Nunca se envía a IA ni se rastrea.</b> Sin anuncios, sin analítica.","<b>Se usa solo para tu desarrollo,</b> nunca para salario, contratación, calificaciones ni medidas disciplinarias.","<b>Tú tienes el control.</b> Cambia quién lo ve, o bórralo todo, cuando quieras."],
-    delTitle:"Borrar mis datos", delLead:"Elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito. No se puede deshacer.",
+      ["save","Dónde se guardan tus respuestas",["Todo lo que ingresas (tu evaluación, plan, pasaporte de habilidades y seguimientos) se guarda automáticamente, alrededor de un segundo después de cada cambio."],
+        ["<b>En la app del equipo en claude.ai:</b> en tu espacio privado de la base de datos de la app. Está vinculado a tu cuenta de claude.ai, así que recuperas tu registro en cualquier dispositivo. Es privado incluso para la persona que creó la app.","<b>En la demo pública, o si no iniciaste sesión:</b> solo en este navegador, en esta computadora. No se envía nada a ningún lado, y si borras los datos del navegador, se elimina."]],
+      ["share","Quién puede verlo",["Tú decides. Si nombras a tu líder directo, ve tu registro completo para poder apoyarte. Cualquier otra persona ve solo las secciones que elijas compartir con ella. Nadie más ve nada. Puedes cambiar o dejar de compartir cuando quieras en <b>Quién puede ver mi desarrollo</b>."],
+        [],"<b>Bueno saberlo:</b> las partes que compartes se copian a un registro compartido que la app muestra solo a las personas que elegiste. Comparte solo lo que te haga sentir cómodo."],
+      ["shield","Sin IA, sin rastreo",["Tus respuestas nunca se envían a Claude ni a ningún otro servicio de IA. Tu plan, los veredictos de tus metas y los consejos de acompañamiento se generan con reglas fijas dentro de la app. No hay anuncios, analítica ni rastreo."],[]],
+      ["export","Copiar mi pasaporte",["Copia tus habilidades y certificaciones como texto a tu portapapeles, para un CV o perfil. No se guarda en ningún otro lugar."],[]],
+      ["link","Compartir el enlace",["Compartir el enlace da acceso a la app, no a tu registro. Cada persona empieza con el equipo de ejemplo y su propio registro privado."],[]],
+      ["control","Borrar tus datos",["<b>Borrar mis datos</b>, aquí abajo, elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito, de tu cuenta y de este navegador."],[]],
+      ["check","Buenas prácticas",["Describe a tus compañeros y clientes por su rol, no por su nombre, y deja fuera datos de salud, financieros u otros datos personales sensibles. Tu plan funciona igual de bien sin ellos. Tus respuestas son solo para tu desarrollo, nunca para salario, contratación, calificaciones ni medidas disciplinarias."],[]]],
+    delTitle:"Borrar mis datos", delLead:"Elimina de forma permanente todo lo que ingresaste. No se puede deshacer.",
     delBtn:"Borrar mis datos", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
     delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo."}
 };
@@ -2177,17 +2156,17 @@ const ICONS = {
 };
 const icon = k => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 function renderPrivacy(){
-  const d = PRIVACY[LANG] || PRIVACY.en;
-  const shortIcons = ["device","nosend","noeye","person","control"], secIcons = ["save","share","case","shield","export","link","check"];
-  const tile = (x, i) => { const m = x.match(/^<b>(.*?)<\/b>\s*(.*)$/); return `<div class="ptile ${i % 2 ? "g" : "n"}"><span class="pico">${icon(shortIcons[i])}</span><div><b class="tt">${m ? m[1].replace(/[,.]$/, "") : ""}</b><p>${m ? m[2] : x}</p></div></div>`; };
+  const d = PRIVACY[LANG] || PRIVACY.en, es = LANG === "es";
+  const state = S.demo ? "demo" : !S.live ? "local" : S.readOnly ? "ro" : "live";
   const hasData = S.demo ? false : !!(S.myDoc.assessment || (S.myDoc.skills || []).length || (S.myDoc.checkins || []).length || Object.keys(S.notes).length);
-  return `<div data-notr class="stack" style="gap:20px">
-    <section class="card bp-hero"><span class="eyebrow">${d.eyebrow}</span><h1>${d.title}</h1><p>${d.lead}</p></section>
-    <section class="inshort"><h2>${LOCK} ${LANG === "es" ? "En resumen" : "In short"}</h2><div class="ptiles">${(S.live ? d.shortTeam : d.shortDemo).map(tile).join("")}</div></section>
-    <div class="psecs">${d.sections.map(([h, items], i) => `<section class="card psec ${i % 2 ? "g" : "n"}"><div class="psec-h"><span class="pico">${icon(secIcons[i])}</span><h2>${h}</h2></div>
-      <ul>${items.map(x => `<li class="${/^<b>(An honest limit|Un límite)/.test(x) ? "callout" : ""}">${x}</li>`).join("")}</ul></section>`).join("")}</div>
-    <section class="card stack pdel" style="gap:10px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small muted" style="max-width:68ch">${d.delLead}</p>
-      ${S.demo ? `<p class="small">${d.delDemo}</p>`
+  return `<div data-notr class="stack priv" style="gap:16px">
+    <h1>${d.title}</h1>
+    <p class="pv-promise">${LOCK}<span>${d.promise}</span></p>
+    <p class="pv-now"><b>${es ? "Ahora mismo:" : "Right now:"}</b> ${d.now[state]}</p>
+    <div class="psecs">${d.sections.map(([ic, h, paras, list, note], i) => `<section class="card psec ${i % 2 ? "g" : "n"}"><div class="psec-h"><span class="pico">${icon(ic)}</span><h2>${h}</h2></div>
+      ${paras.map(x => `<p>${x}</p>`).join("")}${list.length ? `<ol>${list.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${note ? `<p class="callout">${note}</p>` : ""}</section>`).join("")}</div>
+    <section class="card stack pdel" style="gap:10px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small">${d.delLead}</p>
+      ${S.demo ? `<p class="small muted">${d.delDemo}</p>`
         : S.delAsk ? `<p class="small"><b>${d.delSure}</b></p><div class="row"><button class="btn danger" data-action="del-yes">${d.delYes}</button><button class="btn ghost" data-action="del-no">${d.delNo}</button></div>`
         : `<div><button class="btn ghost" data-action="del-ask" ${hasData ? "" : "disabled"}>${d.delBtn}</button></div>`}
     </section></div>`;
