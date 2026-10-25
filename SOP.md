@@ -178,6 +178,16 @@ On top of these, development moves cover stretch assignments, delegation, learni
 4. **Snapshot, not a label.** People change; retake every 90 days.
 5. **Escalation.** Concerns about well-being, discrimination or pay equity go to HR, following existing company policy.
 
+### 7.1 Where information goes
+
+The **Privacy and security** page in the app (link in every page footer, or `#privacy`) explains this to employees in plain language. In summary:
+
+- **Saving:** in the team app on claude.ai, entries save about a second after each change to the person's private section, tied to their claude.ai account. No one else can open it, including their manager, the app owner, and Claude working for the owner. In the public demo or when signed out, entries are saved only in that browser.
+- **Sharing:** only the sections a person chooses are copied to a shared record that the app shows to the people they picked. That record is protected by the app, not locked per person in the database (see section 6).
+- **No AI processing and no tracking:** answers are not sent to Claude or any other AI service; plans and coaching tips come from fixed rules in the app. No ads, analytics or tracking; the page loads only Google Fonts from outside.
+- **Exports:** *Copy my passport* copies text to the person's clipboard only.
+- **Deleting:** anyone can permanently delete their own data with **Delete my data** on the Privacy and security page.
+
 ## 8. Troubleshooting
 
 | Problem | Fix |

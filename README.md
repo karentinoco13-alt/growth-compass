@@ -67,6 +67,14 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
 - **SOP** (the Blueprint): the full standard operating procedure inside the app, in English and Spanish, with a clickable table of contents. Also available as [SOP.md](SOP.md) and [SOP.es.md](SOP.es.md).
 - **Foundations**: which research framework drives each part of the app.
 
+## Privacy and security
+
+A **Privacy and security** page in the app (linked in every page footer) explains, in English and Spanish, exactly where information is saved, who can see it, and how to delete it. In short:
+- Entries save automatically to each person's private section (in the team app on claude.ai), or only in their browser (public demo). No one else can open a private section, including the app owner.
+- Only the sections a person chooses to share leave their private section.
+- No AI processing and no tracking: answers are never sent to Claude or any other AI service.
+- Anyone can permanently delete their own data with **Delete my data**.
+
 ## Research foundations
 
 The assessment logic, plan generation and coaching guidance draw on the frameworks in:

@@ -178,6 +178,16 @@ Además, las acciones de desarrollo incluyen asignaciones retadoras, delegación
 4. **Una foto del momento, no una etiqueta.** Las personas cambian; repite la evaluación cada 90 días.
 5. **Escalamiento.** Las preocupaciones sobre bienestar, discriminación o equidad salarial se llevan a RR. HH., según la política vigente de la empresa.
 
+### 7.1 Adónde va la información
+
+La página **Privacidad y seguridad** de la app (enlace en el pie de cada página, o `#privacy`) lo explica a los colaboradores en lenguaje sencillo. En resumen:
+
+- **Guardado:** en la app del equipo en claude.ai, lo que se ingresa se guarda alrededor de un segundo después de cada cambio en la sección privada de la persona, vinculada a su cuenta de claude.ai. Nadie más puede abrirla, ni su líder, ni la persona dueña de la app, ni Claude cuando trabaja para esa persona. En la demo pública o sin sesión iniciada, se guarda solo en ese navegador.
+- **Compartir:** solo las secciones que la persona elige se copian a un registro compartido que la app muestra a quienes eligió. Ese registro está protegido por la app, no bloqueado persona por persona en la base de datos (ver la sección 6).
+- **Sin procesamiento de IA y sin rastreo:** las respuestas no se envían a Claude ni a ningún otro servicio de IA; los planes y consejos se generan con reglas fijas en la app. Sin anuncios, analítica ni rastreo; la página solo carga Google Fonts desde fuera.
+- **Exportar:** *Copiar mi pasaporte* copia texto solo al portapapeles de la persona.
+- **Borrar:** cualquier persona puede borrar sus propios datos de forma permanente con **Borrar mis datos** en la página Privacidad y seguridad.
+
 ## 8. Solución de problemas
 
 | Problema | Solución |
