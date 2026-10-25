@@ -18,7 +18,7 @@
   --bg:#F3F5F9; --surface:#FFFFFF; --sunk:#E7ECF4; --ink:#0F1E3D; --muted:#56627A; --line:#D3DBE8;
   --in:#1F4E9C; --in-soft:#DEE7F7; --ex:#8C6A0E; --ex-soft:#F7EDD0;
   --navy:#0F2347; --navy-2:#1A3463; --on-navy:#F4F6FB; --on-navy-muted:#B9C5DD; --gold:#D4A72C; --gold-soft:#F7EDD0;
-  --btn-bg:#0F2347; --btn-fg:#FFFFFF;
+  --btn-bg:#0F2347; --btn-fg:#FFFFFF; --crit-soft:#FBEAE8; --in-tint:#EEF3FB; --gold-tint:#FBF5E6;
   --ok:#1E7A3C; --warn:#A35F00; --crit:#B3261E; --focus:#2B59C3;
   --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --f-body:"Source Sans 3", "Segoe UI", system-ui, sans-serif;
@@ -28,13 +28,13 @@
   --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
   --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
   --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
-  --btn-bg:#E6BE52; --btn-fg:#0A1328;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --in-tint:#14244A; --gold-tint:#2A2414;
   --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0A1328; --surface:#111D36; --sunk:#182743; --ink:#E9EEF8; --muted:#9DABC4; --line:#26385C;
   --in:#86AAEB; --in-soft:#1B2E55; --ex:#E6BE52; --ex-soft:#3A2F12;
   --navy:#081127; --navy-2:#13234A; --on-navy:#F4F6FB; --on-navy-muted:#A8B6D2; --gold:#E6BE52; --gold-soft:#3A2F12;
-  --btn-bg:#E6BE52; --btn-fg:#0A1328;
+  --btn-bg:#E6BE52; --btn-fg:#0A1328; --crit-soft:#3A1C1A; --in-tint:#14244A; --gold-tint:#2A2414;
   --ok:#5BC77E; --warn:#F0A845; --crit:#F2827A; --focus:#9DB8FF; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
@@ -304,6 +304,29 @@ h1,h2{color:var(--ink)}
 .inshort{border:2px solid var(--gold);display:grid;gap:10px}
 .inshort h2{display:flex;gap:8px;align-items:center}
 .inshort ul{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:72ch}
+/* Privacy page colour */
+.inshort{border:0;background:var(--navy);color:var(--on-navy);border-radius:12px;padding:20px;display:grid;gap:14px}
+.inshort h2{color:var(--on-navy)} .inshort .lock{color:var(--gold)}
+.ptiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:10px}
+.ptile{border-radius:10px;padding:14px;display:flex;gap:12px;align-items:flex-start;min-width:0;background:var(--navy-2);border-top:3px solid var(--gold)}
+.ptile.g{border-top-color:var(--in)}
+.ptile .tt{display:block;color:var(--gold);margin-bottom:4px} .ptile p b{color:var(--gold)} .ptile p{font-size:.9rem;color:var(--on-navy)}
+.pico{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--gold);color:var(--navy)}
+.pico .slash{stroke:var(--crit)}
+.psecs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
+.psec{display:grid;gap:12px;align-content:start;border-left:5px solid var(--in);background:var(--in-tint)}
+.psec.g{border-left-color:var(--gold);background:var(--gold-tint)}
+.psec:last-child:nth-child(odd){grid-column:1/-1}
+.psec-h{display:flex;gap:12px;align-items:center} .psec-h h2{font-size:1.15rem}
+.psec .pico{background:var(--navy);color:var(--gold)} .psec.g .pico{background:var(--gold);color:var(--navy)}
+.psec ul{margin:0;padding-left:1.2em;display:grid;gap:8px;font-size:.94rem}
+.psec li::marker{color:var(--ex)}
+.psec li.callout{list-style:none;margin-left:-1.2em;background:var(--surface);border:1px solid var(--gold);border-left:5px solid var(--gold);border-radius:8px;padding:10px 12px}
+.pdel{border:1px solid var(--crit);background:var(--crit-soft)} .pdel .pico{background:var(--crit);color:#FFFFFF}
+/* SOP tables */
+.bp th{background:var(--navy);color:var(--on-navy);border-bottom:0} .bp th:first-child{border-top-left-radius:8px} .bp th:last-child{border-top-right-radius:8px}
+.bp tbody tr:nth-child(even) td{background:var(--sunk)}
+.bp h2{display:flex;align-items:center;gap:10px} .bp h2::before{content:"";width:6px;height:1.1em;border-radius:3px;background:var(--gold);flex:none}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
@@ -2138,14 +2161,32 @@ function privacyPromise(){
     ? {head:"Privada por diseño.", text:"Tus respuestas se guardan en tu propia sección privada. Solo tú, y las personas que elijas, pueden verlas. Nunca se envían a servicios de IA ni se rastrean.", link:"Privacidad y seguridad"}
     : {head:"Private by design.", text:"Your answers are saved to your own private section. Only you, and the people you choose, can see them. They are never sent to AI services or tracked.", link:"Privacy and security"};
 }
+const ICONS = {
+  device:'<rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18.5h2"/>',
+  nosend:'<path d="M3 11.5 21 3l-6.5 18-3-7.5z"/><path d="M4 20 20 4" class="slash"/>',
+  noeye:'<path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/><path d="M4 20 20 4" class="slash"/>',
+  person:'<circle cx="12" cy="8" r="3.6"/><path d="M4.5 20.5c1.2-4 4-6 7.5-6s6.3 2 7.5 6"/>',
+  control:'<path d="M5 7h14M9 7V4.5h6V7M7 7l1 13h8l1-13"/>',
+  save:'<path d="M5 3.5h11l3.5 3.5v13.5H5z"/><path d="M8 3.5v5h7v-5M8 20.5v-6h8v6"/>',
+  share:'<circle cx="8" cy="9" r="3"/><circle cx="17" cy="9.5" r="2.5"/><path d="M2.5 20c.8-3.4 3-5 5.5-5s4.7 1.6 5.5 5M14 15.2c2.6-.5 5.6.6 6.8 4.3"/>',
+  case:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V4.5h6V7M3 12.5h18"/>',
+  shield:'<path d="M12 2.8 19.5 6v6c0 4.6-3.1 8-7.5 9.3C7.6 20 4.5 16.6 4.5 12V6z"/><path d="m8.7 12 2.3 2.3 4.4-4.6"/>',
+  export:'<path d="M12 3v11M7.5 7.5 12 3l4.5 4.5M5 13v7.5h14V13"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1.3 1.3M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.3-1.3"/>',
+  check:'<circle cx="12" cy="12" r="9"/><path d="m8 12.2 2.8 2.8 5.3-5.6"/>'
+};
+const icon = k => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
 function renderPrivacy(){
   const d = PRIVACY[LANG] || PRIVACY.en;
+  const shortIcons = ["device","nosend","noeye","person","control"], secIcons = ["save","share","case","shield","export","link","check"];
+  const tile = (x, i) => { const m = x.match(/^<b>(.*?)<\/b>\s*(.*)$/); return `<div class="ptile ${i % 2 ? "g" : "n"}"><span class="pico">${icon(shortIcons[i])}</span><div><b class="tt">${m ? m[1].replace(/[,.]$/, "") : ""}</b><p>${m ? m[2] : x}</p></div></div>`; };
   const hasData = S.demo ? false : !!(S.myDoc.assessment || (S.myDoc.skills || []).length || (S.myDoc.checkins || []).length || Object.keys(S.notes).length);
   return `<div data-notr class="stack" style="gap:20px">
     <section class="card bp-hero"><span class="eyebrow">${d.eyebrow}</span><h1>${d.title}</h1><p>${d.lead}</p></section>
-    <section class="card inshort"><h2>${LOCK} ${LANG === "es" ? "En resumen" : "In short"}</h2><ul>${(S.live ? d.shortTeam : d.shortDemo).map(x => `<li>${x}</li>`).join("")}</ul></section>
-    <article class="card bp">${d.sections.map(([h, items]) => `<section><h2>${h}</h2><ul>${items.map(x => `<li>${x}</li>`).join("")}</ul></section>`).join("")}</article>
-    <section class="card stack" style="gap:10px"><h2>${d.delTitle}</h2><p class="small muted" style="max-width:68ch">${d.delLead}</p>
+    <section class="inshort"><h2>${LOCK} ${LANG === "es" ? "En resumen" : "In short"}</h2><div class="ptiles">${(S.live ? d.shortTeam : d.shortDemo).map(tile).join("")}</div></section>
+    <div class="psecs">${d.sections.map(([h, items], i) => `<section class="card psec ${i % 2 ? "g" : "n"}"><div class="psec-h"><span class="pico">${icon(secIcons[i])}</span><h2>${h}</h2></div>
+      <ul>${items.map(x => `<li class="${/^<b>(An honest limit|Un límite)/.test(x) ? "callout" : ""}">${x}</li>`).join("")}</ul></section>`).join("")}</div>
+    <section class="card stack pdel" style="gap:10px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small muted" style="max-width:68ch">${d.delLead}</p>
       ${S.demo ? `<p class="small">${d.delDemo}</p>`
         : S.delAsk ? `<p class="small"><b>${d.delSure}</b></p><div class="row"><button class="btn danger" data-action="del-yes">${d.delYes}</button><button class="btn ghost" data-action="del-no">${d.delNo}</button></div>`
         : `<div><button class="btn ghost" data-action="del-ask" ${hasData ? "" : "disabled"}>${d.delBtn}</button></div>`}

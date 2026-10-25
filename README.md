@@ -99,8 +99,8 @@ The assessment logic, plan generation and coaching guidance draw on the framewor
 | In-app SOP summary | Phone, dark mode |
 | ![Who can see my development](docs/screenshots/sharing.png) | ![Spanish](docs/screenshots/spanish-employee-view.png) |
 | The employee decides who sees what | Full Spanish version |
-| ![Blueprint](docs/screenshots/blueprint.png) | |
-| The full procedure inside the app | |
+| ![Blueprint](docs/screenshots/blueprint.png) | ![Privacy and security](docs/screenshots/privacy.png) |
+| The full procedure inside the app | Privacy and security |
 
 ## Technical notes
 
