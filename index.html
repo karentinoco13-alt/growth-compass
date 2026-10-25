@@ -295,6 +295,15 @@ h1,h2{color:var(--ink)}
 .foot b{color:var(--on-navy)} .foot a{color:var(--gold)}
 .btn.danger{background:var(--crit);border-color:var(--crit);color:#FFFFFF}
 .foot a{text-decoration:underline}
+.privbar{background:var(--gold-soft);border-bottom:1px solid var(--line);color:var(--ink);font-size:.88rem}
+.privbar .wrap{display:flex;gap:10px;align-items:flex-start;padding-block:9px}
+.privbar .lock,.intro-lock .lock,.inshort .lock{flex:none;color:var(--ex);margin-top:2px}
+.privbar a,.intro-lock a{color:var(--in);font-weight:600;white-space:nowrap}
+.intro-lock{display:flex;gap:8px;align-items:flex-start;color:var(--on-navy)}
+.intro .intro-lock a{color:var(--gold)} .intro .intro-lock .lock{color:var(--gold)}
+.inshort{border:2px solid var(--gold);display:grid;gap:10px}
+.inshort h2{display:flex;gap:8px;align-items:center}
+.inshort ul{margin:0;padding-left:1.2em;display:grid;gap:6px;max-width:72ch}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
@@ -316,6 +325,7 @@ h1,h2{color:var(--ink)}
     <button class="demo-tog" id="demo-tog" data-action="demo" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Sample data</button>
   </div>
 </header>
+<div class="privbar" id="privbar"></div>
 <main class="wrap" id="app"></main>
 <footer class="foot" id="foot"></footer>
 <div class="toast" id="toast" hidden></div>
@@ -664,7 +674,7 @@ const ES = {
   "Couldn't save. Check your connection and try again.":"No se pudo guardar. Revisa tu conexión e inténtalo de nuevo.","Live updates stopped. Reload the page to reconnect.":"Se detuvieron las actualizaciones en vivo. Recarga la página para reconectar.","Pick up to 4.":"Elige hasta 4.","SKILLS AND CERTIFICATIONS":"HABILIDADES Y CERTIFICACIONES","Blueprint":"Plan maestro","SOP":"Procedimiento","A short version of the Blueprint. Turn on":"Una versión breve del Plan maestro. Activa",
   "You decide":"Tú decides","Who can see my development":"Quién puede ver mi desarrollo","Your full record is private to you. Only the people below can see it, and only the parts you choose.":"Tu registro completo es privado. Solo las personas de abajo pueden verlo, y solo las partes que elijas.",
   "My direct manager":"Mi líder directo","Not set":"Sin definir","Sees your full development record (profile, plan, skills passport and check-ins), so they can support you.":"Ve tu registro de desarrollo completo (perfil, plan, pasaporte de habilidades y seguimientos) para poder apoyarte.","Remove":"Quitar",
-  "Also shared with":"También compartido con","No one else. You can share with a mentor, another manager or HR.":"Nadie más. Puedes compartir con un mentor, otro líder o RR. HH.","Stop sharing":"Dejar de compartir","Everyone else sees nothing. You can change this at any time.":"Nadie más ve nada. Puedes cambiarlo cuando quieras.","How your information is stored":"Cómo se guarda tu información",
+  "Also shared with":"También compartido con","No one else. You can share with a mentor, another manager or HR.":"Nadie más. Puedes compartir con un mentor, otro líder o RR. HH.","Stop sharing":"Dejar de compartir","Everyone else sees nothing. You can change this at any time.":"Nadie más ve nada. Puedes cambiarlo cuando quieras.","How your information is stored":"Cómo se guarda tu información","Your answers stay in your own browser. They are never sent anywhere or tracked.":"Tus respuestas se quedan en tu propio navegador. Nunca se envían a ningún lado ni se rastrean.","Your answers are saved privately to your own account. Only you, and the people you choose, can see them.":"Tus respuestas se guardan de forma privada en tu propia cuenta. Solo tú, y las personas que elijas, pueden verlas.",
   "Search by name":"Buscar por nombre","Search for your manager":"Busca a tu líder","Search for someone to share with":"Busca a alguien con quien compartir","Sharing updated":"Se actualizó con quién compartes","No one found. Check the spelling, or ask them to open this page first.":"No se encontró a nadie. Revisa cómo está escrito o pídele que abra esta página primero.",
   "In the live app you search for colleagues by name here. Sample data uses made-up people.":"En la app real aquí buscas a tus compañeros por nombre. Los datos de ejemplo usan personas ficticias.",
   "Motivation profile":"Perfil de motivación","Development plan":"Plan de desarrollo","Check-ins":"Seguimientos",
@@ -1484,6 +1494,7 @@ function render(force){
   $("#demo-tog").setAttribute("aria-pressed", String(S.demo));
   $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : S.view === "blueprint" ? renderBlueprint() : S.view === "privacy" ? renderPrivacy() : renderFoundations();
   translateDom($("#app"));
+  { const pp = privacyPromise(); $("#privbar").innerHTML = S.view === "privacy" ? "" : `<div class="wrap">${LOCK}<span><b>${pp.head}</b> ${pp.text} <a href="#privacy" data-action="view" data-v="privacy">${pp.link}</a></span></div>`; $("#privbar").hidden = S.view === "privacy"; }
   $("#foot").innerHTML = LANG === "es"
     ? `<div class="wrap"><p><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">Licencia</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacidad y seguridad</a></p>
        <p>Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p></div>`
@@ -1495,7 +1506,7 @@ document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender
 
 function banner(){
   if (S.demo) return "";
-  if (!S.live) return `<div class="notice"><b>Saved on this device only.</b> Your answers stay in this browser. When the app is shared through claude.ai, plans are shared with your manager and team.</div>`;
+  if (!S.live) return "";   // the "Private by design" bar already explains where answers are saved
   if (S.readOnly) return `<div class="notice"><b>View only.</b> You can read plans here but not save. Ask the page owner for Contributor access.</div>`;
   return "";
 }
@@ -1529,6 +1540,7 @@ function renderIntro(outdated){
       <h1>Your growth, driven by you, built around what actually motivates you</h1>
       <p class="muted">The assessment looks at <i>why</i> you put in effort, which needs your job meets and what's behind any gaps, how you work best in your own words, which rewards matter to you, and what you believe about your own growth. It branches on your role type and time in role, then builds a 90-day plan with measurable goals. You drive it; your manager supports it. The skills you build are yours to keep, wherever you work next.</p>
       <div class="row"><button class="btn" data-action="start">Start my assessment</button><button class="btn ghost" data-action="demo">See it with sample data</button><span class="muted small">10 short steps · about 15 minutes · retake any time</span></div>
+      <p class="small intro-lock">${LOCK} <span>${S.live ? "Your answers are saved privately to your own account. Only you, and the people you choose, can see them." : "Your answers stay in your own browser. They are never sent anywhere or tracked."} <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a></span></p>
       <p class="muted small">A development tool, not a test. Answers are for growth conversations, never for pay, discipline or hiring decisions. See <a href="#" data-action="view" data-v="science">Foundations</a> for the research behind it.</p>
     </div>
     <div class="tree" aria-label="How the assessment branches">
@@ -2079,6 +2091,8 @@ const PRIVACY = {
       ["How your answers may be used", [
         "Only for development conversations. Never for hiring, pay, ratings, promotion or discipline decisions.",
         "If you have any concern, talk to the person who runs the programme (usually HR). You can also delete your data below at any time."]]],
+    shortDemo:["<b>Your answers stay on your device.</b> In this demo, everything you enter is saved only in your own web browser.","<b>Nothing is sent anywhere.</b> No server stores your answers, and they are never sent to Claude or any other AI service.","<b>No tracking.</b> No ads, no analytics, no profiling.","<b>No account needed,</b> and nobody else, including the app's creator, can see what you enter.","<b>You stay in control.</b> Delete your data at any time with <b>Delete my data</b> below, or by clearing your browser data."],
+    shortTeam:["<b>Your record is private.</b> It's saved to your own private section, tied to your claude.ai account.","<b>Only you, and the people you choose, can see it.</b> Not other employees, and not the app's owner.","<b>Never sent to AI and never tracked.</b> No ads, no analytics.","<b>Used only for your development,</b> never for pay, hiring, ratings or discipline.","<b>You stay in control.</b> Change who sees it, or delete everything, at any time."],
     delTitle:"Delete my data", delLead:"Removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote. This can't be undone.",
     delBtn:"Delete my data", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
     delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again."},
@@ -2107,15 +2121,29 @@ const PRIVACY = {
       ["Cómo pueden usarse tus respuestas", [
         "Solo para conversaciones de desarrollo. Nunca para decisiones de contratación, salario, calificaciones, ascensos ni medidas disciplinarias.",
         "Si tienes cualquier inquietud, habla con quien dirige el programa (normalmente RR. HH.). También puedes borrar tus datos aquí abajo cuando quieras."]]],
+    shortDemo:["<b>Tus respuestas se quedan en tu dispositivo.</b> En esta demo, todo lo que ingresas se guarda solo en tu propio navegador.","<b>No se envía nada a ningún lado.</b> Ningún servidor guarda tus respuestas, y nunca se envían a Claude ni a ningún otro servicio de IA.","<b>Sin rastreo.</b> Sin anuncios, sin analítica, sin perfiles.","<b>No necesitas una cuenta,</b> y nadie más, ni siquiera la persona que creó la app, puede ver lo que ingresas.","<b>Tú tienes el control.</b> Borra tus datos cuando quieras con <b>Borrar mis datos</b> aquí abajo, o borrando los datos de tu navegador."],
+    shortTeam:["<b>Tu registro es privado.</b> Se guarda en tu propia sección privada, vinculada a tu cuenta de claude.ai.","<b>Solo tú, y las personas que elijas, pueden verlo.</b> Ni otros colaboradores ni la persona dueña de la app.","<b>Nunca se envía a IA ni se rastrea.</b> Sin anuncios, sin analítica.","<b>Se usa solo para tu desarrollo,</b> nunca para salario, contratación, calificaciones ni medidas disciplinarias.","<b>Tú tienes el control.</b> Cambia quién lo ve, o bórralo todo, cuando quieras."],
     delTitle:"Borrar mis datos", delLead:"Elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito. No se puede deshacer.",
     delBtn:"Borrar mis datos", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
     delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo."}
 };
+const LOCK = `<svg class="lock" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="7" width="11" height="7.5" rx="1.5" fill="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
+// Short privacy promise, matched to where the person is using the app
+function privacyPromise(){
+  const es = LANG === "es";
+  if (!S.live) return es
+    ? {head:"Privada por diseño.", text:"Todo lo que ingresas se queda en tu propio navegador. Tus respuestas nunca se envían a ningún lado, no se guardan en un servidor y no hay rastreo. Puedes borrarlas cuando quieras.", link:"Privacidad y seguridad"}
+    : {head:"Private by design.", text:"Everything you enter stays in your own browser. Your answers are never sent anywhere, never stored on a server, and nothing is tracked. You can delete them at any time.", link:"Privacy and security"};
+  return es
+    ? {head:"Privada por diseño.", text:"Tus respuestas se guardan en tu propia sección privada. Solo tú, y las personas que elijas, pueden verlas. Nunca se envían a servicios de IA ni se rastrean.", link:"Privacidad y seguridad"}
+    : {head:"Private by design.", text:"Your answers are saved to your own private section. Only you, and the people you choose, can see them. They are never sent to AI services or tracked.", link:"Privacy and security"};
+}
 function renderPrivacy(){
   const d = PRIVACY[LANG] || PRIVACY.en;
   const hasData = S.demo ? false : !!(S.myDoc.assessment || (S.myDoc.skills || []).length || (S.myDoc.checkins || []).length || Object.keys(S.notes).length);
   return `<div data-notr class="stack" style="gap:20px">
     <section class="card bp-hero"><span class="eyebrow">${d.eyebrow}</span><h1>${d.title}</h1><p>${d.lead}</p></section>
+    <section class="card inshort"><h2>${LOCK} ${LANG === "es" ? "En resumen" : "In short"}</h2><ul>${(S.live ? d.shortTeam : d.shortDemo).map(x => `<li>${x}</li>`).join("")}</ul></section>
     <article class="card bp">${d.sections.map(([h, items]) => `<section><h2>${h}</h2><ul>${items.map(x => `<li>${x}</li>`).join("")}</ul></section>`).join("")}</article>
     <section class="card stack" style="gap:10px"><h2>${d.delTitle}</h2><p class="small muted" style="max-width:68ch">${d.delLead}</p>
       ${S.demo ? `<p class="small">${d.delDemo}</p>`
