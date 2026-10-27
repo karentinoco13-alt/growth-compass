@@ -377,6 +377,7 @@ dialog.fb legend{font-weight:600;padding:0;margin-bottom:6px}
       <button class="tab" role="tab" id="tab-blueprint" data-action="view" data-v="blueprint">SOP</button>
       <button class="tab" role="tab" id="tab-science" data-action="view" data-v="science">Foundations</button>
       <button class="tab" role="tab" id="tab-privacy" data-action="view" data-v="privacy">Privacy</button>
+      <button class="tab" role="tab" id="tab-terms" data-action="view" data-v="terms">Terms</button>
     </nav>
     <div class="lang" role="group" aria-label="Language"><button data-action="lang" data-l="en" lang="en">EN</button><button data-action="lang" data-l="es" lang="es">ES</button></div>
     <button class="fbbtn" data-action="feedback">Feedback</button>
@@ -399,7 +400,7 @@ dialog.fb legend{font-weight:600;padding:0;margin-bottom:6px}
 // Keys are normalised: numbers become "#" and dates "<DATE>", then put back in the same order.
 const ES = {
   // App chrome
-  "Growth Compass":"Growth Compass","My growth":"Mi desarrollo","My team":"Mi equipo","How to use":"Cómo usarla","Foundations":"Fundamentos",
+  "Growth Compass":"Growth Compass","My growth":"Mi desarrollo","My team":"Mi equipo","How to use":"Cómo usarla","Foundations":"Fundamentos","Terms":"Condiciones",
   "Sample data":"Datos de ejemplo","Workspace":"Espacio de trabajo","Language":"Idioma",
   "Sample data.":"Datos de ejemplo.","Sample team.":"Equipo de ejemplo.","Saved on this device only.":"Guardado solo en este dispositivo.",
   "Your answers stay in this browser. When the app is shared through claude.ai, plans are shared with your manager and team.":"Tus respuestas se quedan en este navegador. Cuando la app se comparte a través de claude.ai, los planes se comparten con tu líder y tu equipo.",
@@ -1552,7 +1553,7 @@ function render(force){
   document.querySelectorAll("[data-action=lang]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.l === LANG)));
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", String(t.dataset.v === S.view)));
   $("#demo-tog").setAttribute("aria-pressed", String(S.demo));
-  $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : S.view === "blueprint" ? renderBlueprint() : S.view === "privacy" ? renderPrivacy() : renderFoundations();
+  $("#app").innerHTML = S.view === "me" ? renderMe() : S.view === "team" ? renderTeam() : S.view === "guide" ? renderGuide() : S.view === "blueprint" ? renderBlueprint() : S.view === "privacy" ? renderPrivacy() : S.view === "terms" ? renderTerms() : renderFoundations();
   translateDom($("#app"));
   { const pp = privacyPromise(); $("#privbar").innerHTML = S.view === "privacy" ? "" : `<div class="wrap">${LOCK}<span><b>${pp.head}</b> ${pp.text} <a href="#privacy" data-action="view" data-v="privacy">${pp.link}</a></span></div>`; $("#privbar").hidden = S.view === "privacy"; }
   $("#foot").innerHTML = LANG === "es"
@@ -2204,6 +2205,14 @@ const ICONS = {
   check:'<circle cx="12" cy="12" r="9"/><path d="m8 12.2 2.8 2.8 5.3-5.6"/>'
 };
 const icon = k => `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+function renderTerms(){
+  const d = PRIVACY[LANG] || PRIVACY.en, es = LANG === "es";
+  return `<div data-notr class="stack priv" style="gap:16px">
+    <h1>${d.termsTitle}</h1>
+    <section class="card psec n" id="terms"><div class="psec-h"><span class="pico">${icon("check")}</span><h2>${es ? "Lo que aceptas al usar Growth Compass" : "What you agree to by using Growth Compass"}</h2></div>${d.terms.map(x => `<p>${x}</p>`).join("")}</section>
+    <p class="small muted">${es ? "Growth Compass es gratuita y se ofrece tal cual." : "Growth Compass is free and provided as is."} <a href="#privacy" data-action="view" data-v="privacy">${es ? "Privacidad y seguridad" : "Privacy and security"}</a> · <a href="#feedback" data-action="feedback">${es ? "Enviar comentarios" : "Send feedback"}</a></p>
+  </div>`;
+}
 function renderPrivacy(){
   const d = PRIVACY[LANG] || PRIVACY.en, es = LANG === "es";
   const state = S.demo ? "demo" : !S.live ? "local" : S.readOnly ? "ro" : "live";
@@ -2330,7 +2339,7 @@ document.addEventListener("click", e => {
     case "del-no": S.delAsk = 0; S.delAck = false; break;
     case "del-yes": if (S.delAsk !== 2 || !S.delAck) return; deleteMyData(); return;
     case "feedback": openFeedback(); return;
-    case "terms": S.view = "privacy"; render(); document.getElementById("terms")?.scrollIntoView(); return;
+    case "terms": S.view = "terms"; render(); scrollTo(0, 0); return;
     case "bp-go": document.getElementById(el.dataset.id)?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
     case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
     case "start": case "retake": {
@@ -2547,7 +2556,7 @@ const local = lsGet(LS_KEY); if (local) S.myDoc = local;
 S.demo = !S.myDoc.assessment?.why;
 // Direct links: #sop, #team, #guide, #foundations, #growth (add -es for Spanish, e.g. #sop-es)
 (() => { const m = (location.hash.slice(1) || "").match(/^(sop|team|guide|foundations|growth|privacy|terms)(-es|-en)?$/); if (!m) return;
-  S.view = {sop: "blueprint", team: "team", guide: "guide", foundations: "science", growth: "me", privacy: "privacy", terms: "privacy"}[m[1]];
+  S.view = {sop: "blueprint", team: "team", guide: "guide", foundations: "science", growth: "me", privacy: "privacy", terms: "terms"}[m[1]];
   if (S.view === "team" && S.demo) S.sel = "ex2";
   if (m[2]) LANG = m[2].slice(1); })();
 render();
