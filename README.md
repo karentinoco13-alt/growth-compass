@@ -2,11 +2,13 @@
 
 **A research-grounded personal development app for front-line managers and their teams.**
 
-Growth Compass helps employees understand what really motivates them, and turns that into a realistic 90-day development plan that they own. Front-line managers act as a **supporting layer**, not a director: they see team patterns, answer support requests, and get a coaching playbook for each direct report.
+Growth Compass helps employees understand what really motivates them, and turns that into a realistic plan to grow their skills, at the pace they choose. Every skill they earn is theirs, wherever their career takes them. Front-line managers act as a **supporting layer**, not a director: they see team patterns, answer support requests, and get a coaching playbook for each direct report.
 
 ## Principle: personal development is personal
 
 - **The employee drives.** They choose what to develop, how fast, and how much of their own time to invest. The manager guides, supports and removes barriers, but doesn't set their direction.
+- **You set the pace. The plan follows you.** There is no fixed program length. Each person picks a horizon (2 weeks to 2 years, their own date, or no deadline), their own hours a week or a month, how often to check in and how often to review with their manager, and can change any of it later.
+- **Growth means skills.** The plan's goals are skills and certifications. Promotions, raises and new roles are outcomes those skills prepare people for, inside the company or anywhere else; the app never promises them.
 - **Skills are portable.** What someone masters goes with them, whether their next step is in this company or another one. The app treats both as normal career moves.
 - **A job is also a place to learn.** Every employee names what they want their job to teach them, besides pay, and logs lessons they could use in any job.
 - **Motivation shapes the message.** Someone driven mainly by pay is shown that skills are what raise pay over time, here or elsewhere. Someone driven by the work itself is encouraged to collect skills deliberately.
@@ -36,15 +38,18 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
   - *Rewards*: 5 intrinsic and 5 extrinsic, a top 3, and a role-specific deep-dive question for each.
   - *Beliefs*: mindset, achievement-goal focus, confidence to learn, whether effort leads to results and results to rewards, and fairness.
   - *Career direction and practical constraints*: direction (including **a career that can go anywhere**, here or at another company), what they want this job to teach them, blockers, work time available, and optional own time.
-- **A 90-day plan sized to the time available.** Goals have a *Success looks like* measure, and actions follow 70-20-10: practice on the job, learning from people, formal learning. Goals that don't fit the available time are **parked**, not hidden.
-- **An honest reality check.** Every goal gets a verdict: *Realistic*, *Stretch*, *Unlikely in 90 days*, *Not fully in your control* or *Parked*. Pay, promotion, recognition and flexibility are clearly marked as depending on other people.
-- **Talents vs goals.** A talent is something you already do well, with evidence. A goal is something you still have to build. Talents without evidence are labelled *self-reported*.
+- **A plan at the pace you choose.** Goals are skills to build, each with a *Success looks like* measure, and actions follow 70-20-10: practice on the job, learning from people, formal learning. The person marks each goal **Focus now**, **Later** or **Someday**; the app suggests Later for goals that don't fit the time they chose, and they can override it. **Change my pace** re-sizes the plan at any time.
+- **An honest reality check.** Every goal gets a verdict: *Realistic*, *Ambitious*, *Unlikely at this pace*, *Not fully in your control*, *Later* or *Someday*, or with no deadline, *Step by step* notes on how long things usually take. For pay and promotion: the skills are yours; the opening and decision belong to others.
+- **Skills earned so far.** A summary at the top of My growth counts earned skills and certifications, skills in progress, talents and STAR stories.
+- **Talents vs goals.** A talent is something you already do well, with evidence. A goal is a skill you still have to build. Talents without evidence are labelled *self-reported*.
+- **My talents, elaborated.** For each talent: what I do well, evidence, where I use it at work, and how it could add value next (a new level here, or another company).
+- **My accomplishments (STAR).** Stories written as Situation, Task, Action, Result, with the result quantified, the skills used, the talent shown, the impact on the organization and the value the person could add next, plus reflection prompts. **Interview prep** groups the stories by skill. A check-in win becomes a story in one click. The STAR method is a behavioral interviewing technique credited to [DDI](https://www.ddi.com/solutions/behavioral-interviewing/star-method); the app uses it as a general structure and is not affiliated with or endorsed by DDI.
 - **"This is yours."** An ownership card shows what the person has invested (actions done, practice logged, skills kept, lessons for any job), with a message tailored to their motivation.
 - **Own-time investment (optional).** People choose how much personal time they'll invest, and the plan is sized to work time plus that.
-- **A skills passport the employee owns.** Suggestions are tailored to technical or non-technical roles and ranked by the person's answers: CompTIA, AWS and Azure fundamentals, CMRT, PLC programming, NFPA 70E, Lean Six Sigma, supervisor certificates, CAPM, Excel, forklift, Mental Health First Aid and more, plus practical skills. Skills move Planned → Learning → Practising → **Mastered** (three independent practices). Certifications move Planned → Studying → Exam booked → **Certified**. Both need evidence. A **"Copy my passport"** button exports mastered skills, certifications and evidence as plain text for a CV or profile.
-- **You decide who sees it.** Each employee's full record is private. They name their direct manager, who sees everything so they can support them, and can share chosen sections (profile, plan, skills passport, check-ins) with anyone else, such as a mentor, another manager or HR. Everyone else sees nothing.
+- **A skills passport the employee owns.** Suggestions are tailored to technical or non-technical roles and ranked by the person's answers: CompTIA, AWS and Azure fundamentals, CMRT, PLC programming, NFPA 70E, Lean Six Sigma, supervisor certificates, CAPM, Excel, forklift, Mental Health First Aid and more, plus practical skills. Skills move Planned → Learning → Practising → **Mastered** (three independent practices). Certifications move Planned → Studying → Exam booked → **Certified**. Both need evidence. **Copy my career portfolio** exports earned skills, certifications, talents with evidence and STAR stories as plain text for a CV, LinkedIn or interview prep.
+- **You decide who sees it.** Each employee's full record is private. They name their direct manager, who sees everything so they can support them, and can share chosen sections (profile, plan, skills passport, talents and accomplishments, check-ins) with anyone else, such as a mentor, another manager or HR. Everyone else sees nothing.
 - **Support requests.** The employee asks their manager for exactly what they need: time, a real task to practise on, feedback, funding, a mentor, or sign-off.
-- **Monthly check-ins.** Energy, productivity, wins, a lesson they could use in any job, where they applied something new, what made the difference (with a nudge toward controllable causes) and what they need.
+- **Check-ins at the rhythm they chose.** Energy, productivity, wins, a lesson they could use in any job, where they applied something new, what made the difference (with a nudge toward controllable causes) and what they need.
 
 ![Reality check and skills tracker](docs/screenshots/reality-check-and-skills.png)
 
@@ -58,6 +63,7 @@ Available in **English and Spanish** (switch with **EN / ES** in the top bar).
   - *Development moves*: a checklist of concrete actions built from their answers.
   - *A coaching playbook* with root-cause fixes, how to tap into their talent, how to set up their work, and honest guidance on what not to promise. Each tip is tagged with its research source.
   - *Private coaching notes*, visible only to the manager.
+  - *Suggest a story to capture*: if the person shares their talents and accomplishments, the manager can suggest a STAR story. The employee decides whether to add it; the manager can't edit their record.
 
 ![Manager view: support requests and coaching playbook](docs/screenshots/manager-coaching.png)
 
