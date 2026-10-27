@@ -333,6 +333,33 @@ h1,h2{color:var(--ink)}
 .pv-now{background:var(--in-soft);border-radius:10px;padding:12px 16px;max-width:80ch}
 .psec p{max-width:72ch} .psec ol{margin:0;padding-left:1.3em;display:grid;gap:8px} .psec ol li::marker{color:var(--ex);font-weight:700}
 .psec p.callout{background:var(--surface);border:1px solid var(--gold);border-left:5px solid var(--gold);border-radius:8px;padding:10px 12px}
+/* Delete confirmation, disclaimer, terms and feedback */
+.del-step{display:grid;gap:10px;border:1px solid var(--crit);background:var(--surface);border-radius:10px;padding:14px}
+.del-step .stepno{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--crit)}
+.del-ack{display:flex;gap:10px;align-items:flex-start;font-size:.92rem;line-height:1.5}
+.del-ack input{flex:none;width:18px;height:18px;margin-top:3px;accent-color:var(--crit)}
+.plan-note{font-size:.88rem;background:var(--gold-tint);border-left:4px solid var(--gold);border-radius:6px;padding:8px 12px;color:var(--ink)}
+.terms{border-left:5px solid var(--navy-2);display:grid;gap:10px}
+.terms p{max-width:72ch}
+.fbbtn{border:1px solid var(--gold);background:transparent;color:var(--on-navy);border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:.88rem}
+.fbbtn:hover{background:var(--gold);color:#0F1E3D}
+dialog.fb{max-width:560px;width:calc(100% - 32px);max-height:calc(100% - 32px);overflow:auto;border:0;border-top:5px solid var(--gold);border-radius:12px;background:var(--surface);color:var(--ink);padding:22px 24px}
+dialog.fb::backdrop{background:rgb(8 17 39 / .6)}
+dialog.fb form{display:grid;gap:14px}
+dialog.fb a{color:var(--in);font-weight:600}
+dialog.fb fieldset{border:0;padding:0;margin:0;display:grid;gap:8px}
+dialog.fb legend{font-weight:600;padding:0;margin-bottom:6px}
+.fb-types{display:flex;gap:8px;flex-wrap:wrap}
+.fb-types label{position:relative;cursor:pointer}
+.fb-types input{position:absolute;opacity:0;pointer-events:none}
+.fb-types span{display:block;border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:.92rem}
+.fb-types input:checked+span{background:var(--btn-bg);color:var(--btn-fg);border-color:var(--btn-bg)}
+.fb-types input:focus-visible+span{outline:2px solid var(--focus);outline-offset:2px}
+.fb-msg{border-radius:8px;padding:10px 12px;font-size:.92rem}
+.fb-msg.ok{background:var(--ok-soft);border:1px solid var(--ok)}
+.fb-msg.err{background:var(--crit-soft);border:1px solid var(--crit)}
+.fb-msg textarea{margin-top:8px;font-size:.85rem}
+.fb-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
 </style>
 </head>
@@ -352,6 +379,7 @@ h1,h2{color:var(--ink)}
       <button class="tab" role="tab" id="tab-privacy" data-action="view" data-v="privacy">Privacy</button>
     </nav>
     <div class="lang" role="group" aria-label="Language"><button data-action="lang" data-l="en" lang="en">EN</button><button data-action="lang" data-l="es" lang="es">ES</button></div>
+    <button class="fbbtn" data-action="feedback">Feedback</button>
     <button class="demo-tog" id="demo-tog" data-action="demo" aria-pressed="false"><span class="sw" aria-hidden="true"></span>Sample data</button>
   </div>
 </header>
@@ -359,6 +387,7 @@ h1,h2{color:var(--ink)}
 <main class="wrap" id="app"></main>
 <footer class="foot" id="foot"></footer>
 <div class="toast" id="toast" hidden></div>
+<dialog class="fb" id="fbDlg" aria-labelledby="fbTitle"></dialog>
 
 <script>
 // ---------- Blueprint: the full operating procedure (generated from SOP.md and SOP.es.md) ----------
@@ -804,6 +833,7 @@ const ES_PAT = [
 
 let LANG = (() => { try { const v = localStorage.getItem("gc-lang"); if (v) return v; } catch {} return (navigator.language || "en").toLowerCase().startsWith("es") ? "es" : "en"; })();
 const ES_MISSING = new Set();
+ES["Feedback"] = "Comentarios";
 const DATE_RX = /\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{1,2}, \d{4}\b|\b\d{1,2} (?:ene|feb|mar|abr|may|jun|jul|ago|sept?|oct|nov|dic)\.? \d{4}\b/g;
 function normalise(s){
   const vals = [];
@@ -1526,9 +1556,9 @@ function render(force){
   translateDom($("#app"));
   { const pp = privacyPromise(); $("#privbar").innerHTML = S.view === "privacy" ? "" : `<div class="wrap">${LOCK}<span><b>${pp.head}</b> ${pp.text} <a href="#privacy" data-action="view" data-v="privacy">${pp.link}</a></span></div>`; $("#privbar").hidden = S.view === "privacy"; }
   $("#foot").innerHTML = LANG === "es"
-    ? `<div class="wrap"><p><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">Licencia</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacidad y seguridad</a></p>
+    ? `<div class="wrap"><p><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">Licencia</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacidad y seguridad</a> · <a href="#terms" data-action="terms">Condiciones de uso</a> · <a href="#feedback" data-action="feedback">Enviar comentarios</a></p>
        <p>Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p></div>`
-    : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a></p>
+    : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a> · <a href="#terms" data-action="terms">Terms of use</a> · <a href="#feedback" data-action="feedback">Send feedback</a></p>
        <p>Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.</p></div>`;
 }
 document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
@@ -1741,6 +1771,7 @@ function renderPlan(doc, editable, extra = ""){
   return `<section class="card stack" style="gap:10px">
       <div class="row between"><div><span class="eyebrow">90-day development plan</span><h2>${editable ? "My plan" : "Their plan"}</h2></div><span class="mono" style="font-size:1.4rem">${prog}%</span></div>
       <div class="prog" role="img" aria-label="${prog}% of actions done"><b style="width:${prog}%"></b></div>
+      <p class="plan-note" data-notr>${LANG === "es" ? "Cada plan es único para la persona, líder o empresa, y se basa en los datos que proporcionas. Los resultados no están garantizados: el éxito depende de que los datos sean precisos y de dar seguimiento al proceso y a todos los datos importantes para él." : "Every plan is unique to the person, manager or company and built from the data you provide. Results aren't guaranteed: success depends on accurate data and on monitoring the journey and all the data that matters to it."} <a href="#terms" data-action="terms">${LANG === "es" ? "Condiciones de uso" : "Terms of use"}</a></p>
       <p class="muted small">Started ${fmtDate(p.createdAt)} · actions follow 70-20-10: <span class="tag7">70</span> practice on the job, <span class="tag7">20</span> learning from people, <span class="tag7">10</span> formal learning.</p>
       <div class="sep stack" style="gap:8px"><b>Is it working? ${src("PAW")} ${src("APTM")}</b>
         <div class="kirk">
@@ -2108,10 +2139,19 @@ const PRIVACY = {
       ["export","Copy my passport",["Copies your skills and certifications to your clipboard as text, for a CV or profile. It isn't stored anywhere else."],[]],
       ["link","Sharing the link",["Sharing the link gives people the app, not your record. Each person starts with the sample team and their own private record."],[]],
       ["control","Deleting your data",["<b>Delete my data</b> below removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote, from your account and from this browser."],[]],
+      ["share","Feedback",["Feedback is sent only when you click <b>Send feedback</b>. <b>In the team app on claude.ai</b>, it's saved where only the app's owner can read it, and used to improve future versions. <b>In the public demo</b>, nothing is sent: you copy your feedback and send it yourself. The only thing that leaves your browser is feedback you choose to send, and it goes only to the app's owner."],[]],
       ["check","Good practice",["Describe colleagues and customers by role, not by name, and leave out health, financial or other sensitive personal details. Your plan works just as well without them. Your answers are for development only, never for pay, hiring, ratings or discipline."],[]]],
     delTitle:"Delete my data", delLead:"Permanently removes everything you entered. This can't be undone.",
     delBtn:"Delete my data", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
-    delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again."},
+    delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again.",
+    del1Title:"Step 1 of 2", del1:w => `Delete all your Growth Compass data? This permanently erases your assessment, plan, skills passport, check-ins, sharing settings and private notes from ${w}. It can't be undone or recovered.`,
+    whereLive:"your account and from this browser", whereLocal:"this browser",
+    keep:"Keep it", cont:"Continue", del2Title:"Step 2 of 2",
+    ack:"I understand this will be permanently deleted and can't be recovered. I accept full responsibility for deleting it. I agree that Growth Compass and its developer are not responsible for any loss of data, and I give up any right to make a claim or bring a lawsuit against them over it, to the fullest extent the law allows.",
+    delFinal:"Delete permanently",
+    termsTitle:"Terms of use",
+    terms:["Growth Compass and its developer make no warranty of any outcome. Plans are unique and tailored to each individual, manager or company, based on the data provided, and are only as good as that data. Success requires proper monitoring of the journey and of all the data pertinent to it.",
+      "You're responsible for your data. Growth Compass and its developer aren't responsible for lost or deleted data, to the fullest extent the law allows. Keep your own copy of what matters: <b>Copy my passport</b> copies your skills and certifications as text."]},
   es: {title:"Privacidad y seguridad",
     promise:"Tu registro de desarrollo es privado. Otras personas que usan esta app no pueden ver lo que ingresas, y tampoco la persona dueña de la app, a menos que tú decidas compartirlo.",
     now:{demo:"estás viendo datos de ejemplo. Son ficticios y nada de lo que cambies se guarda.", local:"tus respuestas se están guardando solo en este navegador, en este dispositivo. No se envía nada a ningún lado.", live:"tus respuestas se están guardando en tu espacio privado de tu cuenta de claude.ai.", ro:"tienes acceso de solo lectura, así que nada de lo que ingreses se guarda."},
@@ -2124,10 +2164,19 @@ const PRIVACY = {
       ["export","Copiar mi pasaporte",["Copia tus habilidades y certificaciones como texto a tu portapapeles, para un CV o perfil. No se guarda en ningún otro lugar."],[]],
       ["link","Compartir el enlace",["Compartir el enlace da acceso a la app, no a tu registro. Cada persona empieza con el equipo de ejemplo y su propio registro privado."],[]],
       ["control","Borrar tus datos",["<b>Borrar mis datos</b>, aquí abajo, elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito, de tu cuenta y de este navegador."],[]],
+      ["share","Comentarios",["Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>. <b>En la app del equipo en claude.ai</b>, se guardan donde solo la persona dueña de la app puede leerlos, y se usan para mejorar versiones futuras. <b>En la demo pública</b> no se envía nada: copias tus comentarios y los envías tú. Lo único que sale de tu navegador son los comentarios que tú decidas enviar, y solo los recibe la persona dueña de la app."],[]],
       ["check","Buenas prácticas",["Describe a tus compañeros y clientes por su rol, no por su nombre, y deja fuera datos de salud, financieros u otros datos personales sensibles. Tu plan funciona igual de bien sin ellos. Tus respuestas son solo para tu desarrollo, nunca para salario, contratación, calificaciones ni medidas disciplinarias."],[]]],
     delTitle:"Borrar mis datos", delLead:"Elimina de forma permanente todo lo que ingresaste. No se puede deshacer.",
     delBtn:"Borrar mis datos", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
-    delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo."}
+    delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo.",
+    del1Title:"Paso 1 de 2", del1:w => `¿Borrar todos tus datos de Growth Compass? Esto elimina de forma permanente tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y notas privadas de ${w}. No se puede deshacer ni recuperar.`,
+    whereLive:"tu cuenta y de este navegador", whereLocal:"este navegador",
+    keep:"Conservarlos", cont:"Continuar", del2Title:"Paso 2 de 2",
+    ack:"Entiendo que esto se borrará de forma permanente y no se podrá recuperar. Acepto toda la responsabilidad por borrarlo. Acepto que Growth Compass y su desarrolladora no son responsables de ninguna pérdida de datos, y renuncio a cualquier derecho a presentar un reclamo o una demanda en su contra por ello, en la máxima medida que permita la ley.",
+    delFinal:"Borrar de forma permanente",
+    termsTitle:"Condiciones de uso",
+    terms:["Growth Compass y su desarrolladora no garantizan ningún resultado. Los planes son únicos y se adaptan a cada persona, líder o empresa según los datos proporcionados, y solo son tan buenos como esos datos. El éxito requiere dar seguimiento adecuado al proceso y a todos los datos relacionados con él.",
+      "Tú eres responsable de tus datos. Growth Compass y su desarrolladora no son responsables de datos perdidos o borrados, en la máxima medida que permita la ley. Guarda tu propia copia de lo importante: <b>Copiar mi pasaporte</b> copia tus habilidades y certificaciones como texto."]}
 };
 const LOCK = `<svg class="lock" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="7" width="11" height="7.5" rx="1.5" fill="currentColor"/><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>`;
 // Short privacy promise, matched to where the person is using the app
@@ -2165,9 +2214,11 @@ function renderPrivacy(){
     <p class="pv-now"><b>${es ? "Ahora mismo:" : "Right now:"}</b> ${d.now[state]}</p>
     <div class="psecs">${d.sections.map(([ic, h, paras, list, note], i) => `<section class="card psec ${i % 2 ? "g" : "n"}"><div class="psec-h"><span class="pico">${icon(ic)}</span><h2>${h}</h2></div>
       ${paras.map(x => `<p>${x}</p>`).join("")}${list.length ? `<ol>${list.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${note ? `<p class="callout">${note}</p>` : ""}</section>`).join("")}</div>
+    <section class="card terms" id="terms"><div class="psec-h"><span class="pico">${icon("check")}</span><h2>${d.termsTitle}</h2></div>${d.terms.map(x => `<p>${x}</p>`).join("")}</section>
     <section class="card stack pdel" style="gap:10px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small">${d.delLead}</p>
       ${S.demo ? `<p class="small muted">${d.delDemo}</p>`
-        : S.delAsk ? `<p class="small"><b>${d.delSure}</b></p><div class="row"><button class="btn danger" data-action="del-yes">${d.delYes}</button><button class="btn ghost" data-action="del-no">${d.delNo}</button></div>`
+        : S.delAsk === 1 ? `<div class="del-step" role="alertdialog" aria-labelledby="del1t"><span class="stepno" id="del1t">${d.del1Title}</span><p><b>${d.del1(S.live ? d.whereLive : d.whereLocal)}</b></p><div class="row"><button class="btn ghost" data-action="del-no">${d.keep}</button><button class="btn danger" data-action="del-next">${d.cont}</button></div></div>`
+        : S.delAsk === 2 ? `<div class="del-step" role="alertdialog" aria-labelledby="del2t"><span class="stepno" id="del2t">${d.del2Title}</span><label class="del-ack"><input type="checkbox" id="del-ack" ${S.delAck ? "checked" : ""}><span>${d.ack}</span></label><div class="row"><button class="btn ghost" data-action="del-no">${d.keep}</button><button class="btn danger" id="del-final" data-action="del-yes" ${S.delAck ? "" : "disabled"}>${d.delFinal}</button></div></div>`
         : `<div><button class="btn ghost" data-action="del-ask" ${hasData ? "" : "disabled"}>${d.delBtn}</button></div>`}
     </section></div>`;
 }
@@ -2180,7 +2231,7 @@ async function deleteMyData(){
       await S.db.doc("people/" + S.meId).delete();
     }
     try { localStorage.removeItem(LS_KEY); } catch {}
-    S.myDoc = {}; S.notes = {}; S.delAsk = false; S.demo = true; S.demoTouched = true;
+    S.myDoc = {}; S.notes = {}; S.delAsk = 0; S.delAck = false; S.demo = true; S.demoTouched = true;
     toast(d.delDone);
   } catch { toast(d.delFail); }
   render(true);
@@ -2274,9 +2325,12 @@ document.addEventListener("click", e => {
   if (el.tagName === "A") e.preventDefault();
   switch (act){
     case "lang": LANG = el.dataset.l; try { localStorage.setItem("gc-lang", LANG); } catch {} break;
-    case "del-ask": S.delAsk = true; break;
-    case "del-no": S.delAsk = false; break;
-    case "del-yes": deleteMyData(); return;
+    case "del-ask": S.delAsk = 1; S.delAck = false; break;
+    case "del-next": S.delAsk = 2; S.delAck = false; break;
+    case "del-no": S.delAsk = 0; S.delAck = false; break;
+    case "del-yes": if (S.delAsk !== 2 || !S.delAck) return; deleteMyData(); return;
+    case "feedback": openFeedback(); return;
+    case "terms": S.view = "privacy"; render(); document.getElementById("terms")?.scrollIntoView(); return;
     case "bp-go": document.getElementById(el.dataset.id)?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
     case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
     case "start": case "retake": {
@@ -2408,12 +2462,92 @@ document.addEventListener("input", e => {
   if (el.dataset.ev){ curDoc().skills.find(y => y.id === el.dataset.ev).evidence = el.value; saveMe(); }
 });
 
+// ---------- Delete step 2 checkbox ----------
+document.addEventListener("change", e => {
+  if (e.target.id !== "del-ack") return;
+  S.delAck = e.target.checked; const b = $("#del-final"); if (b) b.disabled = !S.delAck;
+});
+
+// ---------- Feedback ----------
+const FB = {
+  en: {title:"Send feedback", lead:"Help make Growth Compass better. Your feedback goes only to the app's owner and is used to plan future versions.",
+    type:"What kind of feedback?", types:[["idea","Idea"],["broken","Something's broken"],["other","Other"]],
+    rating:"How useful is the app?", low:"Not useful", high:"Very useful",
+    text:"What would make it better?", textPh:"Tell us what worked, what didn't, and what you'd change.",
+    contact:"Your email or name (optional)", contactHint:"Only if you'd like a reply.",
+    send:"Send feedback", cancel:"Cancel", close:"Close", sending:"Sending…",
+    ok:"Thank you. Your feedback was sent to the app's owner.",
+    fail:"Your feedback couldn't be sent from this view.",
+    demo:"This public demo can't send feedback directly, so nothing leaves your browser.",
+    copyLead:"Copy it below and send it through", copy:"Copy feedback", copied:"Copied", need:"Please tell us what would make it better."},
+  es: {title:"Enviar comentarios", lead:"Ayuda a mejorar Growth Compass. Tus comentarios solo los recibe la persona dueña de la app y se usan para planear versiones futuras.",
+    type:"¿Qué tipo de comentario?", types:[["idea","Idea"],["broken","Algo no funciona"],["other","Otro"]],
+    rating:"¿Qué tan útil es la app?", low:"Nada útil", high:"Muy útil",
+    text:"¿Qué la haría mejor?", textPh:"Cuéntanos qué funcionó, qué no y qué cambiarías.",
+    contact:"Tu correo o nombre (opcional)", contactHint:"Solo si quieres una respuesta.",
+    send:"Enviar comentarios", cancel:"Cancelar", close:"Cerrar", sending:"Enviando…",
+    ok:"Gracias. Tus comentarios se enviaron a la persona dueña de la app.",
+    fail:"No se pudieron enviar tus comentarios desde esta vista.",
+    demo:"Esta demo pública no puede enviar comentarios directamente, así que nada sale de tu navegador.",
+    copyLead:"Cópialos aquí abajo y envíalos a través de", copy:"Copiar comentarios", copied:"Copiado", need:"Cuéntanos qué la haría mejor."}
+};
+function openFeedback(){
+  const f = FB[LANG] || FB.en, dlg = $("#fbDlg");
+  dlg.innerHTML = `<h2 id="fbTitle" tabindex="-1" style="outline:none">${f.title}</h2>
+    <p class="small muted" style="margin:6px 0 16px">${f.lead}</p>
+    <form id="fbForm" novalidate>
+      <fieldset><legend>${f.type}</legend><div class="fb-types">${f.types.map(([v, l], i) => `<label><input type="radio" name="fbtype" value="${v}" ${i === 0 ? "checked" : ""}><span>${l}</span></label>`).join("")}</div></fieldset>
+      <fieldset><legend>${f.rating}</legend><div class="scale">${[1,2,3,4,5].map(n => `<label><input type="radio" name="fbrate" value="${n}"><span>${n}</span></label>`).join("")}</div><div class="scale-legend"><span>${f.low}</span><span>${f.high}</span></div></fieldset>
+      <div class="field"><label for="fbText">${f.text}</label><textarea id="fbText" required maxlength="4000" placeholder="${f.textPh}"></textarea></div>
+      <div class="field"><label for="fbContact">${f.contact} <span class="small muted" style="font-weight:400">${f.contactHint}</span></label><input type="text" id="fbContact" maxlength="200" autocomplete="email"></div>
+      <div id="fbMsg" aria-live="polite"></div>
+      <div class="fb-actions"><button type="button" class="btn ghost" id="fbCancel">${f.cancel}</button><button type="submit" class="btn" id="fbSend">${f.send}</button></div>
+    </form>`;
+  $("#fbCancel").onclick = () => dlg.close();
+  $("#fbForm").onsubmit = submitFeedback;
+  dlg.showModal(); $("#fbTitle").focus(); dlg.scrollTop = 0;
+}
+function feedbackText(item){
+  const f = FB[LANG] || FB.en;
+  return `Growth Compass feedback\nType: ${(f.types.find(t => t[0] === item.type) || [, item.type])[1]}\nUseful (1-5): ${item.rating || "-"}\n${item.text}${item.contact ? `\nContact: ${item.contact}` : ""}`;
+}
+function feedbackFallback(item, lead){
+  const f = FB[LANG] || FB.en, msg = $("#fbMsg");
+  msg.innerHTML = `<div class="fb-msg err"><b>${lead}</b> ${f.copyLead} <a href="https://www.thehumanelement.live/" target="_blank" rel="noopener">thehumanelement.live</a>.
+    <textarea id="fbCopyText" readonly rows="5"></textarea><div class="row" style="margin-top:8px"><button type="button" class="btn sm" id="fbCopy">${f.copy}</button></div></div>`;
+  $("#fbCopyText").value = feedbackText(item);
+  $("#fbCopy").onclick = () => {
+    const ta = $("#fbCopyText"), done = () => { $("#fbCopy").textContent = f.copied; };
+    try { navigator.clipboard.writeText(ta.value).then(done, () => { ta.focus(); ta.select(); }); } catch { ta.focus(); ta.select(); }
+  };
+}
+async function submitFeedback(e){
+  e.preventDefault();
+  const f = FB[LANG] || FB.en, form = e.target, msg = $("#fbMsg");
+  const text = $("#fbText").value.trim();
+  if (!text){ msg.innerHTML = `<div class="fb-msg err">${f.need}</div>`; $("#fbText").focus(); return; }
+  const item = {type: form.fbtype.value || "other", rating: Number(form.fbrate.value) || null, text, contact: $("#fbContact").value.trim(),
+    ts: new Date().toISOString(), lang: LANG, app: "growth-compass"};
+  if (!S.live || !S.db || !S.meId) return feedbackFallback(item, f.demo);
+  const btn = $("#fbSend"); btn.disabled = true; btn.textContent = f.sending;
+  try {
+    const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    await S.db.collection("feedback/" + S.meId + "/items").doc(rid).set(item);
+    msg.innerHTML = `<div class="fb-msg ok">${f.ok}</div>`;
+    form.querySelectorAll("input, textarea").forEach(x => x.disabled = true);
+    btn.hidden = true; $("#fbCancel").textContent = f.close;
+  } catch {
+    btn.disabled = false; btn.textContent = f.send;
+    feedbackFallback(item, f.fail);
+  }
+}
+
 // ---------- Boot ----------
 const local = lsGet(LS_KEY); if (local) S.myDoc = local;
 S.demo = !S.myDoc.assessment?.why;
 // Direct links: #sop, #team, #guide, #foundations, #growth (add -es for Spanish, e.g. #sop-es)
-(() => { const m = (location.hash.slice(1) || "").match(/^(sop|team|guide|foundations|growth|privacy)(-es|-en)?$/); if (!m) return;
-  S.view = {sop: "blueprint", team: "team", guide: "guide", foundations: "science", growth: "me", privacy: "privacy"}[m[1]];
+(() => { const m = (location.hash.slice(1) || "").match(/^(sop|team|guide|foundations|growth|privacy|terms)(-es|-en)?$/); if (!m) return;
+  S.view = {sop: "blueprint", team: "team", guide: "guide", foundations: "science", growth: "me", privacy: "privacy", terms: "privacy"}[m[1]];
   if (S.view === "team" && S.demo) S.sel = "ex2";
   if (m[2]) LANG = m[2].slice(1); })();
 render();
