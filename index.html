@@ -1786,9 +1786,9 @@ function render(force){
   translateDom($("#app"));
   { const pp = privacyPromise(); $("#privbar").innerHTML = S.view === "privacy" ? "" : `<div class="wrap">${LOCK}<span><b>${pp.head}</b> ${pp.text} <a href="#privacy" data-action="view" data-v="privacy">${pp.link}</a></span></div>`; $("#privbar").hidden = S.view === "privacy"; }
   $("#foot").innerHTML = LANG === "es"
-    ? `<div class="wrap"><p><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">Licencia</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacidad y seguridad</a> · <a href="#terms" data-action="terms">Condiciones de uso</a> · <a href="#feedback" data-action="feedback">Enviar comentarios</a></p>
+    ? `<div class="wrap"><p><b>Growth Compass</b> por Karen Tinoco · © 2026 Karen Tinoco. Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">Licencia</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacidad y seguridad</a> · <a href="#terms" data-action="terms">Condiciones de uso</a> · <a href="#feedback" data-action="feedback">Enviar comentarios</a> · <a href="#delete-data" data-action="delnav">Borrar todos mis datos</a></p>
        <p>Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p></div>`
-    : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a> · <a href="#terms" data-action="terms">Terms of use</a> · <a href="#feedback" data-action="feedback">Send feedback</a></p>
+    : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a> · <a href="#terms" data-action="terms">Terms of use</a> · <a href="#feedback" data-action="feedback">Send feedback</a> · <a href="#delete-data" data-action="delnav">Delete all my data</a></p>
        <p>Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.</p></div>`;
 }
 document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
@@ -2531,9 +2531,9 @@ const PRIVACY = {
       ["control","Deleting your data",["<b>Delete my data</b> below removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote, from your account and from this browser."],[]],
       ["share","Feedback",["Feedback is sent only when you click <b>Send feedback</b>. <b>In the team app on claude.ai</b>, it's saved where only the app's owner can read it, and used to improve future versions. <b>In the public demo</b>, nothing is sent: you copy your feedback and send it yourself. The only thing that leaves your browser is feedback you choose to send, and it goes only to the app's owner."],[]],
       ["check","Good practice",["Describe colleagues and customers by role, not by name, and leave out health, financial or other sensitive personal details. Your plan works just as well without them. Your answers are for development only, never for pay, hiring, ratings or discipline."],[]]],
-    delTitle:"Delete my data", delLead:"Permanently removes everything you entered. This can't be undone.",
-    delBtn:"Delete my data", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
-    delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again.",
+    delTitle:"Delete all my data", delLead:"Permanently removes everything you entered. This can't be undone.",
+    delBtn:"Delete all my data", delNone:"Nothing is saved yet, so there is nothing of yours to delete.", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
+    delDemo:"You're viewing sample data, which is never saved, so there is nothing of yours to delete. Turn off <b>Sample data</b> at the top to see and delete your own data.", delDone:"Your data was deleted.", delFail:"Couldn't delete everything. Check your connection and try again.",
     del1Title:"Step 1 of 2", del1:w => `Delete all your Growth Compass data? This permanently erases your assessment, plan, skills passport, check-ins, sharing settings and private notes from ${w}. It can't be undone or recovered.`,
     whereLive:"your account and from this browser", whereLocal:"this browser",
     keep:"Keep it", cont:"Continue", del2Title:"Step 2 of 2",
@@ -2556,9 +2556,9 @@ const PRIVACY = {
       ["control","Borrar tus datos",["<b>Borrar mis datos</b>, aquí abajo, elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito, de tu cuenta y de este navegador."],[]],
       ["share","Comentarios",["Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>. <b>En la app del equipo en claude.ai</b>, se guardan donde solo la persona dueña de la app puede leerlos, y se usan para mejorar versiones futuras. <b>En la demo pública</b> no se envía nada: copias tus comentarios y los envías tú. Lo único que sale de tu navegador son los comentarios que tú decidas enviar, y solo los recibe la persona dueña de la app."],[]],
       ["check","Buenas prácticas",["Describe a tus compañeros y clientes por su rol, no por su nombre, y deja fuera datos de salud, financieros u otros datos personales sensibles. Tu plan funciona igual de bien sin ellos. Tus respuestas son solo para tu desarrollo, nunca para salario, contratación, calificaciones ni medidas disciplinarias."],[]]],
-    delTitle:"Borrar mis datos", delLead:"Elimina de forma permanente todo lo que ingresaste. No se puede deshacer.",
-    delBtn:"Borrar mis datos", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
-    delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo.",
+    delTitle:"Borrar todos mis datos", delLead:"Elimina de forma permanente todo lo que ingresaste. No se puede deshacer.",
+    delBtn:"Borrar todos mis datos", delNone:"Todavía no hay nada guardado, así que no hay datos tuyos que borrar.", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
+    delDemo:"Estás viendo datos de ejemplo, que nunca se guardan, así que no hay nada tuyo que borrar. Desactiva <b>Datos de ejemplo</b> arriba para ver y borrar tus propios datos.", delDone:"Se borraron tus datos.", delFail:"No se pudo borrar todo. Revisa tu conexión e inténtalo de nuevo.",
     del1Title:"Paso 1 de 2", del1:w => `¿Borrar todos tus datos de Growth Compass? Esto elimina de forma permanente tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y notas privadas de ${w}. No se puede deshacer ni recuperar.`,
     whereLive:"tu cuenta y de este navegador", whereLocal:"este navegador",
     keep:"Conservarlos", cont:"Continuar", del2Title:"Paso 2 de 2",
@@ -2613,11 +2613,11 @@ function renderPrivacy(){
     <div class="psecs">${d.sections.map(([ic, h, paras, list, note], i) => `<section class="card psec ${i % 2 ? "g" : "n"}"><div class="psec-h"><span class="pico">${icon(ic)}</span><h2>${h}</h2></div>
       ${paras.map(x => `<p>${x}</p>`).join("")}${list.length ? `<ol>${list.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${note ? `<p class="callout">${note}</p>` : ""}</section>`).join("")}</div>
     <section class="card terms" id="terms"><div class="psec-h"><span class="pico">${icon("check")}</span><h2>${d.termsTitle}</h2></div>${d.terms.map(x => `<p>${x}</p>`).join("")}</section>
-    <section class="card stack pdel" style="gap:10px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small">${d.delLead}</p>
-      ${S.demo ? `<p class="small muted">${d.delDemo}</p>`
+    <section class="card stack pdel" id="delete-data" style="gap:10px;scroll-margin-top:110px"><div class="psec-h"><span class="pico">${icon("control")}</span><h2>${d.delTitle}</h2></div><p class="small">${d.delLead}</p>
+      ${S.demo ? `<p class="small muted">${d.delDemo}</p><div><button class="btn danger" disabled>${d.delBtn}</button></div>`
         : S.delAsk === 1 ? `<div class="del-step" role="alertdialog" aria-labelledby="del1t"><span class="stepno" id="del1t">${d.del1Title}</span><p><b>${d.del1(S.live ? d.whereLive : d.whereLocal)}</b></p><div class="row"><button class="btn ghost" data-action="del-no">${d.keep}</button><button class="btn danger" data-action="del-next">${d.cont}</button></div></div>`
         : S.delAsk === 2 ? `<div class="del-step" role="alertdialog" aria-labelledby="del2t"><span class="stepno" id="del2t">${d.del2Title}</span><label class="del-ack"><input type="checkbox" id="del-ack" ${S.delAck ? "checked" : ""}><span>${d.ack}</span></label><div class="row"><button class="btn ghost" data-action="del-no">${d.keep}</button><button class="btn danger" id="del-final" data-action="del-yes" ${S.delAck ? "" : "disabled"}>${d.delFinal}</button></div></div>`
-        : `<div><button class="btn ghost" data-action="del-ask" ${hasData ? "" : "disabled"}>${d.delBtn}</button></div>`}
+        : `<div><button class="btn danger" data-action="del-ask" ${hasData ? "" : "disabled"}>${d.delBtn}</button></div>${hasData ? "" : `<p class="small muted">${d.delNone}</p>`}`}
     </section></div>`;
 }
 async function deleteMyData(){
@@ -2733,6 +2733,7 @@ document.addEventListener("click", e => {
     case "del-yes": if (S.delAsk !== 2 || !S.delAck) return; deleteMyData(); return;
     case "feedback": openFeedback(); return;
     case "terms": S.view = "terms"; render(); scrollTo(0, 0); return;
+    case "delnav": S.view = "privacy"; render(); document.getElementById("delete-data")?.scrollIntoView({block:"start"}); return;
     case "bp-go": document.getElementById(el.dataset.id)?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
     case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
     case "start": case "retake": {
