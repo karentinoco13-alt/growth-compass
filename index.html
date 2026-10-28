@@ -578,6 +578,46 @@ body{background:
 /* Foundations */
 .book .spine{width:64px;height:8px}
 .btn.danger{color:var(--on-acc)}
+/* Terms gate: blocking first-use dialog */
+html.gate-open{overflow:hidden}
+.gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;
+  background:radial-gradient(700px 500px at 0% 0%, color-mix(in srgb, var(--teal-band) 30%, transparent), transparent 70%),radial-gradient(700px 500px at 100% 100%, color-mix(in srgb, var(--coral-band) 26%, transparent), transparent 70%),rgb(8 17 39 / .82)}
+.gate-box{position:relative;width:100%;max-width:620px;max-height:calc(100dvh - 32px);display:flex;flex-direction:column;box-sizing:border-box;background:var(--surface);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgb(0 0 0 / .35);font-family:var(--f-body)}
+.gate-box::before{content:"";flex:none;height:6px;background:linear-gradient(90deg,var(--teal-band),var(--violet-band),var(--coral-band),var(--blue-band),var(--green-band))}
+.gate-head{flex:none;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 22px 10px}
+.gate-head h2{margin:0;font-family:var(--f-display);font-size:1.35rem;line-height:1.25;color:var(--ink)}
+.gate-head .eyebrow{display:inline-block;margin-bottom:6px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber-ink);background:color-mix(in srgb, var(--amber-band) 18%, transparent);padding:2px 9px;border-radius:999px}
+.gate-lang{flex:none;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.gate-lang button{border:0;background:transparent;color:var(--ink);font:inherit;font-weight:700;font-size:.85rem;padding:6px 11px;cursor:pointer;min-width:40px}
+.gate-lang button[aria-pressed=true]{background:var(--navy);color:var(--on-navy)}
+.gate-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 22px 14px}
+.gate-body:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.gate-lead{margin:0 0 12px;color:var(--muted)}
+.gate-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.gate-list li{--band:var(--blue-band);--acc:var(--blue-ink);border-left:4px solid var(--band);background:color-mix(in srgb, var(--band) 9%, var(--surface));border-radius:8px;padding:10px 12px;line-height:1.5}
+.gate-list li b.gh{display:block;color:var(--acc);margin-bottom:2px}
+.gate-list li.t{--band:var(--teal-band);--acc:var(--teal-ink)}
+.gate-list li.v{--band:var(--violet-band);--acc:var(--violet-ink)}
+.gate-list li.b{--band:var(--blue-band);--acc:var(--blue-ink)}
+.gate-list li.c{--band:var(--coral-band);--acc:var(--coral-ink)}
+.gate-list li.g{--band:var(--green-band);--acc:var(--green-ink)}
+.gate-list p{margin:0}.gate-list p+p{margin-top:6px}
+.gate a{color:var(--blue-ink);font-weight:600}
+.gate-links{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px}
+.gate-full .priv h1{font-size:1.2rem;margin:4px 0}
+.gate-full .card{margin:0}
+.gate-foot{flex:none;border-top:1px solid var(--line);padding:14px 22px 18px;display:grid;gap:12px;background:var(--surface)}
+.gate-ack{display:flex;gap:10px;align-items:flex-start;line-height:1.45;font-weight:600;cursor:pointer}
+.gate-ack input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--teal-band)}
+.gate-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
+.gate-btns .btn{min-height:44px}
+.gate .btn.go{background:var(--teal-ink);border-color:var(--teal-ink);color:var(--on-acc)}
+.gate .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.gate-no{padding:8px 0 4px;text-align:center}
+.gate-no p{font-size:1.1rem;font-weight:700;margin:6px 0 16px}
+.gate :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media (max-width:480px){.gate{padding:8px}.gate-box{max-height:calc(100dvh - 16px)}.gate-head,.gate-body,.gate-foot{padding-left:16px;padding-right:16px}.gate-head h2{font-size:1.15rem}.gate-btns .btn{flex:1 1 auto}}
+.terms-accepted{display:flex;gap:8px;align-items:center;margin:0;padding:10px 14px;border-radius:8px;border-left:4px solid var(--green-band);background:color-mix(in srgb, var(--green-band) 12%, var(--surface));color:var(--green-ink);font-weight:600}
 </style>
 </head>
 <body>
@@ -605,6 +645,7 @@ body{background:
 <main class="wrap" id="app"></main>
 <footer class="foot" id="foot"></footer>
 <div class="toast" id="toast" hidden></div>
+<div class="gate" id="gate" hidden></div>
 <dialog class="fb" id="fbDlg" aria-labelledby="fbTitle"></dialog>
 
 <script>
@@ -1922,6 +1963,7 @@ function render(force){
        <p>Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p></div>`
     : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a> · <a href="#terms" data-action="terms">Terms of use</a> · <a href="#feedback" data-action="feedback">Send feedback</a> · <a href="#delete-data" data-action="delnav">Delete all my data</a></p>
        <p>Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.</p></div>`;
+  gateSync();
 }
 document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
 document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 0));
@@ -2730,6 +2772,7 @@ function renderTerms(){
   const d = PRIVACY[LANG] || PRIVACY.en, es = LANG === "es";
   return `<div data-notr class="stack priv" style="gap:16px">
     <h1>${d.termsTitle}</h1>
+    ${TERMS_REC ? `<p class="terms-accepted" role="status">${icon("check")}<span>${es ? "Aceptaste estas condiciones el" : "You accepted these terms on"} ${fmtDate(TERMS_REC.acceptedAt)}.</span></p>` : ""}
     <section class="card psec n" id="terms"><div class="psec-h"><span class="pico">${icon("check")}</span><h2>${es ? "Lo que aceptas al usar Growth Compass" : "What you agree to by using Growth Compass"}</h2></div>${d.terms.map(x => `<p>${x}</p>`).join("")}</section>
     <p class="small muted">${es ? "Growth Compass es gratuita y se ofrece tal cual." : "Growth Compass is free and provided as is."} <a href="#privacy" data-action="view" data-v="privacy">${es ? "Privacidad y seguridad" : "Privacy and security"}</a> · <a href="#feedback" data-action="feedback">${es ? "Enviar comentarios" : "Send feedback"}</a></p>
   </div>`;
@@ -3128,6 +3171,89 @@ async function submitFeedback(e){
     feedbackFallback(item, f.fail);
   }
 }
+
+// ---------- Terms gate: accept the terms before first use ----------
+const TERMS_VERSION = "2026-10-28";
+const TERMS_KEY = "growth-compass-terms-accepted";
+let TERMS_REC = (() => { const r = lsGet(TERMS_KEY); return r && r.version === TERMS_VERSION && r.acceptedAt ? r : null; })();
+const GATE = {open: !TERMS_REC, ticked: false, declined: false, panel: null, drawn: ""};
+const GATE_BG = ["header.bar", "#privbar", "#app", "#foot"];
+function termsAccepted(){ return TERMS_REC; }
+function gateHTML(){
+  const es = LANG === "es", d = PRIVACY[LANG] || PRIVACY.en, pp = privacyPromise();
+  const shield = d.sections.find(s => s[0] === "shield")[2][0];
+  const head = `<div class="gate-head"><div><span class="eyebrow">Growth Compass</span><h2 id="gate-title">${es ? "Antes de empezar: Condiciones de uso" : "Before you start: Terms of use"}</h2></div>
+    <div class="gate-lang" role="group" aria-label="${es ? "Idioma" : "Language"}"><button type="button" data-g="lang" data-l="en" lang="en" aria-pressed="${!es}">EN</button><button type="button" data-g="lang" data-l="es" lang="es" aria-pressed="${es}">ES</button></div></div>`;
+  if (GATE.declined) return head + `<div class="gate-body" id="gate-desc"><div class="gate-no"><p>${es ? "Necesitas aceptar las condiciones para usar la app." : "You need to accept the terms to use the app."}</p>
+    <button type="button" class="btn go" data-g="review">${es ? "Revisar de nuevo" : "Review again"}</button></div></div>`;
+  let body;
+  if (GATE.panel === "terms") body = `<div class="gate-full">${renderTerms()}</div>`;
+  else if (GATE.panel === "privacy") body = `<div class="gate-full stack priv" style="gap:12px"><h1>${d.title}</h1><p class="pv-promise">${LOCK}<span>${d.promise}</span></p>${d.sections.map(([ic, h, paras, list, note]) => `<section class="card psec n"><div class="psec-h"><span class="pico">${icon(ic)}</span><h2>${h}</h2></div>${paras.map(x => `<p>${x}</p>`).join("")}${list.length ? `<ol>${list.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${note ? `<p class="callout">${note}</p>` : ""}</section>`).join("")}</div>`;
+  else body = `<p class="gate-lead" id="gate-desc">${es ? "Un resumen de las condiciones de uso y del aviso de privacidad de Growth Compass. Léelo y acéptalo para continuar." : "A summary of the Growth Compass terms of use and privacy notice. Please read it and accept to continue."}</p>
+    <ul class="gate-list">
+      <li class="t"><b class="gh">${es ? "Gratuita, mientras se prueba" : "Free, while it's being tested"}</b><p>${es ? "Growth Compass es gratuita y se ofrece tal cual." : "Growth Compass is free and provided as is."} ${es ? "Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>, los recibe solo la persona dueña de la app y se usan para mejorar versiones futuras." : "Feedback is sent only when you click <b>Send feedback</b>; it goes only to the app's owner and is used to improve future versions."}</p></li>
+      <li class="v"><b class="gh">${es ? "Sin resultados garantizados" : "No guaranteed results"}</b><p>${d.terms[0]}</p></li>
+      <li class="b"><b class="gh">${pp.head}</b><p>${pp.text}</p><p>${shield}</p></li>
+      <li class="c"><b class="gh">${es ? "Borrar es permanente; tus datos son tu responsabilidad" : "Deleting is permanent; your data is your responsibility"}</b><p>${d.delLead}</p><p>${d.terms[1]}</p></li>
+      <li class="g"><b class="gh">${es ? "Licencia" : "Licence"}</b><p>© 2026 Karen Tinoco. ${es ? "Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso." : "Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only."} <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">${es ? "Licencia" : "License"}</a></p></li>
+    </ul>
+    <p class="gate-links"><a href="#terms" data-g="panel" data-p="terms">${es ? "Leer las Condiciones de uso completas" : "Read the full Terms of use"}</a><a href="#privacy" data-g="panel" data-p="privacy">${es ? "Leer el aviso de Privacidad y seguridad" : "Read the Privacy & security notice"}</a></p>`;
+  const back = GATE.panel ? `<p style="margin:0 0 10px"><button type="button" class="btn ghost sm" data-g="panel" data-p="">${es ? "← Volver al resumen" : "← Back to the summary"}</button></p>` : "";
+  return head + `<div class="gate-body" tabindex="0" aria-label="${es ? "Resumen de las condiciones" : "Terms summary"}">${back}${body}</div>
+    <div class="gate-foot"><label class="gate-ack"><input type="checkbox" id="gate-ack" ${GATE.ticked ? "checked" : ""}><span>${es ? "He leído y acepto las Condiciones de uso y el aviso de Privacidad y seguridad" : "I have read and accept the Terms of use and the Privacy & security notice"}</span></label>
+    <div class="gate-btns"><button type="button" class="btn ghost" data-g="decline">${es ? "Rechazar" : "Decline"}</button><button type="button" class="btn go" id="gate-accept" data-g="accept" ${GATE.ticked ? "" : "disabled"}>${es ? "Aceptar y continuar" : "Accept and continue"}</button></div></div>`;
+}
+function gateFocusables(){ return [...$("#gate").querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),[tabindex="0"]')].filter(e => e.offsetParent !== null || e === document.activeElement); }
+function gateSync(focusSel){
+  const g = $("#gate"); if (!g) return;
+  GATE_BG.forEach(s => { const el = $(s); if (el) el.inert = GATE.open; });
+  document.documentElement.classList.toggle("gate-open", GATE.open);
+  if (!GATE.open){ if (!g.hidden){ g.hidden = true; g.innerHTML = ""; GATE.drawn = ""; } return; }
+  const key = [LANG, GATE.declined, GATE.panel, S.live].join("|");
+  if (g.hidden || key !== GATE.drawn || focusSel){
+    const scroll = key === GATE.drawn ? g.querySelector(".gate-body")?.scrollTop : 0;
+    g.innerHTML = `<div class="gate-box" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc" lang="${LANG}">${gateHTML()}</div>`;
+    g.hidden = false; GATE.drawn = key;
+    const b = g.querySelector(".gate-body"); if (b && scroll) b.scrollTop = scroll;
+    const f = (focusSel && g.querySelector(focusSel)) || g.querySelector(GATE.declined ? "[data-g=review]" : ".gate-body") ;
+    if (f && !g.contains(document.activeElement) || focusSel) f?.focus({preventScroll: true});
+  }
+}
+function gateAccept(){
+  if (!GATE.ticked) return;
+  TERMS_REC = {version: TERMS_VERSION, acceptedAt: new Date().toISOString()};
+  try { localStorage.setItem(TERMS_KEY, JSON.stringify(TERMS_REC)); } catch {}
+  GATE.open = false; render(true); scrollTo(0, 0);
+  const h = $("#app h1, #app h2"); if (h){ h.setAttribute("tabindex", "-1"); h.focus({preventScroll: true}); }
+}
+document.addEventListener("click", e => {
+  const g = $("#gate"); if (!GATE.open || !g || !g.contains(e.target)) return;
+  const el = e.target.closest("[data-g],[data-action=view]");
+  if (!el) return;
+  e.preventDefault(); e.stopPropagation();
+  if (el.dataset.action === "view"){ GATE.panel = el.dataset.v === "privacy" ? "privacy" : "terms"; gateSync(".gate-body"); return; }
+  switch (el.dataset.g){
+    case "lang": if (LANG !== el.dataset.l){ LANG = el.dataset.l; try { localStorage.setItem("gc-lang", LANG); } catch {} render(true); } gateSync(`[data-g=lang][data-l=${LANG}]`); return;
+    case "panel": GATE.panel = el.dataset.p || null; gateSync(GATE.panel ? ".gate-body" : "[data-p=terms]"); return;
+    case "decline": GATE.declined = true; GATE.ticked = false; gateSync("[data-g=review]"); return;
+    case "review": GATE.declined = false; GATE.panel = null; gateSync(".gate-body"); return;
+    case "accept": gateAccept(); return;
+  }
+}, true);
+document.addEventListener("change", e => {
+  if (e.target.id !== "gate-ack") return;
+  GATE.ticked = e.target.checked; const b = $("#gate-accept"); if (b) b.disabled = !GATE.ticked;
+});
+document.addEventListener("keydown", e => {
+  if (!GATE.open) return;
+  if (e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); return; }
+  if (e.key !== "Tab") return;
+  const f = gateFocusables(); if (!f.length){ e.preventDefault(); return; }
+  const i = f.indexOf(document.activeElement);
+  if (e.shiftKey && (i <= 0)){ e.preventDefault(); f[f.length - 1].focus(); }
+  else if (!e.shiftKey && (i === -1 || i === f.length - 1)){ e.preventDefault(); f[0].focus(); }
+}, true);
+document.addEventListener("focusin", e => { if (GATE.open && !$("#fbDlg")?.open && !$("#gate").contains(e.target)) gateFocusables()[0]?.focus(); });
 
 // ---------- Boot ----------
 const local = lsGet(LS_KEY); if (local) S.myDoc = local;
