@@ -446,6 +446,138 @@ p.earned-line.small{font-size:.92rem;color:var(--ex);margin-top:4px}
 .pace-ed .q{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
 /* plan reality check */
 .sep.stack:has(> b){background:var(--in-tint);border-radius:10px;padding:12px 14px;border-top:0}
+/* ---- Colour pass 2: a warm, confident palette with one colour identity per kind of section ----
+   teal = skills passport · violet = talents · coral = STAR accomplishments · blue = sharing and privacy
+   green = plan and check-ins · amber = motivation and the brand. Ink shades keep AA text contrast. */
+:root{
+  --teal-ink:#0B625E; --teal-band:#14A39B;
+  --violet-ink:#6B3FC4; --violet-band:#8B5CF6;
+  --coral-ink:#A8361F; --coral-band:#F26B4F;
+  --blue-ink:#1F4E9C; --blue-band:#3B7BE0;
+  --green-ink:#17652F; --green-band:#2FA05A;
+  --amber-ink:#7A5A00; --amber-band:#E0AE2F;
+  --crit-band:#D93A2F;
+  --on-acc:#FFFFFF; --mix:var(--surface);
+  --bg:#F7F2EA;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --teal-ink:#5CC9C4; --violet-ink:#BBA2F8; --coral-ink:#FF9D86; --blue-ink:#8DB1F0; --green-ink:#6BD38C; --amber-ink:#E6BE52;
+  --on-acc:#0A1328; --bg:#0A1328}}
+:root[data-theme="dark"]{
+  --teal-ink:#5CC9C4; --violet-ink:#BBA2F8; --coral-ink:#FF9D86; --blue-ink:#8DB1F0; --green-ink:#6BD38C; --amber-ink:#E6BE52;
+  --on-acc:#0A1328; --bg:#0A1328}
+body{background:
+  radial-gradient(900px 600px at 0% 0%, color-mix(in srgb, var(--teal-band) 12%, transparent), transparent 70%),
+  radial-gradient(800px 600px at 100% 30%, color-mix(in srgb, var(--violet-band) 10%, transparent), transparent 70%),
+  radial-gradient(900px 700px at 20% 100%, color-mix(in srgb, var(--coral-band) 10%, transparent), transparent 70%),
+  var(--bg);background-attachment:fixed}
+/* colour families: set --acc (text and solid fills) and --band (bright decoration) */
+:is(.card,.stat,.goal,.need,.kirk>div,.personas button,.bp section,.ptile){--acc:var(--blue-ink);--band:var(--blue-band)}
+/* generic rotation so no card is left plain */
+.card:nth-child(6n+1),.stat:nth-child(5n+1),.goal:nth-of-type(5n+1),.need:nth-child(3n+1),.kirk>div:nth-child(4n+1),.personas button:nth-child(5n+1),.bp section:nth-of-type(6n+1){--acc:var(--teal-ink);--band:var(--teal-band)}
+.card:nth-child(6n+2),.stat:nth-child(5n+2),.goal:nth-of-type(5n+2),.need:nth-child(3n+2),.kirk>div:nth-child(4n+2),.personas button:nth-child(5n+2),.bp section:nth-of-type(6n+2){--acc:var(--violet-ink);--band:var(--violet-band)}
+.card:nth-child(6n+3),.stat:nth-child(5n+3),.goal:nth-of-type(5n+3),.need:nth-child(3n+3),.kirk>div:nth-child(4n+3),.personas button:nth-child(5n+3),.bp section:nth-of-type(6n+3){--acc:var(--coral-ink);--band:var(--coral-band)}
+.card:nth-child(6n+4),.stat:nth-child(5n+4),.goal:nth-of-type(5n+4),.kirk>div:nth-child(4n+4),.personas button:nth-child(5n+4),.bp section:nth-of-type(6n+4){--acc:var(--green-ink);--band:var(--green-band)}
+.card:nth-child(6n+5),.stat:nth-child(5n+5),.goal:nth-of-type(5n+5),.personas button:nth-child(5n+5),.bp section:nth-of-type(6n+5){--acc:var(--amber-ink);--band:var(--amber-band)}
+.card:nth-child(6n+6),.bp section:nth-of-type(6n+6){--acc:var(--blue-ink);--band:var(--blue-band)}
+/* section identities on My growth and in the manager's person view */
+.card:has(> .row p.earned-line),.card:has(.skill),.card:has(> .req){--acc:var(--teal-ink);--band:var(--teal-band)}
+.card:has(.talent),.card:has([data-action="tl-new"]),.card:has([data-action="tl-save"]){--acc:var(--violet-ink);--band:var(--violet-band)}
+#stories,.card:has(.story),.card:has([data-action="st-new"]),.card:has(.star){--acc:var(--coral-ink);--band:var(--coral-band)}
+.card:has(.share-row),.card.terms{--acc:var(--blue-ink);--band:var(--blue-band)}
+.card:has(> .prog),.card:has(#new-goal),.card:has([name="energy"]),.card:has(.checkin),.card:has(.move){--acc:var(--green-ink);--band:var(--green-band)}
+.card:has(.continuum),.card:has(.needs),.card:has(> .guide):has(> .sep){--acc:var(--amber-ink);--band:var(--amber-band)}
+.card:has(.filters){--acc:var(--blue-ink);--band:var(--blue-band)}
+.card:has(> .patterns){--acc:var(--violet-ink);--band:var(--violet-band)}
+.card:has(> .patterns .barrow){--acc:var(--violet-ink);--band:var(--violet-band)}
+.card.pdel{--acc:var(--crit);--band:var(--crit-band)}
+/* how a coloured card looks (navy hero panels keep their own look) */
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)){
+  background:var(--surface);
+  background:linear-gradient(180deg, color-mix(in srgb, var(--band) 16%, var(--surface)) 0, color-mix(in srgb, var(--band) 7%, var(--surface)) 140px);
+  border-color:color-mix(in srgb, var(--band) 35%, var(--surface));border-top:6px solid var(--band)}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) :is(h2,h3){color:var(--acc)}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) .eyebrow{display:inline-block;background:var(--acc);color:var(--on-acc);padding:2px 9px;border-radius:999px;margin-bottom:4px}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) .btn:not(.ghost,.danger){background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) .btn.ghost{border-color:color-mix(in srgb, var(--band) 60%, var(--surface));color:var(--acc);background:var(--surface)}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) .btn.ghost:hover{border-color:var(--band)}
+.card:not(.intro,.own,.earned,.bp-hero,.vhead,:has(> h1)) .sep{border-top-color:color-mix(in srgb, var(--band) 35%, var(--surface))}
+.card .prog{background:color-mix(in srgb, var(--band) 20%, var(--surface))}
+.card .prog b{background:linear-gradient(90deg,var(--band),var(--acc))}
+/* inner blocks pick up colour too */
+.goal{border-left:6px solid var(--band);background:color-mix(in srgb, var(--band) 6%, var(--surface));border-color:color-mix(in srgb, var(--band) 35%, var(--surface));border-left-color:var(--band)}
+.goal h3{color:var(--acc)}
+.support{background:color-mix(in srgb, var(--band) 14%, var(--surface))}
+.measure{border-color:var(--band)}
+.story{border-left:5px solid var(--coral-band);background:color-mix(in srgb, var(--coral-band) 5%, var(--surface))}
+.talent{border-left-color:var(--violet-band);background:color-mix(in srgb, var(--violet-band) 9%, var(--surface));border-color:color-mix(in srgb, var(--violet-band) 30%, var(--surface));border-left-color:var(--violet-band)}
+.skill{background:color-mix(in srgb, var(--teal-band) 5%, var(--surface))}
+.need{background:color-mix(in srgb, var(--band) 10%, var(--surface));border-top:4px solid var(--band);border-color:color-mix(in srgb, var(--band) 35%, var(--surface));border-top-color:var(--band)}
+.need .v{color:var(--acc)}
+.card:not(.own) .kirk>div{background:color-mix(in srgb, var(--band) 10%, var(--surface));border-color:color-mix(in srgb, var(--band) 35%, var(--surface));border-top:4px solid var(--band)}
+.card:not(.own) .kirk .v{color:var(--acc)}
+.req{border-left-color:var(--teal-band)} .req.open{border-left-color:var(--amber-band)}
+.prep{background:color-mix(in srgb, var(--coral-band) 10%, var(--surface))}
+.plan-note,.pace-lead,.pace-line{background:color-mix(in srgb, var(--amber-band) 14%, var(--surface))}
+.sep.stack:has(> b){background:color-mix(in srgb, var(--green-band) 12%, var(--surface))}
+.card table th{color:var(--acc);background:color-mix(in srgb, var(--band) 14%, var(--surface))}
+.card tr.sel td,.card tr.click:hover td{background:color-mix(in srgb, var(--band) 14%, var(--surface))}
+.filters button{border-color:color-mix(in srgb, var(--blue-band) 45%, var(--surface));color:var(--blue-ink)}
+.filters button[aria-pressed="true"]{background:var(--blue-ink);border-color:var(--blue-ink);color:var(--on-acc)}
+.scale input:checked+span{background:var(--green-ink);border-color:var(--green-ink);color:var(--on-acc)}
+.sugg button{border-color:color-mix(in srgb, var(--band) 55%, var(--surface));background:var(--surface)}
+.sugg button:hover{border-color:var(--band)}
+/* stats row: each number gets its own colour */
+.stat{background:color-mix(in srgb, var(--band) 12%, var(--surface));border-color:color-mix(in srgb, var(--band) 35%, var(--surface));border-top:6px solid var(--band)}
+.stat .eyebrow{color:var(--acc)}
+.stat .v{color:var(--acc)}
+/* sample people chips */
+.personas button{background:color-mix(in srgb, var(--band) 12%, var(--surface));border-color:color-mix(in srgb, var(--band) 55%, var(--surface));color:var(--acc);font-weight:600}
+.personas button .muted{color:var(--ink)}
+.personas button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+/* status chips: solid and clear */
+.chip.ok{background:var(--green-ink);color:var(--on-acc)}
+.chip.warn{background:var(--amber-band);color:#0F1E3D}
+.chip.crit{background:var(--crit);color:var(--on-acc)}
+.chip.neutral{background:color-mix(in srgb, var(--band, var(--blue-band)) 16%, var(--surface));color:var(--acc, var(--blue-ink))}
+.earned-list .chip.ok{background:var(--gold);color:#0F1E3D}
+/* skill stages: violet (planned) → blue (learning) → teal (practising) → gold (mastered) */
+.stepper span[data-s="0"]{--sc:var(--violet-band);--si:var(--violet-ink)}
+.stepper span[data-s="1"]{--sc:var(--blue-band);--si:var(--blue-ink)}
+.stepper span[data-s="2"]{--sc:var(--teal-band);--si:var(--teal-ink)}
+.stepper span[data-s="3"]{--sc:var(--amber-band);--si:var(--amber-ink)}
+.stepper span[data-s]{background:color-mix(in srgb, var(--sc) 10%, var(--surface));color:var(--si);border:1px dashed color-mix(in srgb, var(--sc) 50%, var(--surface))}
+.stepper span.past[data-s]{background:color-mix(in srgb, var(--sc) 22%, var(--surface));color:var(--si);border-style:solid}
+.stepper span.on[data-s]{background:var(--si);color:var(--on-acc);border:1px solid var(--si);font-weight:700}
+.stepper span.on[data-s="3"],.skill.mastered .stepper span.on[data-s="3"]{background:var(--gold);color:#0F1E3D;border-color:var(--gold);font-weight:800}
+.skill.st-0{border-left-color:var(--violet-band)} .skill.st-1{border-left-color:var(--blue-band)} .skill.st-2{border-left-color:var(--teal-band)}
+/* hero panels: navy kept, warmed with a colour wash */
+.earned{background:linear-gradient(125deg,var(--navy) 0%,var(--navy) 45%,color-mix(in srgb, var(--teal-band) 38%, var(--navy)) 100%);border-color:var(--navy)}
+.own{background:linear-gradient(125deg,var(--navy) 0%,var(--navy) 45%,color-mix(in srgb, var(--violet-band) 38%, var(--navy)) 100%)}
+.intro{background:linear-gradient(125deg,var(--navy) 0%,var(--navy) 50%,color-mix(in srgb, var(--coral-band) 22%, var(--navy)) 100%)}
+.bp-hero{background:linear-gradient(125deg,var(--navy) 0%,var(--navy) 50%,color-mix(in srgb, var(--coral-band) 22%, var(--navy)) 100%)}
+#app[data-view="team"]{--vacc:var(--violet-band)} #app[data-view="guide"]{--vacc:var(--teal-band)} #app[data-view="science"]{--vacc:var(--green-band)}
+#app[data-view="privacy"]{--vacc:var(--blue-band)} #app[data-view="terms"]{--vacc:var(--amber-band)} #app[data-view="blueprint"]{--vacc:var(--coral-band)}
+#app > section:has(> h1), #app > .vhead, .priv > h1{background:linear-gradient(125deg,var(--navy) 0%,var(--navy) 45%,color-mix(in srgb, var(--vacc) 24%, var(--navy)) 100%);border-bottom-width:6px}
+/* privacy strip and notices */
+.privbar{background:color-mix(in srgb, var(--blue-band) 16%, var(--surface));border-bottom:2px solid var(--blue-band)}
+.privbar .lock{color:var(--blue-ink)} .privbar a{color:var(--blue-ink)}
+.demo-note{background:color-mix(in srgb, var(--amber-band) 20%, var(--surface));border-color:var(--amber-band);border-left:6px solid var(--amber-band)}
+/* SOP: every section has its own colour */
+.bp section{border-left:6px solid var(--band);padding:4px 0 22px 16px;border-bottom-color:color-mix(in srgb, var(--band) 30%, var(--surface))}
+.bp h2::before{background:var(--band)} .bp h3{color:var(--acc)}
+.bp th{background:var(--acc);color:var(--on-acc)}
+.bp tbody tr:nth-child(even) td{background:color-mix(in srgb, var(--band) 10%, var(--surface))}
+.bp-toc button:hover{background:color-mix(in srgb, var(--band) 16%, var(--surface))}
+/* Privacy page */
+.psec{border-left:6px solid var(--band)} .psec .pico,.psec.g .pico{background:var(--acc);color:var(--on-acc)}
+.psec li::marker,.psec ol li::marker{color:var(--acc)}
+.ptile:nth-child(4n+1){border-top-color:var(--teal-band)} .ptile:nth-child(4n+2){border-top-color:var(--violet-band)}
+.ptile:nth-child(4n+3){border-top-color:var(--coral-band)} .ptile:nth-child(4n+4){border-top-color:var(--green-band)}
+.pv-now{background:color-mix(in srgb, var(--blue-band) 16%, var(--surface));border-left:6px solid var(--blue-band)}
+/* Foundations */
+.book .spine{width:64px;height:8px}
+.btn.danger{color:var(--on-acc)}
 </style>
 </head>
 <body>
