@@ -358,6 +358,7 @@ dialog.fb legend{font-weight:600;padding:0;margin-bottom:6px}
 .fb-msg{border-radius:8px;padding:10px 12px;font-size:.92rem}
 .fb-msg.ok{background:var(--ok-soft);border:1px solid var(--ok)}
 .fb-msg.err{background:var(--crit-soft);border:1px solid var(--crit)}
+.fb-msg.note{background:var(--sunk);border:1px solid var(--line)}
 .fb-msg textarea{margin-top:8px;font-size:.85rem}
 .fb-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--navy);color:var(--on-navy);border:1px solid var(--gold);padding:8px 16px;border-radius:8px;font-weight:600;z-index:20}
@@ -578,45 +579,27 @@ body{background:
 /* Foundations */
 .book .spine{width:64px;height:8px}
 .btn.danger{color:var(--on-acc)}
-/* Terms gate: blocking first-use dialog */
-html.gate-open{overflow:hidden}
-.gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;
-  background:radial-gradient(700px 500px at 0% 0%, color-mix(in srgb, var(--teal-band) 30%, transparent), transparent 70%),radial-gradient(700px 500px at 100% 100%, color-mix(in srgb, var(--coral-band) 26%, transparent), transparent 70%),rgb(8 17 39 / .82)}
-.gate-box{position:relative;width:100%;max-width:620px;max-height:calc(100dvh - 32px);display:flex;flex-direction:column;box-sizing:border-box;background:var(--surface);color:var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 24px 60px rgb(0 0 0 / .35);font-family:var(--f-body)}
-.gate-box::before{content:"";flex:none;height:6px;background:linear-gradient(90deg,var(--teal-band),var(--violet-band),var(--coral-band),var(--blue-band),var(--green-band))}
-.gate-head{flex:none;display:flex;gap:12px;align-items:flex-start;justify-content:space-between;padding:18px 22px 10px}
-.gate-head h2{margin:0;font-family:var(--f-display);font-size:1.35rem;line-height:1.25;color:var(--ink)}
-.gate-head .eyebrow{display:inline-block;margin-bottom:6px;font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--amber-ink);background:color-mix(in srgb, var(--amber-band) 18%, transparent);padding:2px 9px;border-radius:999px}
-.gate-lang{flex:none;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.gate-lang button{border:0;background:transparent;color:var(--ink);font:inherit;font-weight:700;font-size:.85rem;padding:6px 11px;cursor:pointer;min-width:40px}
-.gate-lang button[aria-pressed=true]{background:var(--navy);color:var(--on-navy)}
-.gate-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 22px 14px}
-.gate-body:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
-.gate-lead{margin:0 0 12px;color:var(--muted)}
-.gate-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-.gate-list li{--band:var(--blue-band);--acc:var(--blue-ink);border-left:4px solid var(--band);background:color-mix(in srgb, var(--band) 9%, var(--surface));border-radius:8px;padding:10px 12px;line-height:1.5}
-.gate-list li b.gh{display:block;color:var(--acc);margin-bottom:2px}
-.gate-list li.t{--band:var(--teal-band);--acc:var(--teal-ink)}
-.gate-list li.v{--band:var(--violet-band);--acc:var(--violet-ink)}
-.gate-list li.b{--band:var(--blue-band);--acc:var(--blue-ink)}
-.gate-list li.c{--band:var(--coral-band);--acc:var(--coral-ink)}
-.gate-list li.g{--band:var(--green-band);--acc:var(--green-ink)}
-.gate-list p{margin:0}.gate-list p+p{margin-top:6px}
-.gate a{color:var(--blue-ink);font-weight:600}
-.gate-links{margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px 16px}
-.gate-full .priv h1{font-size:1.2rem;margin:4px 0}
-.gate-full .card{margin:0}
-.gate-foot{flex:none;border-top:1px solid var(--line);padding:14px 22px 18px;display:grid;gap:12px;background:var(--surface)}
-.gate-ack{display:flex;gap:10px;align-items:flex-start;line-height:1.45;font-weight:600;cursor:pointer}
-.gate-ack input{flex:none;width:20px;height:20px;margin:1px 0 0;accent-color:var(--teal-band)}
-.gate-btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}
-.gate-btns .btn{min-height:44px}
-.gate .btn.go{background:var(--teal-ink);border-color:var(--teal-ink);color:var(--on-acc)}
-.gate .btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
-.gate-no{padding:8px 0 4px;text-align:center}
-.gate-no p{font-size:1.1rem;font-weight:700;margin:6px 0 16px}
-.gate :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-@media (max-width:480px){.gate{padding:8px}.gate-box{max-height:calc(100dvh - 16px)}.gate-head,.gate-body,.gate-foot{padding-left:16px;padding-right:16px}.gate-head h2{font-size:1.15rem}.gate-btns .btn{flex:1 1 auto}}
+/* Terms notice: small, dismissible, non-blocking */
+.tnote{position:sticky;bottom:0;z-index:15;background:var(--navy);color:var(--on-navy);border-top:3px solid var(--gold);font-size:.9rem;padding-bottom:env(safe-area-inset-bottom,0px)}
+.tnote .wrap{display:flex;gap:8px 14px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-block:8px}
+.tnote p{margin:0;flex:1 1 220px}
+.tnote a{color:var(--gold);font-weight:600}
+.tnote .btn{min-height:40px;min-width:64px;background:var(--gold);border-color:var(--gold);color:#0F1E3D}
+.tnote :focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+html:has(.tnote:not([hidden])) .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+/* Phones: easier tapping, no iOS zoom on inputs, a header that scrolls away */
+.bp p,.bp li{overflow-wrap:anywhere}
+@media (max-width:640px){
+  .bar{position:static}
+  .tab,.fbbtn,.demo-tog,.btn.sm,.personas button,.bp-toc button,.sugg button,.filters button,input[type=date]{min-height:40px}
+  .act input{width:22px;height:22px}
+  .lang button{min-height:40px;min-width:40px}
+  .x{min-width:40px;min-height:40px}
+  input:not([type=radio]):not([type=checkbox]),select,textarea{font-size:16px}
+  dialog.fb{padding:18px 16px;max-height:calc(100dvh - 24px)}
+  .fb-actions .btn{min-height:44px;flex:1 1 auto}
+  .scale span{padding:11px 2px}
+}
 .terms-accepted{display:flex;gap:8px;align-items:center;margin:0;padding:10px 14px;border-radius:8px;border-left:4px solid var(--green-band);background:color-mix(in srgb, var(--green-band) 12%, var(--surface));color:var(--green-ink);font-weight:600}
 </style>
 </head>
@@ -645,7 +628,7 @@ html.gate-open{overflow:hidden}
 <main class="wrap" id="app"></main>
 <footer class="foot" id="foot"></footer>
 <div class="toast" id="toast" hidden></div>
-<div class="gate" id="gate" hidden></div>
+<div class="tnote" id="tnote" hidden></div>
 <dialog class="fb" id="fbDlg" aria-labelledby="fbTitle"></dialog>
 
 <script>
@@ -1963,7 +1946,7 @@ function render(force){
        <p>Diseñada y dirigida por Karen Tinoco; implementada con Claude Code como programador de IA en pareja. Las personas y los datos de la demo son ficticios. Basada en investigación publicada; sin afiliación con los autores ni las editoriales de las obras citadas.</p></div>`
     : `<div class="wrap"><p><b>Growth Compass</b> by Karen Tinoco · © 2026 Karen Tinoco. Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only. <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">License</a> · <a href="#privacy" data-action="view" data-v="privacy">Privacy and security</a> · <a href="#terms" data-action="terms">Terms of use</a> · <a href="#feedback" data-action="feedback">Send feedback</a> · <a href="#delete-data" data-action="delnav">Delete all my data</a></p>
        <p>Designed and directed by the author; implemented with Claude Code as an AI pair programmer. All people and data in the demo are fictional. Grounded in published research; not affiliated with the authors or publishers of the works cited.</p></div>`;
-  gateSync();
+  noticeSync();
 }
 document.addEventListener("focusin", e => { if (e.target.dataset?.pick) e.target.dispatchEvent(new Event("input", {bubbles: true})); });
 document.addEventListener("focusout", () => setTimeout(() => { if (pendingRender) render(); }, 0));
@@ -2703,7 +2686,7 @@ const PRIVACY = {
       ["export","Copy my career portfolio",["Copies your earned skills and certifications, your talents with evidence and your STAR stories to your clipboard as text, for a CV, LinkedIn or interview prep. It isn't stored anywhere else. Suggestions a manager sends you are saved with their record, and only you and they can see them."],[]],
       ["link","Sharing the link",["Sharing the link gives people the app, not your record. Each person starts with the sample team and their own private record."],[]],
       ["control","Deleting your data",["<b>Delete my data</b> below removes your assessment, plan, skills passport, check-ins, sharing settings and any private notes you wrote, from your account and from this browser."],[]],
-      ["share","Feedback",["Feedback is sent only when you click <b>Send feedback</b>. It's delivered privately to the app's developer, stored in the developer's Google account, and used to improve future versions. <b>In the team app on claude.ai</b>, it's also saved where only the app's owner can read it. If it can't be sent, you can copy your feedback and send it yourself. Only what you type into the feedback form is sent, never your assessment or plan."],[]],
+      ["share","Feedback",["Feedback is sent only when you click <b>Send feedback</b>. It's delivered privately to the app's developer, stored in the developer's Google account, and used to improve future versions. <b>In the team app on claude.ai</b>, it's also saved where only the app's owner can read it. If it can't be sent, you can copy your feedback and send it yourself. Only what you enter in the feedback form is sent, never your assessment or plan."],[]],
       ["check","Good practice",["Describe colleagues and customers by role, not by name, and leave out health, financial or other sensitive personal details. Your plan works just as well without them. Your answers are for development only, never for pay, hiring, ratings or discipline."],[]]],
     delTitle:"Delete all my data", delLead:"Permanently removes everything you entered. This can't be undone.",
     delBtn:"Delete all my data", delNone:"Nothing is saved yet, so there is nothing of yours to delete.", delSure:"Are you sure? Everything you entered will be permanently deleted.", delYes:"Yes, delete everything", delNo:"Cancel",
@@ -2728,7 +2711,7 @@ const PRIVACY = {
       ["export","Copiar mi portafolio profesional",["Copia como texto a tu portapapeles tus habilidades y certificaciones ganadas, tus talentos con evidencia y tus historias STAR, para un CV, LinkedIn o para preparar entrevistas. No se guarda en ningún otro lugar. Las sugerencias que te envía un líder se guardan con su registro, y solo tú y esa persona pueden verlas."],[]],
       ["link","Compartir el enlace",["Compartir el enlace da acceso a la app, no a tu registro. Cada persona empieza con el equipo de ejemplo y su propio registro privado."],[]],
       ["control","Borrar tus datos",["<b>Borrar mis datos</b>, aquí abajo, elimina tu evaluación, plan, pasaporte de habilidades, seguimientos, configuración de privacidad y cualquier nota privada que hayas escrito, de tu cuenta y de este navegador."],[]],
-      ["share","Comentarios",["Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>. Llegan de forma privada a la persona que desarrolla la app, se guardan en su cuenta de Google y se usan para mejorar versiones futuras. <b>En la app del equipo en claude.ai</b>, también se guardan donde solo la persona dueña de la app puede leerlos. Si no se pueden enviar, puedes copiar tus comentarios y enviarlos tú. Solo se envía lo que escribes en el formulario de comentarios, nunca tu evaluación ni tu plan."],[]],
+      ["share","Comentarios",["Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>. Llegan de forma privada a la persona que desarrolla la app, se guardan en su cuenta de Google y se usan para mejorar versiones futuras. <b>En la app del equipo en claude.ai</b>, también se guardan donde solo la persona dueña de la app puede leerlos. Si no se pueden enviar, puedes copiar tus comentarios y enviarlos tú. Solo se envía lo que ingresas en el formulario de comentarios, nunca tu evaluación ni tu plan."],[]],
       ["check","Buenas prácticas",["Describe a tus compañeros y clientes por su rol, no por su nombre, y deja fuera datos de salud, financieros u otros datos personales sensibles. Tu plan funciona igual de bien sin ellos. Tus respuestas son solo para tu desarrollo, nunca para salario, contratación, calificaciones ni medidas disciplinarias."],[]]],
     delTitle:"Borrar todos mis datos", delLead:"Elimina de forma permanente todo lo que ingresaste. No se puede deshacer.",
     delBtn:"Borrar todos mis datos", delNone:"Todavía no hay nada guardado, así que no hay datos tuyos que borrar.", delSure:"¿Seguro? Todo lo que ingresaste se eliminará de forma permanente.", delYes:"Sí, borrar todo", delNo:"Cancelar",
@@ -2774,7 +2757,7 @@ function renderTerms(){
     <h1>${d.termsTitle}</h1>
     ${TERMS_REC ? `<p class="terms-accepted" role="status">${icon("check")}<span>${es ? "Aceptaste estas condiciones el" : "You accepted these terms on"} ${fmtDate(TERMS_REC.acceptedAt)}.</span></p>` : ""}
     <section class="card psec n" id="terms"><div class="psec-h"><span class="pico">${icon("check")}</span><h2>${es ? "Lo que aceptas al usar Growth Compass" : "What you agree to by using Growth Compass"}</h2></div>${d.terms.map(x => `<p>${x}</p>`).join("")}</section>
-    <p class="small muted">${es ? "Growth Compass es gratuita y se ofrece tal cual." : "Growth Compass is free and provided as is."} <a href="#privacy" data-action="view" data-v="privacy">${es ? "Privacidad y seguridad" : "Privacy and security"}</a> · <a href="#feedback" data-action="feedback">${es ? "Enviar comentarios" : "Send feedback"}</a></p>
+    <p class="small muted">${es ? "Growth Compass es gratuita y se ofrece tal cual. Al usar la app aceptas estas condiciones y el aviso de Privacidad y seguridad." : "Growth Compass is free and provided as is. By using the app you agree to these terms and the Privacy and security notice."} <a href="#privacy" data-action="view" data-v="privacy">${es ? "Privacidad y seguridad" : "Privacy and security"}</a> · <a href="#feedback" data-action="feedback">${es ? "Enviar comentarios" : "Send feedback"}</a></p>
   </div>`;
 }
 function renderPrivacy(){
@@ -2908,6 +2891,7 @@ document.addEventListener("click", e => {
     case "del-yes": if (S.delAsk !== 2 || !S.delAck) return; deleteMyData(); return;
     case "feedback": openFeedback(); return;
     case "terms": S.view = "terms"; render(); scrollTo(0, 0); return;
+    case "terms-ok": termsOk(); return;
     case "delnav": S.view = "privacy"; render(); document.getElementById("delete-data")?.scrollIntoView({block:"start"}); return;
     case "bp-go": document.getElementById(el.dataset.id)?.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"}); return;
     case "view": S.view = el.dataset.v; S.sel = S.demo && S.view === "team" ? "ex2" : null; scrollTo(0, 0); break;
@@ -3107,51 +3091,52 @@ async function sendFeedbackToOwner(payload){ // payload = {app, page, language, 
   catch(e){ try { await fetch(FEEDBACK_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body}); return true; } catch(e2){ return false; } }
 }
 const FB = {
-  en: {title:"Send feedback", lead:"Help make Growth Compass better. Your feedback goes privately to the app's developer and is used to plan future versions.",
-    type:"What kind of feedback?", types:[["idea","Idea"],["broken","Something's broken"],["other","Other"]],
+  en: {title:"Send feedback", lead:"Takes a few seconds. No account needed. Both fields are optional.",
     rating:"How useful is the app?", low:"Not useful", high:"Very useful",
-    text:"What would make it better?", textPh:"Tell us what worked, what didn't, and what you'd change.",
+    text:"Anything to add?", textPh:"What worked, what didn't, what you'd change.",
+    agree:"By sending, you agree your feedback goes privately to the app's developer, as described in the", privacy:"Privacy notice",
     contact:"Your email or name (optional)", contactHint:"Only if you'd like a reply.",
     send:"Send feedback", cancel:"Cancel", close:"Close", sending:"Sending…",
     ok:"Thank you. Your feedback was sent to the app's developer.",
     fail:"Your feedback couldn't be sent. Check your connection and try again.",
     demo:"This public demo can't send feedback directly, so nothing leaves your browser.",
-    copyLead:"Copy it below and send it through", copy:"Copy feedback", copied:"Copied", need:"Please tell us what would make it better."},
-  es: {title:"Enviar comentarios", lead:"Ayuda a mejorar Growth Compass. Tus comentarios llegan de forma privada a la persona que desarrolla la app y se usan para planear versiones futuras.",
-    type:"¿Qué tipo de comentario?", types:[["idea","Idea"],["broken","Algo no funciona"],["other","Otro"]],
+    copyLead:"If you'd like, copy it below and send it through", copy:"Copy feedback", copied:"Copied", need:"Pick a rating or write a comment."},
+  es: {title:"Enviar comentarios", lead:"Toma unos segundos. No necesitas una cuenta. Ambos campos son opcionales.",
     rating:"¿Qué tan útil es la app?", low:"Nada útil", high:"Muy útil",
-    text:"¿Qué la haría mejor?", textPh:"Cuéntanos qué funcionó, qué no y qué cambiarías.",
+    text:"¿Algo más que contar?", textPh:"Qué funcionó, qué no y qué cambiarías.",
+    agree:"Al enviar, aceptas que tus comentarios lleguen de forma privada a la persona que desarrolla la app, como se describe en el", privacy:"aviso de Privacidad",
     contact:"Tu correo o nombre (opcional)", contactHint:"Solo si quieres una respuesta.",
     send:"Enviar comentarios", cancel:"Cancelar", close:"Cerrar", sending:"Enviando…",
     ok:"Gracias. Tus comentarios se enviaron a la persona que desarrolla la app.",
     fail:"No se pudieron enviar tus comentarios. Revisa tu conexión e inténtalo de nuevo.",
     demo:"Esta demo pública no puede enviar comentarios directamente, así que nada sale de tu navegador.",
-    copyLead:"Cópialos aquí abajo y envíalos a través de", copy:"Copiar comentarios", copied:"Copiado", need:"Cuéntanos qué la haría mejor."}
+    copyLead:"Si quieres, cópialos aquí abajo y envíalos a través de", copy:"Copiar comentarios", copied:"Copiado", need:"Elige una puntuación o escribe un comentario."}
 };
 function openFeedback(){
   const f = FB[LANG] || FB.en, dlg = $("#fbDlg");
   dlg.innerHTML = `<h2 id="fbTitle" tabindex="-1" style="outline:none">${f.title}</h2>
     <p class="small muted" style="margin:6px 0 16px">${f.lead}</p>
     <form id="fbForm" novalidate>
-      <fieldset><legend>${f.type}</legend><div class="fb-types">${f.types.map(([v, l], i) => `<label><input type="radio" name="fbtype" value="${v}" ${i === 0 ? "checked" : ""}><span>${l}</span></label>`).join("")}</div></fieldset>
       <fieldset><legend>${f.rating}</legend><div class="scale">${[1,2,3,4,5].map(n => `<label><input type="radio" name="fbrate" value="${n}"><span>${n}</span></label>`).join("")}</div><div class="scale-legend"><span>${f.low}</span><span>${f.high}</span></div></fieldset>
-      <div class="field"><label for="fbText">${f.text}</label><textarea id="fbText" required maxlength="4000" placeholder="${f.textPh}"></textarea></div>
+      <div class="field"><label for="fbText">${f.text}</label><textarea id="fbText" maxlength="4000" rows="3" placeholder="${f.textPh}"></textarea></div>
       <div class="field"><label for="fbContact">${f.contact} <span class="small muted" style="font-weight:400">${f.contactHint}</span></label><input type="text" id="fbContact" maxlength="200" autocomplete="email"></div>
+      <p class="small muted" style="margin:0">${f.agree} <a href="#privacy" data-action="view" data-v="privacy" id="fbPriv">${f.privacy}</a>.</p>
       <div id="fbMsg" aria-live="polite"></div>
       <div class="fb-actions"><button type="button" class="btn ghost" id="fbCancel">${f.cancel}</button><button type="submit" class="btn" id="fbSend">${f.send}</button></div>
     </form>`;
   $("#fbCancel").onclick = () => dlg.close();
+  $("#fbPriv").addEventListener("click", () => dlg.close());
   $("#fbForm").onsubmit = submitFeedback;
   dlg.showModal(); $("#fbTitle").focus(); dlg.scrollTop = 0;
 }
 function feedbackText(item){
   const f = FB[LANG] || FB.en;
-  return `Growth Compass feedback\nType: ${(f.types.find(t => t[0] === item.type) || [, item.type])[1]}\nUseful (1-5): ${item.rating || "-"}\n${item.text}${item.contact ? `\nContact: ${item.contact}` : ""}`;
+  return `Growth Compass feedback\nUseful (1-5): ${item.rating || "-"}\n${item.text}${item.contact ? `\nContact: ${item.contact}` : ""}`;
 }
-function feedbackFallback(item, lead){
+function feedbackFallback(item, lead, soft){
   const f = FB[LANG] || FB.en, msg = $("#fbMsg");
-  msg.innerHTML = `<div class="fb-msg err"><b>${lead}</b> ${f.copyLead} <a href="https://www.thehumanelement.live/" target="_blank" rel="noopener">thehumanelement.live</a>.
-    <textarea id="fbCopyText" readonly rows="5"></textarea><div class="row" style="margin-top:8px"><button type="button" class="btn sm" id="fbCopy">${f.copy}</button></div></div>`;
+  msg.innerHTML = `<div class="fb-msg ${soft ? "note" : "err"}"><b>${lead}</b> ${f.copyLead} <a href="https://www.thehumanelement.live/" target="_blank" rel="noopener">thehumanelement.live</a>.
+    <textarea id="fbCopyText" readonly rows="5"></textarea><div class="row" style="margin-top:8px"><button type="button" class="btn ghost sm" id="fbCopy">${f.copy}</button></div></div>`;
   $("#fbCopyText").value = feedbackText(item);
   $("#fbCopy").onclick = () => {
     const ta = $("#fbCopyText"), done = () => { $("#fbCopy").textContent = f.copied; };
@@ -3162,14 +3147,15 @@ async function submitFeedback(e){
   e.preventDefault();
   const f = FB[LANG] || FB.en, form = e.target, msg = $("#fbMsg");
   const text = $("#fbText").value.trim();
-  if (!text){ msg.innerHTML = `<div class="fb-msg err">${f.need}</div>`; $("#fbText").focus(); return; }
-  const item = {type: form.fbtype.value || "other", rating: Number(form.fbrate.value) || null, text, contact: $("#fbContact").value.trim(),
+  const rating = Number(form.fbrate.value) || null;
+  if (!text && !rating){ msg.innerHTML = `<div class="fb-msg err">${f.need}</div>`; form.querySelector("[name=fbrate]").focus(); return; }
+  const item = {type: "", rating, text, contact: $("#fbContact").value.trim(),
     ts: new Date().toISOString(), lang: LANG, app: "growth-compass"};
   const live = S.live && S.db && S.meId;
-  if (!FEEDBACK_ENDPOINT && !live) return feedbackFallback(item, f.demo);
+  if (!FEEDBACK_ENDPOINT && !live) return feedbackFallback(item, f.demo, true);
   const btn = $("#fbSend"); btn.disabled = true; btn.textContent = f.sending; msg.innerHTML = "";
   let sent = await sendFeedbackToOwner({app: "Growth Compass", page: location.href, language: LANG === "es" ? "es" : "en",
-    type: (f.types.find(t => t[0] === item.type) || [, item.type])[1], rating: item.rating || "", feedback: item.text, contact: item.contact, submitted: item.ts});
+    type: "", rating: item.rating || "", feedback: item.text, contact: item.contact, submitted: item.ts});
   if (live){
     try {
       const rid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -3187,88 +3173,28 @@ async function submitFeedback(e){
   }
 }
 
-// ---------- Terms gate: accept the terms before first use ----------
+// ---------- Terms notice: using the app counts as accepting the terms; OK hides the notice ----------
 const TERMS_VERSION = "2026-10-28";
 const TERMS_KEY = "growth-compass-terms-accepted";
-let TERMS_REC = (() => { const r = lsGet(TERMS_KEY); return r && r.version === TERMS_VERSION && r.acceptedAt ? r : null; })();
-const GATE = {open: !TERMS_REC, ticked: false, declined: false, panel: null, drawn: ""};
-const GATE_BG = ["header.bar", "#privbar", "#app", "#foot"];
+const TERMS_OLD = lsGet(TERMS_KEY);
+let TERMS_REC = TERMS_OLD && TERMS_OLD.version === TERMS_VERSION && TERMS_OLD.acceptedAt ? TERMS_OLD : null;
 function termsAccepted(){ return TERMS_REC; }
-function gateHTML(){
-  const es = LANG === "es", d = PRIVACY[LANG] || PRIVACY.en, pp = privacyPromise();
-  const shield = d.sections.find(s => s[0] === "shield")[2][0];
-  const head = `<div class="gate-head"><div><span class="eyebrow">Growth Compass</span><h2 id="gate-title">${es ? "Antes de empezar: Condiciones de uso" : "Before you start: Terms of use"}</h2></div>
-    <div class="gate-lang" role="group" aria-label="${es ? "Idioma" : "Language"}"><button type="button" data-g="lang" data-l="en" lang="en" aria-pressed="${!es}">EN</button><button type="button" data-g="lang" data-l="es" lang="es" aria-pressed="${es}">ES</button></div></div>`;
-  if (GATE.declined) return head + `<div class="gate-body" id="gate-desc"><div class="gate-no"><p>${es ? "Necesitas aceptar las condiciones para usar la app." : "You need to accept the terms to use the app."}</p>
-    <button type="button" class="btn go" data-g="review">${es ? "Revisar de nuevo" : "Review again"}</button></div></div>`;
-  let body;
-  if (GATE.panel === "terms") body = `<div class="gate-full">${renderTerms()}</div>`;
-  else if (GATE.panel === "privacy") body = `<div class="gate-full stack priv" style="gap:12px"><h1>${d.title}</h1><p class="pv-promise">${LOCK}<span>${d.promise}</span></p>${d.sections.map(([ic, h, paras, list, note]) => `<section class="card psec n"><div class="psec-h"><span class="pico">${icon(ic)}</span><h2>${h}</h2></div>${paras.map(x => `<p>${x}</p>`).join("")}${list.length ? `<ol>${list.map(x => `<li>${x}</li>`).join("")}</ol>` : ""}${note ? `<p class="callout">${note}</p>` : ""}</section>`).join("")}</div>`;
-  else body = `<p class="gate-lead" id="gate-desc">${es ? "Un resumen de las condiciones de uso y del aviso de privacidad de Growth Compass. Léelo y acéptalo para continuar." : "A summary of the Growth Compass terms of use and privacy notice. Please read it and accept to continue."}</p>
-    <ul class="gate-list">
-      <li class="t"><b class="gh">${es ? "Gratuita, mientras se prueba" : "Free, while it's being tested"}</b><p>${es ? "Growth Compass es gratuita y se ofrece tal cual." : "Growth Compass is free and provided as is."} ${es ? "Los comentarios se envían solo cuando haces clic en <b>Enviar comentarios</b>: llegan de forma privada a la persona que desarrolla la app, se guardan en su cuenta de Google y se usan para mejorar versiones futuras. Las visitas se cuentan con GoatCounter, que no usa cookies ni recopila datos personales." : "Feedback is sent only when you click <b>Send feedback</b>; it's delivered privately to the app's developer, stored in the developer's Google account, and used to improve future versions. Visits are counted with GoatCounter, which uses no cookies and does not collect personal data."}</p></li>
-      <li class="v"><b class="gh">${es ? "Sin resultados garantizados" : "No guaranteed results"}</b><p>${d.terms[0]}</p></li>
-      <li class="b"><b class="gh">${pp.head}</b><p>${pp.text}</p><p>${shield}</p></li>
-      <li class="c"><b class="gh">${es ? "Borrar es permanente; tus datos son tu responsabilidad" : "Deleting is permanent; your data is your responsibility"}</b><p>${d.delLead}</p><p>${d.terms[1]}</p></li>
-      <li class="g"><b class="gh">${es ? "Licencia" : "Licence"}</b><p>© 2026 Karen Tinoco. ${es ? "Licencia PolyForm Noncommercial 1.0.0: puedes verla, usarla y adaptarla con fines no comerciales. Uso comercial solo con permiso." : "Licensed under PolyForm Noncommercial 1.0.0: free to view, run, and adapt for non-commercial use. Commercial use by permission only."} <a href="https://polyformproject.org/licenses/noncommercial/1.0.0/" target="_blank" rel="noopener">${es ? "Licencia" : "License"}</a></p></li>
-    </ul>
-    <p class="gate-links"><a href="#terms" data-g="panel" data-p="terms">${es ? "Leer las Condiciones de uso completas" : "Read the full Terms of use"}</a><a href="#privacy" data-g="panel" data-p="privacy">${es ? "Leer el aviso de Privacidad y seguridad" : "Read the Privacy & security notice"}</a></p>`;
-  const back = GATE.panel ? `<p style="margin:0 0 10px"><button type="button" class="btn ghost sm" data-g="panel" data-p="">${es ? "← Volver al resumen" : "← Back to the summary"}</button></p>` : "";
-  return head + `<div class="gate-body" tabindex="0" aria-label="${es ? "Resumen de las condiciones" : "Terms summary"}">${back}${body}</div>
-    <div class="gate-foot"><label class="gate-ack"><input type="checkbox" id="gate-ack" ${GATE.ticked ? "checked" : ""}><span>${es ? "He leído y acepto las Condiciones de uso y el aviso de Privacidad y seguridad" : "I have read and accept the Terms of use and the Privacy & security notice"}</span></label>
-    <div class="gate-btns"><button type="button" class="btn ghost" data-g="decline">${es ? "Rechazar" : "Decline"}</button><button type="button" class="btn go" id="gate-accept" data-g="accept" ${GATE.ticked ? "" : "disabled"}>${es ? "Aceptar y continuar" : "Accept and continue"}</button></div></div>`;
+function noticeSync(){
+  const n = $("#tnote"); if (!n) return;
+  if (TERMS_REC){ if (!n.hidden){ n.hidden = true; n.innerHTML = ""; } return; }
+  const es = LANG === "es", upd = !!(TERMS_OLD && TERMS_OLD.acceptedAt);
+  const terms = `<a href="#terms" data-action="terms">${es ? "Condiciones de uso" : "Terms of use"}</a>`, priv = `<a href="#privacy" data-action="view" data-v="privacy">${es ? "aviso de Privacidad" : "Privacy notice"}</a>`;
+  const text = upd ? (es ? `Actualizamos las ${terms} y el ${priv}. Si sigues usando la app, los aceptas.` : `We updated the ${terms} and ${priv}. By continuing to use the app you agree to them.`)
+    : (es ? `Al usar esta app aceptas las ${terms} y el ${priv}.` : `By using this app you agree to the ${terms} and the ${priv}.`);
+  const key = LANG + "|" + upd;
+  if (n.dataset.k !== key){ n.innerHTML = `<div class="wrap" role="region" aria-label="${es ? "Aviso" : "Notice"}"><p>${text}</p><button type="button" class="btn sm" data-action="terms-ok">OK</button></div>`; n.dataset.k = key; }
+  n.hidden = false;
 }
-function gateFocusables(){ return [...$("#gate").querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),[tabindex="0"]')].filter(e => e.offsetParent !== null || e === document.activeElement); }
-function gateSync(focusSel){
-  const g = $("#gate"); if (!g) return;
-  GATE_BG.forEach(s => { const el = $(s); if (el) el.inert = GATE.open; });
-  document.documentElement.classList.toggle("gate-open", GATE.open);
-  if (!GATE.open){ if (!g.hidden){ g.hidden = true; g.innerHTML = ""; GATE.drawn = ""; } return; }
-  const key = [LANG, GATE.declined, GATE.panel, S.live].join("|");
-  if (g.hidden || key !== GATE.drawn || focusSel){
-    const scroll = key === GATE.drawn ? g.querySelector(".gate-body")?.scrollTop : 0;
-    g.innerHTML = `<div class="gate-box" role="dialog" aria-modal="true" aria-labelledby="gate-title" aria-describedby="gate-desc" lang="${LANG}">${gateHTML()}</div>`;
-    g.hidden = false; GATE.drawn = key;
-    const b = g.querySelector(".gate-body"); if (b && scroll) b.scrollTop = scroll;
-    const f = (focusSel && g.querySelector(focusSel)) || g.querySelector(GATE.declined ? "[data-g=review]" : ".gate-body") ;
-    if (f && !g.contains(document.activeElement) || focusSel) f?.focus({preventScroll: true});
-  }
-}
-function gateAccept(){
-  if (!GATE.ticked) return;
+function termsOk(){
   TERMS_REC = {version: TERMS_VERSION, acceptedAt: new Date().toISOString()};
   try { localStorage.setItem(TERMS_KEY, JSON.stringify(TERMS_REC)); } catch {}
-  GATE.open = false; render(true); scrollTo(0, 0);
-  const h = $("#app h1, #app h2"); if (h){ h.setAttribute("tabindex", "-1"); h.focus({preventScroll: true}); }
+  noticeSync(); if (S.view === "terms") render(true);
 }
-document.addEventListener("click", e => {
-  const g = $("#gate"); if (!GATE.open || !g || !g.contains(e.target)) return;
-  const el = e.target.closest("[data-g],[data-action=view]");
-  if (!el) return;
-  e.preventDefault(); e.stopPropagation();
-  if (el.dataset.action === "view"){ GATE.panel = el.dataset.v === "privacy" ? "privacy" : "terms"; gateSync(".gate-body"); return; }
-  switch (el.dataset.g){
-    case "lang": if (LANG !== el.dataset.l){ LANG = el.dataset.l; try { localStorage.setItem("gc-lang", LANG); } catch {} render(true); } gateSync(`[data-g=lang][data-l=${LANG}]`); return;
-    case "panel": GATE.panel = el.dataset.p || null; gateSync(GATE.panel ? ".gate-body" : "[data-p=terms]"); return;
-    case "decline": GATE.declined = true; GATE.ticked = false; gateSync("[data-g=review]"); return;
-    case "review": GATE.declined = false; GATE.panel = null; gateSync(".gate-body"); return;
-    case "accept": gateAccept(); return;
-  }
-}, true);
-document.addEventListener("change", e => {
-  if (e.target.id !== "gate-ack") return;
-  GATE.ticked = e.target.checked; const b = $("#gate-accept"); if (b) b.disabled = !GATE.ticked;
-});
-document.addEventListener("keydown", e => {
-  if (!GATE.open) return;
-  if (e.key === "Escape"){ e.preventDefault(); e.stopPropagation(); return; }
-  if (e.key !== "Tab") return;
-  const f = gateFocusables(); if (!f.length){ e.preventDefault(); return; }
-  const i = f.indexOf(document.activeElement);
-  if (e.shiftKey && (i <= 0)){ e.preventDefault(); f[f.length - 1].focus(); }
-  else if (!e.shiftKey && (i === -1 || i === f.length - 1)){ e.preventDefault(); f[0].focus(); }
-}, true);
-document.addEventListener("focusin", e => { if (GATE.open && !$("#fbDlg")?.open && !$("#gate").contains(e.target)) gateFocusables()[0]?.focus(); });
 
 // ---------- Boot ----------
 const local = lsGet(LS_KEY); if (local) S.myDoc = local;
